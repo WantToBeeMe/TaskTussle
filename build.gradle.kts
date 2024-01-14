@@ -1,7 +1,9 @@
 plugins {
     kotlin("jvm") version "1.8.0" // kotlin!!
     kotlin("kapt") version "1.7.10" // kotlin/annotation!!
+    // if you are using libraries, but they return errors when loading in game, you may want to use this
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    // and if you do, also build your jars like this ./gradle clean build shadowJar
 }
 
 group = "me.wanttobeeme"
