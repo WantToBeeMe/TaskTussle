@@ -1,8 +1,9 @@
 package me.wanttobee.tasktussle
 
-import me.wanttobee.tasktussle.commands.ICommandNamespace
-import me.wanttobee.tasktussle.commands.ICommandObject
-import me.wanttobee.tasktussle.commands.commandTree.*
+
+import me.wanttobee.commandTree.ICommandNamespace
+import me.wanttobee.commandTree.ICommandObject
+import me.wanttobee.commandTree.commandTree.*
 import org.bukkit.ChatColor
 
 object HelloWorldCommands : ICommandNamespace {

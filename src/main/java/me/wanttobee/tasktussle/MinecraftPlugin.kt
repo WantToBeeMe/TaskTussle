@@ -1,6 +1,6 @@
 package me.wanttobee.tasktussle;
 
-import me.wanttobee.tasktussle.commands.WTBMCommands
+import me.wanttobee.commandTree.WTBMCommands
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command

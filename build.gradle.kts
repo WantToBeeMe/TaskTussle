@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.0" // kotlin!!
     kotlin("kapt") version "1.7.10" // kotlin/annotation!!
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "me.wanttobeeme"
@@ -26,7 +27,7 @@ dependencies {
     // implementation("com.github.WantToBeeMe:wtbmGameLib:0.0.2")
     implementation("com.github.WantToBeeMe:CommandTree:1.0")
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
     compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
     kapt("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
 }
