@@ -1,7 +1,9 @@
 package me.wanttobee.tasktussle;
 
+import me.wanttobee.tasktussle.commands.WTBMCommands
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.java.annotation.command.Command
 import org.bukkit.plugin.java.annotation.command.Commands
 import org.bukkit.plugin.java.annotation.dependency.Library
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion
@@ -16,7 +18,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author
 @Description("A plugin with a lot of possibilities for all kinds of task based games")
 
 @Commands(
-       // Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
+       Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
        // Command(name = "byeWorld", aliases = ["bw","bye"], usage = "/byeWorld reason"),
 )
 
@@ -30,9 +32,13 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
+        WTBMCommands.setPlugin(this, title)
+        
+        WTBMCommands.createCommand(HelloWorldCommands)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")
+
         }
     }
 
