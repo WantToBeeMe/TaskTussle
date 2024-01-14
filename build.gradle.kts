@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "1.8.0" // kotlin!!
     kotlin("kapt") version "1.7.10" // kotlin/annotation!!
@@ -11,11 +13,11 @@ version = "1.0"
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    //mavenLocal()
     // instead of mavenLocal() when you have uploaded it to GitHub and made a release
-    // maven {
-    //        url = uri("https://jitpack.io") // Use JitPack as a resolver for GitHub releases
-    //    }
+     maven {
+            url = uri("https://jitpack.io") // Use JitPack as a resolver for GitHub releases
+        }
 
     maven {
         name = "spigotmc-repo"
@@ -27,7 +29,7 @@ repositories {
 
 dependencies {
     // implementation("com.github.WantToBeeMe:wtbmGameLib:0.0.2")
-    implementation("com.github.WantToBeeMe:CommandTree:1.0")
+    implementation("com.github.WantToBeeMe:CommandTree:1.0.0")
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
     compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
@@ -50,4 +52,13 @@ tasks.processResources {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// this piece of code makes it so when building a jar with ./gradle clean build shadowJar
+// that the 2 jars you will get are ProjectName.jar and ProjectName-1.0.jar
+// here the ProjectName.jar is the correct one which you should be using
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    archiveBaseName.set(project.name)
 }
