@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author
 
 @Commands(
        Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
+    Command(name = "ii", usage = "/ii"),
        // Command(name = "byeWorld", aliases = ["bw","bye"], usage = "/byeWorld reason"),
 )
 
@@ -32,9 +33,11 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-        WTBMCommands.setPlugin(this, title)
-        
+        WTBMCommands.initialize(instance, title)
+        ItemUtil.initialize(instance, title)
+
         WTBMCommands.createCommand(HelloWorldCommands)
+        WTBMCommands.createCommand(InventoryTestCommands)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")
@@ -43,6 +46,8 @@ class MinecraftPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
+        ItemUtil.disablePlugin()
+
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been disabled!")
         }

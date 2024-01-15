@@ -4,7 +4,11 @@ package me.wanttobee.tasktussle
 import me.wanttobee.commandTree.ICommandNamespace
 import me.wanttobee.commandTree.ICommandObject
 import me.wanttobee.commandTree.commandTree.*
+import me.wanttobee.tasktussle.ItemUtil.colorize
+
+import me.wanttobee.tasktussle.interactiveitems.RefreshHotBarItem
 import org.bukkit.ChatColor
+import org.bukkit.Material
 
 object HelloWorldCommands : ICommandNamespace {
     override val commandName: String = "helloWorld"
@@ -22,7 +26,25 @@ object HelloWorldCommands : ICommandNamespace {
 
     object SayTree : ICommandObject {
         override val helpText: String = "say it"
-        override val baseTree = CommandEmptyLeaf("say") { commander -> commander.sendMessage("${ChatColor.YELLOW}Hello World") }
+        override val baseTree = CommandEmptyLeaf("say") { commander ->
+            commander.sendMessage("${ChatColor.YELLOW}Hello World")
+
+            val colors = arrayOf(ChatColor.YELLOW, ChatColor.GOLD, ChatColor.RED, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, ChatColor.RED,  ChatColor.GOLD)
+            var colorIndex = 0
+            val refreshItem = RefreshHotBarItem()
+            refreshItem.setItem(ItemUtil.itemFactory(Material.SNOW, "SAY", "more say")).setSlot(1)
+            refreshItem.setRefreshEffect { itemStack ->
+                     val color = colors[colorIndex++]
+                    refreshItem.updateMaterial(Material.WHITE_WOOL.colorize(color))
+                    refreshItem.setLeftClickEvent{player, _ -> player.sendMessage("$color More Hello World") }
+                    if(colors.size <= colorIndex) colorIndex = 0
+                }.setRefreshInterval(10).startRefreshing()
+
+            for (onlinePlayer in MinecraftPlugin.instance.server.onlinePlayers) {
+                refreshItem.giveToPlayer(onlinePlayer)
+            }
+
+        }
     }
 
     object PairTree : ICommandObject {
