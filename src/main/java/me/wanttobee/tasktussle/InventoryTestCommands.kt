@@ -1,11 +1,12 @@
 package me.wanttobee.tasktussle
 
+
 import me.wanttobee.commandTree.ICommandNamespace
 import me.wanttobee.commandTree.ICommandObject
 import me.wanttobee.commandTree.commandTree.CommandEmptyLeaf
 import me.wanttobee.commandTree.commandTree.ICommandNode
-import me.wanttobee.tasktussle.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.interactiveinventory.InteractiveInventorySystem
+import me.wanttobee.everythingitems.ItemUtil
+import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import org.bukkit.Material
 
 object InventoryTestCommands : ICommandNamespace {
@@ -13,17 +14,16 @@ object InventoryTestCommands : ICommandNamespace {
     override val commandSummary: String = "start something"
     override val hasOnlyOneGroupMember: Boolean = false
     override val isZeroParameterCommand: Boolean = false
-    override val systemCommands: Array<ICommandObject> = arrayOf(createBranch,openBranch,clearBranch,debugBranch)
+    override val systemCommands: Array<ICommandObject> = arrayOf(createBranch, openBranch,debugBranch, clearBranch)
 
-    private var inventory : InteractiveInventory? = null
+    private var inventory : TestInventory? = null
     object createBranch : ICommandObject{
         override val helpText: String = "creates something"
         override val baseTree: ICommandNode = CommandEmptyLeaf("create") {_ ->
             if(inventory != null) return@CommandEmptyLeaf
-            inventory = InteractiveInventory(18, "some cool inventory")
+            inventory = TestInventory("some cool inventory")
             val item = ItemUtil.itemFactory(Material.MAGENTA_BANNER, "hey", "aaa", 3)
-            inventory!!.itemClickEvent(item,{ p -> p.sendMessage("hey!!!")},null)
-            inventory!!.setItem(4,item)
+            inventory!!.addLockedItem(4,item) { p -> p.sendMessage("hey!!!") }
         }
     }
 
@@ -44,7 +44,7 @@ object InventoryTestCommands : ICommandNamespace {
     object debugBranch : ICommandObject{
         override val helpText: String = "debug something"
         override val baseTree: ICommandNode = CommandEmptyLeaf("debug") {p ->
-           InteractiveInventorySystem.debugStatus(p)
+            InteractiveInventorySystem.debugStatus(p)
         }
     }
 }

@@ -4,9 +4,10 @@ package me.wanttobee.tasktussle
 import me.wanttobee.commandTree.ICommandNamespace
 import me.wanttobee.commandTree.ICommandObject
 import me.wanttobee.commandTree.commandTree.*
-import me.wanttobee.tasktussle.ItemUtil.colorize
 
-import me.wanttobee.tasktussle.interactiveitems.RefreshHotBarItem
+import me.wanttobee.everythingitems.ItemUtil
+import me.wanttobee.everythingitems.ItemUtil.colorize
+import me.wanttobee.everythingitems.interactiveitems.RefreshHotBarItem
 import org.bukkit.ChatColor
 import org.bukkit.Material
 
@@ -83,6 +84,4 @@ object HelloWorldCommands : ICommandNamespace {
             , {sender,pair -> sender.sendMessage("(${pair.first}) - (${pair.second.first},${pair.second.second}) - (${pair.third.first},${pair.third.second})")}
         )
     }
-
-
 }

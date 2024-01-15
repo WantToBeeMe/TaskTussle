@@ -13,7 +13,7 @@ version = "1.0"
 
 repositories {
     mavenCentral()
-    //mavenLocal()
+    // mavenLocal()
     // instead of mavenLocal() when you have uploaded it to GitHub and made a release
      maven {
             url = uri("https://jitpack.io") // Use JitPack as a resolver for GitHub releases
@@ -28,9 +28,8 @@ repositories {
 }
 
 dependencies {
-    // implementation("com.github.WantToBeeMe:wtbmGameLib:0.0.2")
     implementation("com.github.WantToBeeMe:CommandTree:1.0.1")
-    implementation("com.github.WantToBeeMe:EverythingItems:1.0.0")
+    implementation("com.github.WantToBeeMe:EverythingItems:1.0.1")
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
     compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!

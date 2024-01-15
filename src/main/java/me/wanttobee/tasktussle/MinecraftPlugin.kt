@@ -1,6 +1,9 @@
 package me.wanttobee.tasktussle;
 
+import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandTree.WTBMCommands
+import me.wanttobee.tasktussle.teams.TeamCommands
+import me.wanttobee.tasktussle.teams.TeamSystem
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command
@@ -19,6 +22,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author
 
 @Commands(
        Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
+    Command(name = "teams", usage = "/teams"),
     Command(name = "ii", usage = "/ii"),
        // Command(name = "byeWorld", aliases = ["bw","bye"], usage = "/byeWorld reason"),
 )
@@ -35,9 +39,11 @@ class MinecraftPlugin : JavaPlugin() {
         instance = this
         WTBMCommands.initialize(instance, title)
         ItemUtil.initialize(instance, title)
+        TeamSystem.initialize(instance, title)
 
         WTBMCommands.createCommand(HelloWorldCommands)
         WTBMCommands.createCommand(InventoryTestCommands)
+        WTBMCommands.createCommand(TeamCommands)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")
@@ -47,6 +53,7 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onDisable() {
         ItemUtil.disablePlugin()
+        TeamSystem.disablePlugin()
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been disabled!")
