@@ -6,16 +6,6 @@ import me.wanttobee.commandTree.commandTree.CommandEmptyLeaf
 import me.wanttobee.commandTree.commandTree.CommandIntLeaf
 import me.wanttobee.commandTree.commandTree.ICommandNode
 
-
-// you already have researched : TeamCommands
-// you already have researched : TeamMakerInventory
-// you already have researched : TeamSystem
-// TODO:
-//  research the file : Team
-//  research the file : TeamSet
-//  research the file : ITeamSetObserver
-//  research the file : ITeamObserver
-
 object TeamCommands : ICommandNamespace {
     override val commandName: String = "teams"
     override val commandSummary: String = "everything you will need for creating, managing and/or debugging teams"

@@ -1,10 +1,9 @@
-package me.wanttobee.tasktussle.utils.teams
+package me.wanttobee.tasktussle.teams
 
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material

@@ -1,8 +1,5 @@
-package me.wanttobee.tasktussle.utils.teams
+package me.wanttobee.tasktussle.teams
 
-import me.wanttobee.tasktussle.teams.ITeamSetObserver
-import me.wanttobee.tasktussle.teams.Team
-import me.wanttobee.tasktussle.teams.TeamSystem
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
@@ -11,13 +8,15 @@ import org.bukkit.entity.Player
 // for example this object can be a single number (Int) which would represent the score of that team
 // however, it also can be a lot more complicated like some kind of BingoCard, where each time has 1 bingo card assigned to it
 // In other words, the definition of a team is a list of players, and 1 object shared across these team members
-class TeamSet<T>(private val defaultValue : (Team) -> T, private val title : String = "") {
-//private val entityClass : Class<T>,
+class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val title : String = "") {
     private val teams : MutableMap<Team, T> = mutableMapOf()
     private val observers : MutableList<ITeamSetObserver> = mutableListOf()
-    fun getSize() : Int{
-        return teams.size
+
+
+    init{
+        TeamSystem.addTeamSet(this)
     }
+
     fun subscribe(sub : ITeamSetObserver){
         if(!observers.contains(sub))
             observers.add(sub)
@@ -25,74 +24,127 @@ class TeamSet<T>(private val defaultValue : (Team) -> T, private val title : Str
     fun unSubscribe(sub : ITeamSetObserver){
         observers.remove(sub)
     }
-    fun toPairList() : List<Pair<Team, T>>{
-        val returnList = mutableListOf<Pair<Team, T>>()
-        for(team in teams)
-            returnList.add(Pair(team.key,team.value))
-        return returnList
+    fun getTeamCount() : Int{
+        return teams.size
     }
 
-
-    init{
-        TeamSystem.addTeamSet(this)
-    }
+    // clears everything that has to be cleared before the set can be deleted
     fun clear(){
         for(ob in observers)
             ob.onSetClear()
         TeamSystem.removeTeamSet(this)
     }
 
+    // set all the teams setting to `leave team on quit`
     fun setLeaveOnQuit(value : Boolean){
-        for((team,_) in teams){
+        for(team in teams.keys){
             team.setLeaveTeamOnQuit(value)
         }
     }
+    // set all the teams setting to `leave team on death`
     fun setLeaveOnDeath(value: Boolean){
-        for((team,_) in teams){
+        for(team in teams.keys){
             team.setLeaveTeamOnDeath(value)
         }
     }
+
 
     fun addTeam(team : Team, value : T){
         teams[team]= value
     }
     fun addTeam(team: Team) {
-        return addTeam(team, defaultValue.invoke(team))
+        return addTeam(team, teamObjectInitializer.invoke(team))
     }
 
     fun getTeam(player: Player): Team? {
-        for ((team, _) in teams) {
+        for(team in teams.keys){
             if (team.containsMember(player))
                 return team
         }
         return null
     }
-
     fun getTeam(value: T): Team? {
         return teams.entries.find { it.value == value }?.key
     }
 
-    fun getT(team: Team): T? {
+    // get the object for the given team
+    fun getObject(team: Team): T? {
         return teams[team]
     }
-    fun getT(player: Player): T? {
-        for ((team, value) in teams) {
+    fun getObject(player: Player): T? {
+        // gets the object for the given player,
+        // so it first finds the team that it is in, and then it will find the object for that team
+        for ((team, teamObject) in teams) {
             if (team.containsMember(player))
-                return value
+                return teamObject
         }
         return null
     }
 
+    // if this set contains this team
     fun containsTeam(team: Team): Boolean {
         return teams.containsKey(team)
     }
+    // if this set contains this player
     fun containsPlayer(player: Player): Boolean {
-        for ((team, _) in teams) {
+        for(team in teams.keys){
             if (team.containsMember(player))
                 return true
         }
         return false
     }
+
+    // when a player leaves and the team setting leaveTeamOnQuit has been checked
+    // than we will remove that player from the members
+    // in the TeamSystem object it will still be added to the player leave list, but that doesn't matter because it is already out of the team itself.
+    fun onPlayerLeave(player : Player){
+        for(team in teams.keys){
+            if(team.containsMember(player) && team.leaveTeamOnQuit)
+                team.removeMember(player)
+        }
+    }
+    // same as above, but than for when a player dies instead of leaves
+    fun onPlayerDeath(player: Player){
+        for(team in teams.keys){
+            if(team.containsMember(player) && team.leaveTeamOnDeath )
+                team.removeMember(player)
+        }
+    }
+
+    fun onPlayerJoin(leavingPlayer : Player, joiningPlayer : Player){
+        for(team in teams.keys){
+            if(team.containsMember(leavingPlayer))
+                team.swapPlayer(leavingPlayer, joiningPlayer)
+        }
+    }
+
+    // sendMessage but for everyone in this set
+    fun broadcast(message : String){
+        for(team in teams.keys){
+            for(member in team.getMembers())
+                member.sendMessage(message)
+        }
+    }
+    fun applyToTeams( effect: (Team, T) -> Unit ){
+        for((team,teamObject) in teams)
+            effect.invoke(team,teamObject)
+    }
+    fun applyToAllMembers(effect: (Player) -> Unit){
+        for(team in teams.keys){
+            for(member in team.getMembers())
+                effect.invoke(member)
+        }
+    }
+
+    // // oddly specific
+    // fun applyToOwnTeamObject(player : Player, effect : T.( ) -> Unit){
+    //     for((team,teamObject) in teams){
+    //         if(team.containsMember(player)){
+    //             teamObject.effect()
+    //             return
+    //         }
+    //     }
+    // }
 
     override fun toString(): String {
         var stringBuffer = "${ChatColor.GOLD}Set${ChatColor.RESET}: $title"
@@ -108,50 +160,5 @@ class TeamSet<T>(private val defaultValue : (Team) -> T, private val title : Str
         }
 
         return stringBuffer
-    }
-
-    fun onPlayerLeave(player : Player){
-        for(team in teams.keys){
-            if(team.containsMember(player) && team.leaveTeamOnQuit)
-                team.removeMember(player)
-        }
-    }
-
-    fun onPlayerJoin(leftPlayer : Player, newPlayer : Player){
-        for(team in teams.keys){
-            if(team.containsMember(leftPlayer))
-                team.swapPlayer(leftPlayer, newPlayer)
-        }
-    }
-    fun onPlayerDeath(player: Player){
-        for((team,_) in teams){
-            if(team.leaveTeamOnDeath && team.containsMember(player))
-                team.removeMember(player)
-        }
-    }
-
-    fun broadcast(message : String){
-        for((team, _) in teams){
-            for(member in team.getMembers())
-                member.sendMessage(message)
-        }
-    }
-    fun applyToTeams( effect: (Team, T) -> Unit ){
-        for((team,T) in teams)
-            effect.invoke(team,T)
-    }
-    fun applyToAllMembers(effect: (Player) -> Unit){
-        for((team,_) in teams){
-            for(member in team.getMembers())
-                effect.invoke(member)
-        }
-    }
-    fun applyToOwnT(player : Player , effect : T.( ) -> Unit){
-        for((team,T) in teams){
-            if(team.containsMember(player)){
-                T.effect()
-                return
-            }
-        }
     }
 }

@@ -3,7 +3,9 @@ package me.wanttobee.tasktussle.teams
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-class Team(private val teamNumber : Int) {
+// teamIndex is the index of the team within the teamSet
+// for example, you can be in `Team 1`, or in `Team 2`
+class Team(private val teamIndex : Int) {
     private val members : MutableList<Player> = mutableListOf()
     private val observers : MutableList<ITeamObserver> = mutableListOf()
 
@@ -14,6 +16,16 @@ class Team(private val teamNumber : Int) {
     var leaveTeamOnDeath = false
         private set
 
+    companion object{
+        // based on the teamIndex there will 1 color taken from this list that is the default color for that team
+        // if the index is bigger than this list, then it will start from the start again
+        private val defaultColors = arrayOf(ChatColor.BLUE, ChatColor.RED, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.LIGHT_PURPLE, ChatColor.GOLD, ChatColor.AQUA, ChatColor.DARK_GREEN, ChatColor.DARK_PURPLE, ChatColor.DARK_AQUA)
+    }
+    init{
+        this.color = if(teamIndex <= 0) ChatColor.WHITE else defaultColors[(teamIndex-1) % defaultColors.size]
+    }
+
+
     fun setLeaveTeamOnQuit(value : Boolean) : Team {
         this.leaveTeamOnQuit = value
         return this
@@ -22,15 +34,12 @@ class Team(private val teamNumber : Int) {
         this.leaveTeamOnDeath = value
         return this
     }
+    // you can change the color to something specific if you want. but it is set to a color by default
     fun setColor(value : ChatColor) : Team {
         color = value
         return this
     }
 
-    init{
-        val defaultColors = arrayOf(ChatColor.BLUE, ChatColor.RED, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.LIGHT_PURPLE, ChatColor.GOLD, ChatColor.AQUA, ChatColor.DARK_GREEN, ChatColor.DARK_PURPLE, ChatColor.DARK_AQUA)
-        this.color = if(teamNumber <= 0) ChatColor.WHITE else defaultColors[(teamNumber-1)%10]
-    }
     fun subscribe(ob : ITeamObserver){
         if(!observers.contains(ob))
             observers.add(ob)
@@ -39,23 +48,16 @@ class Team(private val teamNumber : Int) {
         return observers.remove(ob)
     }
 
-
     fun getMembers() : List<Player>{
         return members.toList()
     }
 
+    fun containsMember(p : Player) : Boolean{
+        return members.contains(p)
+    }
     fun addMember(players:Collection<Player>){
         for(p in players)
             this.addMember(p)
-    }
-    fun swapPlayer(leave:Player,enter:Player){
-        if(!members.contains(leave) || members.contains(enter)) return
-        //TeamSystem.minecraftPlugin.logger.info("swap begin")
-        members.remove(leave)
-        members.add(enter)
-
-        for(ob in observers.toList())
-            ob.onSwapMember(leave, enter)
     }
     fun addMember(p : Player){
         if(members.contains(p)) return
@@ -66,15 +68,26 @@ class Team(private val teamNumber : Int) {
     fun removeMember(p: Player) : Boolean{
         val done = members.remove(p)
         if(done){
-            //p.setDisplayName(p.name)//resetting the name (so any color gets removed)
             for(ob in observers.toList())
                 ob.onRemoveMember(p)
         }
         return done
     }
-    fun containsMember(p : Player) : Boolean{
-        return members.contains(p)
+
+    // this method will swap out the first player for the second player
+    // you might have some kind of ability that does this in your game where this can be useful
+    // we also use this for when players leave the server and rejoin, they then have a new player instance,
+    // so we swap the old player instance for there new player instance
+    fun swapPlayer(leave:Player, enter:Player){
+        if(!members.contains(leave) || members.contains(enter)) return
+        //TeamSystem.minecraftPlugin.logger.info("swap begin")
+        members.remove(leave)
+        members.add(enter)
+
+        for(ob in observers.toList())
+            ob.onSwapMember(leave, enter)
     }
+
     fun clear() {
         members.forEach { member ->
             member.setDisplayName(member.name)
@@ -91,20 +104,22 @@ class Team(private val teamNumber : Int) {
         }
     }
 
-    fun getMemberString() : String{
+    // can be useful when you for example want to put the names on an item
+    // instead of getting all players and assembling this list youself, you can just call this method
+    fun getMemberString(separator : String = ", ") : String{
         var text = ""
         for(member in members){
             text += member.name
             if(member != members.last()){
-                text += ", "
+                text += separator
             }
         }
         return text
     }
     fun getDisplayName() : String{
-        return "${color}Team $teamNumber"
+        return "${color}Team $teamIndex"
     }
     override fun toString(): String {
-        return "${ChatColor.GOLD}Team $color-=$teamNumber=-${ChatColor.RESET}: ${getMemberString()} "
+        return "${ChatColor.GOLD}Team $color-=$teamIndex=-${ChatColor.RESET}: ${getMemberString()} "
     }
 }
