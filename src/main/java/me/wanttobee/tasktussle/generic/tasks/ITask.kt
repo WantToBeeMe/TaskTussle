@@ -80,6 +80,9 @@ abstract class ITask(val associatedTeam : Team) {
     protected abstract fun enable()
 
 
+    abstract fun getSuccessMessage(hideDetails : Boolean) : String
+
+
     abstract fun clone(otherTeam : Team) : ITask
 
     //all the different possible listeners

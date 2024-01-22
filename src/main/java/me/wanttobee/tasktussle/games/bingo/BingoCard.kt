@@ -21,7 +21,7 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         return card.displayTask(taskSet)
     }
 
-    // here we have no important buissness with the teams, however, we do need to inform the card itself to display it
+    // here we have no important business with the teams, however, we do need to inform the card itself to display it
     override fun <T : ITTCard> setTeams(teams: TeamSet<T>) {
         card.displayTeams(teams)
     }
@@ -33,18 +33,18 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
             }
             return
         }
-        // TODO: Make per task a complete message
-        // if(TaskTussleSystem.hideCard){
-        //     BingoGameSystem.gameTeams?.forEach{ team,bingoCardManager ->
-        //         if(bingoCardManager == this)
-        //             team.forEachMember { p -> p.sendMessage("\"${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task ${ChatColor.DARK_GRAY}(${ItemUtil.getRealName(task.itemToObtain)})") }
-        //         else
-        //             team.forEachMember { p -> p.sendMessage("\"${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task")}
-        //     }
-        // }
-        // else{
-        //     BingoGameSystem.game?.applyToAllMembers { p ->  p.sendMessage("${associatedTeam.getDisplayName()}${ChatColor.RESET} got task: ${ChatColor.GOLD}${TTUtil.getRealName(task.itemToObtain)}")  }
-        // }
+
+        if(TaskTussleSystem.hideCard){
+            BingoGameManager.gameTeams?.forEach{ team,bingoCardManager ->
+                if(bingoCardManager == this)
+                    team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(false)) }
+                else
+                    team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(true)) }
+            }
+        }
+        else{
+            BingoGameManager.gameTeams?.forEachPlayer{ p -> p.sendMessage(task.getSuccessMessage(false)) }
+        }
         card.teamIcon.setAmount(getCompletedAmount())
         BingoGameManager.checkCardForWin(this)
     }

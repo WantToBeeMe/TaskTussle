@@ -12,15 +12,19 @@ import org.bukkit.Material
 object ObtainTaskManager  : ITaskManager<ObtainTask>() {
     private var fileName = "default.yml"
 
-    // taskEnabled boolean determent if this task will be added to the pool when generating the tasks
-    private var taskEnabled = true
     // handInItem boolean determent if the item you obtain will remove 1 from the stack or just leave it as is
     var handInItem = false
         private set
 
-    override fun isEnabled(): Boolean {
-        return taskEnabled
-    }
+    override val taskTypeName: String = "obtain_task"
+    override val settings: Array<ICommandNode> = arrayOf(
+        CommandBoolLeaf("hand_in_item",
+            { p,arg -> handInItem = arg; settingIsChangedTo(p,"hand in item", arg) },
+            { p -> settingIsCurrently(p, "hand in item", handInItem) }),
+        CommandStringLeaf("file_name", { ObtainTaskFiles.getAllFileNames() },
+            { p,arg -> fileName = arg; settingIsChangedTo(p,"file_name", arg)},
+            { p -> settingIsCurrently(p, "file_name",fileName) }),
+    )
 
     override fun generateTasks(associatedTeam: Team, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
         val taskPool = ObtainTaskFiles.readFile(fileName) ?: return null
@@ -45,16 +49,9 @@ object ObtainTaskManager  : ITaskManager<ObtainTask>() {
         return Array(selectedMaterials.size) {i -> ObtainTask(selectedMaterials[i],associatedTeam ) }
     }
 
-    override val taskTypeName: String = "obtain_task"
-    override val settings: Array<ICommandNode> = arrayOf(
-        CommandBoolLeaf("hand_in_item",
-            { p,arg -> handInItem = arg; settingIsChangedTo(p,"hand in item", arg) },
-            { p -> settingIsCurrently(p, "hand in item", handInItem) }),
-        CommandBoolLeaf("enabled",
-            { p,arg -> taskEnabled = arg; settingIsChangedTo(p,"enabled", arg) },
-            { p -> settingIsCurrently(p, "enabled",taskEnabled) }),
-        CommandStringLeaf("file_name", { ObtainTaskFiles.getAllFileNames() },
-            { p,arg -> fileName = arg; settingIsChangedTo(p,"file_name", arg)},
-            { p -> settingIsCurrently(p, "file_name",fileName) }),
-    )
+    override fun getExplanationText(clickItemName : String): String {
+        return if(handInItem)
+            "To submit an item, go in your inventory, drag the item you want to submit, and click with this item on the $clickItemName."
+        else "To submit an item to the card, you will need to pick it up, or drag it on to your $clickItemName."
+    }
 }

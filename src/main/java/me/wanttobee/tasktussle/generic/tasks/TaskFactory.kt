@@ -31,7 +31,7 @@ object TaskFactory {
         val totalRatio = easyRatio + normalRatio + hardRatio
         if(totalRatio == 0) return null
         // we put all the task in the pool that are enabled
-        val enabledManagersList = taskManagers.filter{ manager -> manager.isEnabled() }.shuffled()
+        val enabledManagersList = taskManagers.filter{ manager -> manager.taskEnabled }.shuffled()
         if(enabledManagersList.isEmpty()) return null
 
         // we keep track of the amount that has eben generated already,
@@ -51,5 +51,4 @@ object TaskFactory {
         }
         return tasks
     }
-
 }

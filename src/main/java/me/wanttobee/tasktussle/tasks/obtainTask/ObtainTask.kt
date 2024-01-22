@@ -38,6 +38,12 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(ass
         TaskListener.inventoryClickObservers.remove(this)
     }
 
+    override fun getSuccessMessage(hideDetails: Boolean): String {
+        return if(hideDetails)
+            "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task"
+        else "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
+    }
+
     override fun checkTask(event: PlayerPickupItemEvent) : (() -> Unit)? {
         if(handIn) return null
         if(associatedTeam.containsMember(event.player)){
@@ -65,5 +71,4 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(ass
     override fun clone(otherTeam : Team): ObtainTask {
         return ObtainTask(itemToObtain,otherTeam)
     }
-
 }

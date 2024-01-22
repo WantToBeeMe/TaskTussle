@@ -120,5 +120,4 @@ object TaskTussleSystem {
         InteractiveHotBarSystem.debugStatus(commander)
         TeamSystem.debugStatus(commander)
     }
-
 }

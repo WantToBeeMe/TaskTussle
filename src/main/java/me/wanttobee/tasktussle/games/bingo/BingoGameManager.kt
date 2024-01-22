@@ -26,11 +26,16 @@ object BingoGameManager : ITTGameManager<BingoCard> {
         val itemName = "${ChatColor.GOLD}${TaskTussleSystem.clickItemName}$messageColor"
         teams.forEachPlayer { player ->
             player.sendMessage("${messageColor}Click with the $itemName in your hand to see your teams progress.")
-            // TODO: make each tasks have an option extra explanation
-            //if(ObtainTaskManager.handInItem)
-            //    player.sendMessage("${messageColor}To submit an item, go in your inventory, drag the item you want to submit, and click with this item on the $itemName.")
-            //else
-            //    player.sendMessage("${messageColor}To submit an item to the card, you will need to pick it up, or drag it on to your $itemName.")
+            // we send all the explanations for the different tasks that are active (if they have it)
+            // to tell the user how to complete curtain tasks if they don't know already
+            for(taskManager in TaskTussleSystem.taskManagers){
+                if(taskManager.taskEnabled && taskManager.getExplanationText(itemName) != null){
+                    player.sendMessage(
+                        "${ChatColor.GRAY}(${taskManager.taskTypeName})$messageColor" +
+                                taskManager.getExplanationText(itemName)
+                    )
+                }
+            }
             player.sendMessage("${messageColor}The goal is set to: ${ChatColor.GOLD}$winningCondition")
         }
 

@@ -20,22 +20,9 @@ object TaskTussleCommand : ICommandNamespace {
         DebugTree
     )
 
-    //  Todo:
-    //   /taskTussle setting generic ...
-    //   /taskTussle setting games  ...
-    //   /taskTussle setting tasks  ...
-    //   /taskTussle start ...
-    //   /taskTussle stop
-    //   /taskTussle debug
-    //   E.G.
-    //   /taskTussle settings generic gameTime 15
-    //   /taskTussle settings games bingo winCondition full_card
-    //   /taskTussle start bingo 3
-    //   /taskTussle stop
-
     object StartTree : ICommandObject {
         override val helpText: String = "to start one of the games"
-        override val baseTree = CommandBranch("start", 
+        override val baseTree = CommandBranch("start",
             gameCommands.map { it.start }.toTypedArray()
         )
     }
@@ -84,11 +71,11 @@ object TaskTussleCommand : ICommandNamespace {
 
     }
 
+    // the following 2 methods are to have a consistent message for checking and changing a setting
     private fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any) {
         commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is currently: ${ChatColor.GOLD}$currentValue")
     }
     private fun settingIsChangedTo(commander : Player, settingName: String, newValue: Any) {
         commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is changed to: ${ChatColor.GOLD}$newValue")
     }
-
 }

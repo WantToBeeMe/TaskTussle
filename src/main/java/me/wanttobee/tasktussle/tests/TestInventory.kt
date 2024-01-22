@@ -53,6 +53,4 @@ class TestInventory(title : String) : InteractiveInventory() {
         //    }
         //}
     }
-
-
 }

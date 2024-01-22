@@ -12,7 +12,7 @@ abstract class ITTGameCommands {
     abstract val settings : Array<ICommandNode>
     abstract val start: ICommandNode
 
-
+    // the following 2 methods are to have a consistent message for checking and changing a setting
     protected fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any) {
         commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY}($commandName) ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is currently: ${ChatColor.GOLD}$currentValue")
     }
