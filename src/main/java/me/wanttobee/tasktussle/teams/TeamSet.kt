@@ -17,6 +17,10 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
         TeamSystem.addTeamSet(this)
     }
 
+    fun getTeamsAsMap() : MutableMap<Team, T>{
+        return teams
+    }
+
     fun subscribe(sub : ITeamSetObserver){
         if(!observers.contains(sub))
             observers.add(sub)
@@ -30,9 +34,18 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
 
     // clears everything that has to be cleared before the set can be deleted
     fun clear(){
+        // we first clear the set from the system
+        TeamSystem.removeTeamSet(this)
+        // then we tell all the teams that they are being cleared
+        // so if they have observers of their own, they can pass the message
+        for(team in teams.keys)
+            team.clear()
+        teams.clear() // we don't have to do it, but it just in case something goes wrong
+
+        // and only then do we tell the observers of our own that we cleared
         for(ob in observers)
             ob.onSetClear()
-        TeamSystem.removeTeamSet(this)
+        observers.clear() // we don't have to do it, but it just in case something goes wrong
     }
 
     // set all the teams setting to `leave team on quit`
@@ -50,7 +63,7 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
 
 
     fun addTeam(team : Team, value : T){
-        teams[team]= value
+        teams[team] = value
     }
     fun addTeam(team: Team) {
         return addTeam(team, teamObjectInitializer.invoke(team))
@@ -67,6 +80,7 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
         return teams.entries.find { it.value == value }?.key
     }
 
+
     // get the object for the given team
     fun getObject(team: Team): T? {
         return teams[team]
@@ -79,6 +93,25 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
                 return teamObject
         }
         return null
+    }
+
+    fun forEach(action : (Team, T)->Unit){
+        for (team in teams)
+            action.invoke(team.key, team.value)
+    }
+    fun forEachTeam(action : (Team)->Unit){
+        for (team in teams.keys)
+            action.invoke(team)
+    }
+    fun forEachObject(action : (T)->Unit){
+        for (obj in teams.values)
+            action.invoke(obj)
+    }
+    fun forEachPlayer(effect: (Player) -> Unit){
+        for(team in teams.keys){
+            for(member in team.getMembers())
+                effect.invoke(member)
+        }
     }
 
     // if this set contains this team
@@ -125,29 +158,9 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
                 member.sendMessage(message)
         }
     }
-    fun applyToTeams( effect: (Team, T) -> Unit ){
-        for((team,teamObject) in teams)
-            effect.invoke(team,teamObject)
-    }
-    fun applyToAllMembers(effect: (Player) -> Unit){
-        for(team in teams.keys){
-            for(member in team.getMembers())
-                effect.invoke(member)
-        }
-    }
-
-    // // oddly specific
-    // fun applyToOwnTeamObject(player : Player, effect : T.( ) -> Unit){
-    //     for((team,teamObject) in teams){
-    //         if(team.containsMember(player)){
-    //             teamObject.effect()
-    //             return
-    //         }
-    //     }
-    // }
 
     override fun toString(): String {
-        var stringBuffer = "${ChatColor.GOLD}Set${ChatColor.RESET}: $title"
+        var stringBuffer = title
         var first = true
         for((team,value) in teams){
             if(first){
@@ -156,7 +169,7 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
                 if(valueName == "Unit") valueName = "-"
                 stringBuffer += "${ChatColor.GRAY} ($valueName)"
             }
-            stringBuffer += "\n${ChatColor.WHITE}- $team"
+            stringBuffer += "\n${ChatColor.WHITE}  - $team"
         }
 
         return stringBuffer

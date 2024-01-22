@@ -89,16 +89,15 @@ class Team(private val teamIndex : Int) {
     }
 
     fun clear() {
-        members.forEach { member ->
-            member.setDisplayName(member.name)
-        }
-        members.clear()
+       // we clear
+        members.clear() // we don't have to do it, but it just in case something goes wrong.
+        // and then we tell all the observers that we cleared
         for(ob in observers)
             ob.onTeamClear()
-        observers.clear()
+        observers.clear() // we don't have to do it, but it just in case something goes wrong
     }
 
-    fun applyToMembers( thing : (Player) -> Unit ){
+    fun forEachMember(thing : (Player) -> Unit ){
         for(member in members){
             thing.invoke(member)
         }

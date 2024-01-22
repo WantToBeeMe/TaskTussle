@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle
+package me.wanttobee.tasktussle.tests
 
 
 import me.wanttobee.commandTree.ICommandNamespace
@@ -6,7 +6,9 @@ import me.wanttobee.commandTree.ICommandObject
 import me.wanttobee.commandTree.commandTree.CommandEmptyLeaf
 import me.wanttobee.commandTree.commandTree.ICommandNode
 import me.wanttobee.everythingitems.ItemUtil
+import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
+import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
 import org.bukkit.Material
 
 object InventoryTestCommands : ICommandNamespace {
@@ -14,7 +16,7 @@ object InventoryTestCommands : ICommandNamespace {
     override val commandSummary: String = "start something"
     override val hasOnlyOneGroupMember: Boolean = false
     override val isZeroParameterCommand: Boolean = false
-    override val systemCommands: Array<ICommandObject> = arrayOf(createBranch, openBranch,debugBranch, clearBranch)
+    override val systemCommands: Array<ICommandObject> = arrayOf(createBranch, openBranch, debugBranch, clearBranch)
 
     private var inventory : TestInventory? = null
     object createBranch : ICommandObject{
@@ -22,7 +24,7 @@ object InventoryTestCommands : ICommandNamespace {
         override val baseTree: ICommandNode = CommandEmptyLeaf("create") {_ ->
             if(inventory != null) return@CommandEmptyLeaf
             inventory = TestInventory("some cool inventory")
-            val item = ItemUtil.itemFactory(Material.MAGENTA_BANNER, "hey", "aaa", 3)
+            val item = UniqueItemStack(Material.MAGENTA_BANNER, "hey", "aaa", 3)
             inventory!!.addLockedItem(4,item) { p -> p.sendMessage("hey!!!") }
         }
     }
@@ -45,6 +47,7 @@ object InventoryTestCommands : ICommandNamespace {
         override val helpText: String = "debug something"
         override val baseTree: ICommandNode = CommandEmptyLeaf("debug") {p ->
             InteractiveInventorySystem.debugStatus(p)
+            InteractiveHotBarSystem.debugStatus(p)
         }
     }
 }

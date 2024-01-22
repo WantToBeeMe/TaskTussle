@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle
+package me.wanttobee.tasktussle.tests
 
 
 import me.wanttobee.commandTree.ICommandNamespace
@@ -7,14 +7,16 @@ import me.wanttobee.commandTree.commandTree.*
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.everythingitems.ItemUtil.colorize
+import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveitems.RefreshHotBarItem
+import me.wanttobee.tasktussle.MinecraftPlugin
 import org.bukkit.ChatColor
 import org.bukkit.Material
 
 object HelloWorldCommands : ICommandNamespace {
     override val commandName: String = "helloWorld"
     override val commandSummary: String = "to say hello world or something"
-    override val systemCommands: Array<ICommandObject> = arrayOf(GroupTree,coolPairTree)
+    override val systemCommands: Array<ICommandObject> = arrayOf(GroupTree, coolPairTree)
     override val hasOnlyOneGroupMember: Boolean = false
     override val isZeroParameterCommand: Boolean = false
 
@@ -33,13 +35,15 @@ object HelloWorldCommands : ICommandNamespace {
             val colors = arrayOf(ChatColor.YELLOW, ChatColor.GOLD, ChatColor.RED, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, ChatColor.RED,  ChatColor.GOLD)
             var colorIndex = 0
             val refreshItem = RefreshHotBarItem()
-            refreshItem.setItem(ItemUtil.itemFactory(Material.SNOW, "SAY", "more say")).setSlot(1)
-            refreshItem.setRefreshEffect { itemStack ->
-                     val color = colors[colorIndex++]
-                    refreshItem.updateMaterial(Material.WHITE_WOOL.colorize(color))
-                    refreshItem.setLeftClickEvent{player, _ -> player.sendMessage("$color More Hello World") }
-                    if(colors.size <= colorIndex) colorIndex = 0
-                }.setRefreshInterval(10).startRefreshing()
+            refreshItem.setItem(UniqueItemStack(Material.SNOW, "SAY", "more say")).setSlot(1)
+            refreshItem.setRefreshEffect { thisItem ->
+                val color = colors[colorIndex++]
+                if(colors.size <= colorIndex) colorIndex = 0
+
+                thisItem.updateMaterial(Material.WHITE_WOOL.colorize(color))
+                thisItem.setLeftClickEvent{player, _ -> player.sendMessage("$color More Hello World") }
+                }.setRefreshInterval(10)
+                .startRefreshing()
 
             for (onlinePlayer in MinecraftPlugin.instance.server.onlinePlayers) {
                 refreshItem.giveToPlayer(onlinePlayer)

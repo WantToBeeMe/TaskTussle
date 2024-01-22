@@ -2,8 +2,12 @@ package me.wanttobee.tasktussle;
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandTree.WTBMCommands
+import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.teams.TeamCommands
 import me.wanttobee.tasktussle.teams.TeamSystem
+import me.wanttobee.tasktussle.tests.DebugCommand
+import me.wanttobee.tasktussle.tests.HelloWorldCommands
+import me.wanttobee.tasktussle.tests.InventoryTestCommands
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command
@@ -21,10 +25,9 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author
 @Description("A plugin with a lot of possibilities for all kinds of task based games")
 
 @Commands(
-       Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
-    Command(name = "teams", usage = "/teams"),
-    Command(name = "ii", usage = "/ii"),
-       // Command(name = "byeWorld", aliases = ["bw","bye"], usage = "/byeWorld reason"),
+    //Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
+    Command(name = "debug_tt", usage = "/debug_tt"),
+    Command(name = "taskTussle", aliases = ["tt"], usage = "/taskTussle")
 )
 
 // library has to be loaded in order to use kotlin
@@ -37,23 +40,27 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-        WTBMCommands.initialize(instance, title)
-        ItemUtil.initialize(instance, title)
-        TeamSystem.initialize(instance, title)
+        WTBMCommands.initialize(instance, "${ChatColor.GREEN}(C)$title")
+        ItemUtil.initialize(instance, "${ChatColor.LIGHT_PURPLE}(I)$title")
+        TeamSystem.initialize(instance, "${ChatColor.AQUA}(T)$title")
+        TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
 
-        WTBMCommands.createCommand(HelloWorldCommands)
-        WTBMCommands.createCommand(InventoryTestCommands)
-        WTBMCommands.createCommand(TeamCommands)
+        ObtainTaskFiles.generateDefaultFolder()
+        // WTBMCommands.createCommand(HelloWorldCommands)
+        // WTBMCommands.createCommand(InventoryTestCommands)
+        // WTBMCommands.createCommand(TeamCommands)
+        WTBMCommands.createCommand(DebugCommand)
+        WTBMCommands.createCommand(TaskTussleCommand)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")
-
         }
     }
 
     override fun onDisable() {
         ItemUtil.disablePlugin()
         TeamSystem.disablePlugin()
+        TaskTussleSystem.disablePlugin()
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been disabled!")

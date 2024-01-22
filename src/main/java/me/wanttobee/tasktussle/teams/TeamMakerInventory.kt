@@ -3,6 +3,7 @@ package me.wanttobee.tasktussle.teams
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.everythingitems.ItemUtil.colorize
+import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -19,7 +20,6 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
             teams = Array(teamCount) { i -> Team(i+1) }
             refreshTeamVisualizer()
         }
-
     }
 
     // refreshes the inventories items when any changes happen (when someone clicks on another team to move for example)
@@ -31,10 +31,10 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
         for(index in 0 until teamCount){
             val team = teams[index]
             val teamMembers = team.getMembers()
-            var item: ItemStack
+            var item: UniqueItemStack
             // sets item to glass if its empty
             if(teamMembers.isEmpty()){
-                item = ItemUtil.itemFactory( Material.WHITE_STAINED_GLASS.colorize(team.color),
+                item = UniqueItemStack( Material.WHITE_STAINED_GLASS.colorize(team.color),
                     team.getDisplayName(),"${ChatColor.DARK_GRAY} Empty",1 )
             }
             // otherwise its sets it to its concrete variant with the member names
@@ -45,7 +45,7 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
                     if(memberID != teamMembers.size -1)
                         memberString += ", "
                 }
-                item = ItemUtil.itemFactory( Material.WHITE_CONCRETE.colorize(team.color),
+                item = UniqueItemStack( Material.WHITE_CONCRETE.colorize(team.color),
                         team.getDisplayName(),memberString,teamMembers.size , true)
             }
 
@@ -69,5 +69,4 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
         this.clear()
         return teams.filter { team -> team.getMembers().isNotEmpty() }.toTypedArray()
     }
-
 }

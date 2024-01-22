@@ -15,7 +15,7 @@ object TeamCommands : ICommandNamespace {
 
     object ListTree : ICommandObject{
         override val helpText: String = "shows the list of active teams"
-        override val baseTree: ICommandNode = CommandEmptyLeaf("list") {p -> TeamSystem.listTeams(p) }
+        override val baseTree: ICommandNode = CommandEmptyLeaf("debug") {p -> TeamSystem.debugStatus(p) }
     }
     object ClearTree : ICommandObject{
         override val helpText: String = "lets you delete all active teams (clear all)"
@@ -23,10 +23,10 @@ object TeamCommands : ICommandNamespace {
     }
     object GenerateTree : ICommandObject{
         override val helpText: String = "lets you generate x teams (x is the amount you specified)"
-        override val baseTree: ICommandNode = CommandIntLeaf("generateTeams", null,  {_,i -> TeamSystem.makeTeams(i,"Command Generated") {} } )
+        override val baseTree: ICommandNode = CommandIntLeaf("generateTeams", null,  {_,i -> TeamSystem.generateTeams(i,"Command Generated") {} } )
     }
     object MakeTree : ICommandObject{
         override val helpText: String = "will open a team maker with the specific settings your provided"
-        override val baseTree: ICommandNode =CommandIntLeaf("teamMaker", 2, 54,  {p,i -> TeamSystem.teamMaker(p,{},i,"Command Made"){} } )
+        override val baseTree: ICommandNode =CommandIntLeaf("teamMaker", 2, 54,  {p,i -> TeamSystem.startTeamMaker(p,{},i,"Command Made"){} } )
     }
 }
