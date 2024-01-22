@@ -2,6 +2,7 @@ package me.wanttobee.tasktussle.generic.tasks
 
 import me.wanttobee.commandTree.commandTree.CommandBoolLeaf
 import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.tasktussle.TaskTussleCommand
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 import me.wanttobee.tasktussle.teams.Team
@@ -24,10 +25,10 @@ abstract class ITaskManager<T : ITask> {
 
     // the following 2 methods are to have a consistent message for checking and changing a setting
     protected fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any) {
-        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY}($taskTypeName) ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is currently: ${ChatColor.GOLD}$currentValue")
+        TaskTussleCommand.settingIsCurrently(commander,settingName,currentValue,taskTypeName)
     }
     protected fun settingIsChangedTo(commander : Player, settingName: String, newValue: Any) {
-        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY}($taskTypeName) ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is changed to: ${ChatColor.GOLD}$newValue")
+        TaskTussleCommand.settingIsChangedTo(commander,settingName,newValue,taskTypeName)
     }
 
 

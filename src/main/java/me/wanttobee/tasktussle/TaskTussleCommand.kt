@@ -72,10 +72,10 @@ object TaskTussleCommand : ICommandNamespace {
     }
 
     // the following 2 methods are to have a consistent message for checking and changing a setting
-    private fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any) {
-        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is currently: ${ChatColor.GOLD}$currentValue")
+    fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any, groupName : String = "") {
+        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY}${if(groupName != "") "($groupName)" else ""} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is currently: ${ChatColor.GOLD}$currentValue")
     }
-    private fun settingIsChangedTo(commander : Player, settingName: String, newValue: Any) {
-        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is changed to: ${ChatColor.GOLD}$newValue")
+    fun settingIsChangedTo(commander : Player, settingName: String, newValue: Any, groupName : String = "") {
+        commander.sendMessage("${TaskTussleSystem.title}${ChatColor.GRAY}${if(groupName != "") "($groupName)" else ""} ${ChatColor.GOLD}$settingName${ChatColor.WHITE} is changed to: ${ChatColor.GOLD}$newValue")
     }
 }

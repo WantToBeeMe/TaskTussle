@@ -31,6 +31,7 @@ object TaskTussleSystem {
         BingoGameCommands,
     )
 
+
     // some default configurations so that everything is split up
     lateinit var minecraftPlugin : JavaPlugin
         private set
