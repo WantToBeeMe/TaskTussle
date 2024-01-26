@@ -80,7 +80,7 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
                 else setFailed()
             }
         }
-        update()
+        // we can call update here, but because each method also has enchant() in it, that also calls update already
     }
 
     // these methods all are invoked by setState() which has at the end the update() method

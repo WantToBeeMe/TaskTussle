@@ -10,6 +10,7 @@ import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
 
@@ -44,28 +45,27 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(ass
         else "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
     }
 
-    override fun checkTask(event: PlayerPickupItemEvent) : (() -> Unit)? {
-        if(handIn) return null
-        if(associatedTeam.containsMember(event.player)){
-            if(event.item.itemStack.type == itemToObtain)
-                return {this.setCompleted()}
+    override fun checkTask(event: EntityPickupItemEvent) {
+        if(handIn) return
+        val player = event.entity as? Player ?: return
+        val itemType = event.item.itemStack.type
+        if(associatedTeam.containsMember(player)){
+            if(itemType == itemToObtain){
+                this.setCompleted()
+            }
         }
-        return null
     }
 
-    override fun checkTask(event: InventoryClickEvent): (() -> Unit)? {
-        val player = event.whoClicked as? Player ?: return null
-        val cursorItem = event.cursor ?: return null
-        val cardItem = event.currentItem ?: return null
+    override fun checkTask(event: InventoryClickEvent) {
+        val player = event.whoClicked as? Player ?: return
+        val cursorItem = event.cursor ?: return
+        val cardItem = event.currentItem ?: return
         if(TaskTussleSystem.clickItem.isThisItem(cardItem)
             && cursorItem.type == itemToObtain
             && associatedTeam.containsMember(player) ){
-            return {
-                this.setCompleted()
-                if(handIn) cursorItem.amount -= 1
-            }
+            this.setCompleted()
+            if(handIn) cursorItem.amount -= 1
         }
-        return null
     }
 
     override fun clone(otherTeam : Team): ObtainTask {

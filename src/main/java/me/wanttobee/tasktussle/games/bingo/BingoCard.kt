@@ -29,17 +29,13 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
     override fun onTaskDisabled(task: ITask) {
         if(task.stateCode != TaskState.COMPLETED){
             associatedTeam.forEachMember { p ->
-                p.sendMessage("${TaskTussleSystem.title} ${ChatColor.RED} a wrong disableCode (${task.stateCode}) has been given in your card")
+                p.sendMessage("${TaskTussleSystem.title}${ChatColor.RED} a wrong disableCode (${task.stateCode}) has been given in your card")
             }
             return
         }
-
         if(TaskTussleSystem.hideCard){
             BingoGameManager.gameTeams?.forEach{ team,bingoCardManager ->
-                if(bingoCardManager == this)
-                    team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(false)) }
-                else
-                    team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(true)) }
+              team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(bingoCardManager != this)) }
             }
         }
         else{

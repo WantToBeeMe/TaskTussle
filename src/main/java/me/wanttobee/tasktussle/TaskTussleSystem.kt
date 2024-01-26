@@ -55,7 +55,7 @@ object TaskTussleSystem {
     var completeTasksLocked = false
 
     //task tussle settings (common settings, settings that are for every game)
-    var choseTeamsBeforehand = true
+    var choseTeamsBeforehand = false
     //var gameTime = 60
     var hideCard = false
     var easyRatio = 13

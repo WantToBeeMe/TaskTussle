@@ -7,6 +7,7 @@ import org.bukkit.ChatColor
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -21,7 +22,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
 // 5 -> Failed
 abstract class ITask(val associatedTeam : Team) {
     abstract val icon : TaskIcon
-    private var callBackCardManager : ITTCard? = null
+    private var callBackCard : ITTCard? = null
     var stateCode : TaskState = TaskState.HIDDEN
         private set
 
@@ -36,6 +37,7 @@ abstract class ITask(val associatedTeam : Team) {
         icon.setState(stateCode)
         internalDisable()
     }
+
     fun setCompletedBy(teamColor : ChatColor, teamTitle : String){
         stateCode = TaskState.COMPLETED_BY
         icon.setState(stateCode,teamColor,teamTitle)
@@ -60,10 +62,10 @@ abstract class ITask(val associatedTeam : Team) {
     // this method will be called only from this abstract class, it is to make sure the task will not work anymore
     // the public implementation is just disable()
     private fun internalDisable(){
-        if(callBackCardManager == null)
+        if(callBackCard == null)
             TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant do task-callback for disable call (no card manager assigned)")
         else{
-            callBackCardManager!!.onTaskDisabled(this)
+            callBackCard!!.onTaskDisabled(this)
             disable()
         }
 
@@ -72,7 +74,7 @@ abstract class ITask(val associatedTeam : Team) {
     // this method will be called only from this abstract class, it is to make sure the task will work
     // the public implementation is just enable()
     private fun internalEnable(callBackCard : ITTCard){
-        callBackCardManager = callBackCard
+        this.callBackCard = callBackCard
         enable()
     }
 
@@ -87,11 +89,11 @@ abstract class ITask(val associatedTeam : Team) {
 
     //all the different possible listeners
     // open fun checkTask(){} //for the tick one
-    open fun checkTask(event : PlayerPickupItemEvent): (()->Unit)? {return null}
-    open fun checkTask(event : PlayerInteractEvent): (()->Unit)? {return null}
-    open fun checkTask(event : BlockBreakEvent) : (()->Unit)? {return null}
-    open fun checkTask(event : BlockPlaceEvent): (()->Unit)? {return null}
-    open fun checkTask(event : EntityDeathEvent) : (()->Unit)? {return null}
-    open fun checkTask(event : PlayerDeathEvent) : (()->Unit)? {return null}
-    open fun checkTask(event : InventoryClickEvent) : (()->Unit)? {return null}
+    open fun checkTask(event : EntityPickupItemEvent){}
+    open fun checkTask(event : PlayerInteractEvent){}
+    open fun checkTask(event : BlockBreakEvent){}
+    open fun checkTask(event : BlockPlaceEvent){}
+    open fun checkTask(event : EntityDeathEvent){}
+    open fun checkTask(event : PlayerDeathEvent){}
+    open fun checkTask(event : InventoryClickEvent){}
 }

@@ -2,6 +2,7 @@ package me.wanttobee.tasktussle.games.bingo
 
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.generic.cards.ITTGameManager
+import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.TaskFactory
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
@@ -31,7 +32,7 @@ object BingoGameManager : ITTGameManager<BingoCard> {
             for(taskManager in TaskTussleSystem.taskManagers){
                 if(taskManager.taskEnabled && taskManager.getExplanationText(itemName) != null){
                     player.sendMessage(
-                        "${ChatColor.GRAY}(${taskManager.taskTypeName})$messageColor" +
+                        "${ChatColor.GRAY}(${taskManager.taskTypeName}) $messageColor" +
                                 taskManager.getExplanationText(itemName)
                     )
                 }
@@ -46,10 +47,9 @@ object BingoGameManager : ITTGameManager<BingoCard> {
         }
         teams.forEach { team, cardManager ->
             cardManager.setTeams(teams)
-            cardManager.setTasks(TaskTussleSystem.getTasks(team,25)!!)
+            val tasks : Array<ITask>
             if(mutualTasks == 25){
-                mutualTasksList.shuffle()
-                cardManager.setTasks(TaskFactory.combineTasks(mutualTasksList, emptyArray(), team))
+                tasks = TaskFactory.combineTasks(mutualTasksList, emptyArray(), team)
             }
             else if(mutualTasks < 25){
                 val seperatedTasks = TaskTussleSystem.getTasks(team,25-mutualTasks)
@@ -57,14 +57,17 @@ object BingoGameManager : ITTGameManager<BingoCard> {
                     commander.sendMessage("${ChatColor.RED}Cant start a game, there are not enough tasks to make it (need 25)")
                     return@forEach
                 }
-                val tasks = TaskFactory.combineTasks(mutualTasksList, seperatedTasks, team)
-                tasks.shuffle()
-                cardManager.setTasks(tasks)
+                tasks = TaskFactory.combineTasks(mutualTasksList, seperatedTasks, team)
             }
             else{
                 mutualTasksList.shuffle()
-                cardManager.setTasks(TaskFactory.combineTasks(mutualTasksList.take(25).toTypedArray(), emptyArray(), team))
+                // there are more mutual tasks than there can be in 1 card.
+                // That means that the mutual tasks represent a smaller pool where all players take from
+                // that also means we have to shuffel the pool before we take from it
+                tasks = TaskFactory.combineTasks(mutualTasksList.take(25).toTypedArray(), emptyArray(), team)
             }
+            tasks.shuffle()
+            cardManager.setTasks(tasks)
             team.forEachMember { member -> cardManager.openCard(member) }
         }
     }
