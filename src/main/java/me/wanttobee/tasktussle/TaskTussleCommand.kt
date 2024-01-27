@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle
 
-import me.wanttobee.commandTree.ICommandNamespace
-import me.wanttobee.commandTree.ICommandObject
-import me.wanttobee.commandTree.commandTree.*
+import me.wanttobee.commandtree.ICommandNamespace
+import me.wanttobee.commandtree.ICommandObject
+import me.wanttobee.commandtree.nodes.*
 import me.wanttobee.tasktussle.TaskTussleSystem.gameCommands
 import me.wanttobee.tasktussle.TaskTussleSystem.taskManagers
 import org.bukkit.ChatColor

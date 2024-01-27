@@ -12,7 +12,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.player.PlayerPickupItemEvent
 
 
 class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(associatedTeam)  {

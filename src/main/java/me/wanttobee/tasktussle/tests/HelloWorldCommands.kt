@@ -1,9 +1,9 @@
 package me.wanttobee.tasktussle.tests
 
 
-import me.wanttobee.commandTree.ICommandNamespace
-import me.wanttobee.commandTree.ICommandObject
-import me.wanttobee.commandTree.commandTree.*
+import me.wanttobee.commandtree.ICommandNamespace
+import me.wanttobee.commandtree.ICommandObject
+import me.wanttobee.commandtree.nodes.*
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.everythingitems.ItemUtil.colorize

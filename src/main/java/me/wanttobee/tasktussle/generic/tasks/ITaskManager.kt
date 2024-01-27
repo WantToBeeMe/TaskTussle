@@ -1,7 +1,7 @@
 package me.wanttobee.tasktussle.generic.tasks
 
-import me.wanttobee.commandTree.commandTree.CommandBoolLeaf
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.nodes.CommandBoolLeaf
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleCommand
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager

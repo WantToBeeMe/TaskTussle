@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle.games.bingo
 
-import me.wanttobee.commandTree.commandTree.CommandIntLeaf
-import me.wanttobee.commandTree.commandTree.CommandStringLeaf
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.nodes.CommandIntLeaf
+import me.wanttobee.commandtree.nodes.CommandStringLeaf
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.generic.cards.ITTGameCommands
 import org.bukkit.ChatColor

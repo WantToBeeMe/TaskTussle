@@ -1,13 +1,10 @@
 package me.wanttobee.tasktussle;
 
 import me.wanttobee.everythingitems.ItemUtil
-import me.wanttobee.commandTree.WTBMCommands
+import me.wanttobee.commandtree.CommandTreeSystem
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
-import me.wanttobee.tasktussle.teams.TeamCommands
 import me.wanttobee.tasktussle.teams.TeamSystem
 import me.wanttobee.tasktussle.tests.DebugCommand
-import me.wanttobee.tasktussle.tests.HelloWorldCommands
-import me.wanttobee.tasktussle.tests.InventoryTestCommands
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command
@@ -40,7 +37,7 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-        WTBMCommands.initialize(instance, "${ChatColor.GREEN}(C)$title")
+        CommandTreeSystem.initialize(instance, "${ChatColor.GREEN}(C)$title")
         ItemUtil.initialize(instance, "${ChatColor.LIGHT_PURPLE}(I)$title")
         TeamSystem.initialize(instance, "${ChatColor.AQUA}(T)$title")
         TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
@@ -49,8 +46,8 @@ class MinecraftPlugin : JavaPlugin() {
         // WTBMCommands.createCommand(HelloWorldCommands)
         // WTBMCommands.createCommand(InventoryTestCommands)
         // WTBMCommands.createCommand(TeamCommands)
-        WTBMCommands.createCommand(DebugCommand)
-        WTBMCommands.createCommand(TaskTussleCommand)
+        CommandTreeSystem.createCommand(DebugCommand)
+        CommandTreeSystem.createCommand(TaskTussleCommand)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")

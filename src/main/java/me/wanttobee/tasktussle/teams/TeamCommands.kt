@@ -1,10 +1,10 @@
 package me.wanttobee.tasktussle.teams
 
-import me.wanttobee.commandTree.ICommandNamespace
-import me.wanttobee.commandTree.ICommandObject
-import me.wanttobee.commandTree.commandTree.CommandEmptyLeaf
-import me.wanttobee.commandTree.commandTree.CommandIntLeaf
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.ICommandNamespace
+import me.wanttobee.commandtree.ICommandObject
+import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
+import me.wanttobee.commandtree.nodes.CommandIntLeaf
+import me.wanttobee.commandtree.nodes.ICommandNode
 
 object TeamCommands : ICommandNamespace {
     override val commandName: String = "teams"

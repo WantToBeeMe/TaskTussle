@@ -1,9 +1,9 @@
 package me.wanttobee.tasktussle.tests
 
-import me.wanttobee.commandTree.ICommandNamespace
-import me.wanttobee.commandTree.ICommandObject
-import me.wanttobee.commandTree.commandTree.CommandEmptyLeaf
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.ICommandNamespace
+import me.wanttobee.commandtree.ICommandObject
+import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
 import me.wanttobee.tasktussle.teams.TeamSystem

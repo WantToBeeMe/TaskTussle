@@ -1,12 +1,11 @@
 package me.wanttobee.tasktussle.tasks.obtainTask
 
-import me.wanttobee.commandTree.commandTree.CommandBoolLeaf
-import me.wanttobee.commandTree.commandTree.CommandStringLeaf
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.nodes.CommandBoolLeaf
+import me.wanttobee.commandtree.nodes.CommandStringLeaf
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.teams.Team
-import org.bukkit.ChatColor
 import org.bukkit.Material
 
 object ObtainTaskManager  : ITaskManager<ObtainTask>() {

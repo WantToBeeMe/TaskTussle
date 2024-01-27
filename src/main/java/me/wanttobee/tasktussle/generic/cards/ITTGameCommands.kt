@@ -1,9 +1,7 @@
 package me.wanttobee.tasktussle.generic.cards
 
-import me.wanttobee.commandTree.commandTree.ICommandNode
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleCommand
-import me.wanttobee.tasktussle.TaskTussleSystem
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
 // TaskTussle GAME COMMANDS
