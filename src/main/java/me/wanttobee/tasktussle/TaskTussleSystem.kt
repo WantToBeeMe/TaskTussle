@@ -43,9 +43,10 @@ object TaskTussleSystem {
     // if this variable is null, that means there is no game active, otherwise the object that is stored here is the game
     private var gameSystem : ITTGameManager<*>? = null
     const val clickItemName = "Task Tussle Card"
-    val clickItem = InteractiveHotBarItem().setSlot(8).setItem(
+
+    val clickItem = InteractiveHotBarItem(
         UniqueItemStack(Material.PAPER,"${ChatColor.GREEN}$clickItemName" , "${ChatColor.GRAY}right-click to open", true)
-    ).setRightClickEvent { player,_ -> openCard(player) }
+    ).setSlot(8).setRightClickEvent { player,_ -> openCard(player) }
 
     // this is for testing so the check if the teamAmount is to big is ignored
     // (and if it is, it will just result in empty teams, a bit ugly but everything still works)

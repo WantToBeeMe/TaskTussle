@@ -1,7 +1,6 @@
 package me.wanttobee.tasktussle.teams
 
 
-import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
@@ -24,8 +23,9 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
 
     // refreshes the inventories items when any changes happen (when someone clicks on another team to move for example)
     // this way the items stay up to date
-    // in this case we just refresh all items because it's only for a few minuts and its only 1 inventory
-    // (it may seem like everyone has their own, but you can view it just like you can look together in to a chest)
+    // TODO:
+    //  implement the new way of updating the items, instead of refreshing the whole inventory when someone clicks an item,
+    //  now only update the item that changed
     private fun refreshTeamVisualizer(){
         // loops through all the teams and create there corresponding button
         for(index in 0 until teamCount){

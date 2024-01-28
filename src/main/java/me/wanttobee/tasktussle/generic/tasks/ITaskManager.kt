@@ -3,10 +3,8 @@ package me.wanttobee.tasktussle.generic.tasks
 import me.wanttobee.commandtree.nodes.CommandBoolLeaf
 import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleCommand
-import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 import me.wanttobee.tasktussle.teams.Team
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
 abstract class ITaskManager<T : ITask> {

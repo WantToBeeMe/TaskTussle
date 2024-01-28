@@ -152,9 +152,9 @@ object TeamSystem: Listener {
 
         // we now give each player an item which they can click on to open this teamMaker menu
         // if they close the menu that's no problem, they can reopen it again as many times as they want
-        val teamMakerItem = InteractiveHotBarItem()
+        val tntItem = UniqueItemStack(Material.TNT, "${ChatColor.RED}Team ${ChatColor.WHITE}Navigator ${ChatColor.RED}Tool", "${ChatColor.GRAY}Use this item to chose your team", true)
+        val teamMakerItem = InteractiveHotBarItem(tntItem)
             .setSlot(8)
-            .setItem(UniqueItemStack(Material.TNT, "${ChatColor.RED}Team ${ChatColor.WHITE}Navigator ${ChatColor.RED}Tool", "${ChatColor.GRAY}Use this item to chose your team", true))
             .setRightClickEvent { player,_ -> teamMakerInventory.open(player) }
         for(p in minecraftPlugin.server.onlinePlayers) {
             teamMakerItem.giveToPlayer(p)
@@ -162,9 +162,9 @@ object TeamSystem: Listener {
 
         // we will create an item which allows the process starter to also finish this team creation
         // this item will only be given to the player that started this process after all
-        val teamFinisher = InteractiveHotBarItem()
+        val fireChargeItem = UniqueItemStack(Material.FIRE_CHARGE, "${ChatColor.GOLD}Detonate Current Teams", "${ChatColor.GRAY}Use these teams", true)
+        val teamFinisher = InteractiveHotBarItem(fireChargeItem)
            .setSlot(7)
-           .setItem(UniqueItemStack(Material.FIRE_CHARGE, "${ChatColor.GOLD}Detonate Current Teams", "${ChatColor.GRAY}Use these teams", true))
         teamFinisher.setRightClickEvent { _,_ ->
             teamMakerInventory.closeViewers()
             teamMakerItem.clear()

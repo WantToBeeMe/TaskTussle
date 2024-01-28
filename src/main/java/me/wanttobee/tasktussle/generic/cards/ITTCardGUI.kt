@@ -44,7 +44,7 @@ abstract class ITTCardGUI(private val associatedTeam : Team, val taskAmount : In
     }
 
     // whenever the team members get an update, we also want the teamIcon to update to represent the correct team members
-    override fun onAddMember(member: Player) { teamIcon.updateTeam() }
-    override fun onRemoveMember(member: Player) { teamIcon.updateTeam() }
-    override fun onSwapMember(leave: Player, enter: Player) { teamIcon.updateTeam() }
+    override fun onAddMember(member: Player) { teamIcon.refreshTeamVisual() }
+    override fun onRemoveMember(member: Player) { teamIcon.refreshTeamVisual() }
+    override fun onSwapMember(leave: Player, enter: Player) { teamIcon.refreshTeamVisual() }
 }
