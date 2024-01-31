@@ -8,7 +8,7 @@ import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.Material
 
-object ObtainTaskManager  : ITaskManager<ObtainTask>() {
+object ObtainTaskManager : ITaskManager<ObtainTask>() {
     private var fileName = "default.yml"
 
     // handInItem boolean determent if the item you obtain will remove 1 from the stack or just leave it as is
@@ -50,7 +50,7 @@ object ObtainTaskManager  : ITaskManager<ObtainTask>() {
 
     override fun getExplanationText(clickItemName : String): String {
         return if(handInItem)
-            "To submit an item, go in your inventory, drag the item you want to submit, and click with this item on the $clickItemName."
-        else "To submit an item to the card, you will need to pick it up, or drag it on to your $clickItemName."
+            "To complete an obtain task, go in your inventory, drag the item you want to submit, and click with this item on the $clickItemName."
+        else "To complete an obtain task, you will need to pick its corresponding item up, or drag it on to your $clickItemName."
     }
 }

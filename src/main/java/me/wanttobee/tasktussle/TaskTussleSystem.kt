@@ -70,8 +70,8 @@ object TaskTussleSystem {
     }
     fun disablePlugin(){}
 
-    fun getTasks(associatedTeam : Team, amount: Int) : Array<ITask>?{
-        return TaskFactory.createTasks(associatedTeam, amount, easyRatio, normalRatio, hardRatio)
+    fun getTasks(associatedTeam : Team, amount: Int, skips: List<ITask> = emptyList()) : Array<ITask>?{
+        return TaskFactory.createTasks(associatedTeam, amount, easyRatio, normalRatio, hardRatio, skips)
     }
 
     fun startGame(commander: Player, teamAmount : Int, game: ITTGameManager<*>){

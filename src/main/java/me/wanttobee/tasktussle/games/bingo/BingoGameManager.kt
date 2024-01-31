@@ -52,7 +52,7 @@ object BingoGameManager : ITTGameManager<BingoCard> {
                 tasks = TaskFactory.combineTasks(mutualTasksList, emptyArray(), team)
             }
             else if(mutualTasks < 25){
-                val seperatedTasks = TaskTussleSystem.getTasks(team,25-mutualTasks)
+                val seperatedTasks = TaskTussleSystem.getTasks(team,25-mutualTasks, mutualTasksList.toList())
                 if(seperatedTasks == null){
                     commander.sendMessage("${ChatColor.RED}Cant start a game, there are not enough tasks to make it (need 25)")
                     return@forEach
