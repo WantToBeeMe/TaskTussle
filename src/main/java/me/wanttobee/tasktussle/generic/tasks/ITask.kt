@@ -4,13 +4,6 @@ import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.generic.cards.ITTCard
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
-import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.player.PlayerInteractEvent
 
 //the stateCode's in order are
 // 0 -> active
@@ -80,19 +73,7 @@ abstract class ITask(val associatedTeam : Team) {
     protected abstract fun disable()
     protected abstract fun enable()
 
-
     abstract fun getSuccessMessage(hideDetails : Boolean) : String
 
-
     abstract fun clone(otherTeam : Team) : ITask
-
-    //all the different possible listeners
-    // open fun checkTask(){} //for the tick one
-    open fun checkTask(event : EntityPickupItemEvent){}
-    open fun checkTask(event : PlayerInteractEvent){}
-    open fun checkTask(event : BlockBreakEvent){}
-    open fun checkTask(event : BlockPlaceEvent){}
-    open fun checkTask(event : EntityDeathEvent){}
-    open fun checkTask(event : PlayerDeathEvent){}
-    open fun checkTask(event : InventoryClickEvent){}
 }

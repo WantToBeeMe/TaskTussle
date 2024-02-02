@@ -10,7 +10,7 @@ import me.wanttobee.tasktussle.generic.cards.ITTGameManager
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.generic.tasks.TaskFactory
-import me.wanttobee.tasktussle.generic.tasks.TaskListener
+import me.wanttobee.tasktussle.generic.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSystem
@@ -31,7 +31,6 @@ object TaskTussleSystem {
         BingoGameCommands,
     )
 
-
     // some default configurations so that everything is split up
     lateinit var minecraftPlugin : JavaPlugin
         private set
@@ -51,7 +50,10 @@ object TaskTussleSystem {
     // this is for testing so the check if the teamAmount is to big is ignored
     // (and if it is, it will just result in empty teams, a bit ugly but everything still works)
     const val ignoreTeamSize = true
-
+    var canLog = false
+    fun log(message: Any){
+        minecraftPlugin.logger.info(message.toString())
+    }
     // if this is set to true, that means tasks cant be completed, they are all locked, until this is set to false again
     var completeTasksLocked = false
 
@@ -65,7 +67,7 @@ object TaskTussleSystem {
 
     fun initialize(plugin: JavaPlugin, title: String?) {
         minecraftPlugin = plugin
-        plugin.server.pluginManager.registerEvents(TaskListener, plugin)
+        plugin.server.pluginManager.registerEvents(TaskEventsListener, plugin)
         this.title = title
     }
     fun disablePlugin(){}

@@ -2,7 +2,6 @@ package me.wanttobee.tasktussle.teams
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarItem
-import me.wanttobee.tasktussle.generic.tasks.TaskListener
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player

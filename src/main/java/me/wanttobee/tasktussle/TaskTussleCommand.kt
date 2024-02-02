@@ -4,6 +4,7 @@ import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject
 import me.wanttobee.commandtree.nodes.*
 import me.wanttobee.tasktussle.TaskTussleSystem.gameCommands
+import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
 import me.wanttobee.tasktussle.TaskTussleSystem.taskManagers
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -26,11 +27,21 @@ object TaskTussleCommand : ICommandNamespace {
             gameCommands.map { it.start }.toTypedArray()
         )
     }
+
     object DebugTree : ICommandObject {
         override val helpText: String = "check some information just about its current running game (no real usage besides that)"
-        override val baseTree = CommandEmptyLeaf("debug") { commander ->
-            TaskTussleSystem.debugStatus(commander)
-        }
+        override val baseTree = CommandBranch("debug", arrayOf(
+            CommandEmptyLeaf("status"){ commander ->
+                TaskTussleSystem.debugStatus(commander)
+            },
+            CommandEmptyLeaf("log"){ commander ->
+                TaskTussleSystem.canLog = !TaskTussleSystem.canLog
+                commander.sendMessage("${TaskTussleSystem.title} look at the server console")
+                if(TaskTussleSystem.canLog)
+                    minecraftPlugin.logger.info("Started Logging")
+                else minecraftPlugin.logger.info("Stopped Logging")
+            },
+        ))
     }
 
     object StopTree : ICommandObject {
@@ -61,7 +72,6 @@ object TaskTussleCommand : ICommandNamespace {
                 { p, arg -> TaskTussleSystem.hardRatio = arg; settingIsChangedTo(p,"hard-ratio","${ChatColor.GRAY}${TaskTussleSystem.easyRatio}/${TaskTussleSystem.normalRatio}/${ChatColor.GOLD}$arg") },
                 { p -> settingIsCurrently(p,"hard-ratio","${ChatColor.GRAY}${TaskTussleSystem.easyRatio}/${TaskTussleSystem.normalRatio}/${ChatColor.GOLD}${TaskTussleSystem.hardRatio}") }),
         )
-
 
         override val baseTree = CommandBranch("settings", (arrayOf(
             CommandBranch("generic", genericSettings ),

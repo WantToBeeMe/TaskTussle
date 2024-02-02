@@ -1,5 +1,6 @@
 package me.wanttobee.tasktussle.generic.tasks
 
+import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 import me.wanttobee.tasktussle.teams.Team
 
@@ -49,6 +50,7 @@ object TaskFactory {
                 tasks = unSaveCombineTasks(partA, partB)
             }
         }
+        TaskTussleSystem.log("created ${tasks.size} tasks")
         return tasks
     }
 }

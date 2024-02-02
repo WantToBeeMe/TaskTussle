@@ -6,6 +6,7 @@ import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.teams.TeamSystem
 import me.wanttobee.tasktussle.tests.DebugCommand
 import org.bukkit.ChatColor
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command
 import org.bukkit.plugin.java.annotation.command.Commands
@@ -14,7 +15,6 @@ import org.bukkit.plugin.java.annotation.plugin.ApiVersion
 import org.bukkit.plugin.java.annotation.plugin.Description
 import org.bukkit.plugin.java.annotation.plugin.Plugin
 import org.bukkit.plugin.java.annotation.plugin.author.Author
-
 
 @Plugin(name = "TaskTussle", version ="1.0.1")
 @ApiVersion(ApiVersion.Target.v1_20)
@@ -43,9 +43,6 @@ class MinecraftPlugin : JavaPlugin() {
         TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
 
         ObtainTaskFiles.generateDefaultFolder()
-        // WTBMCommands.createCommand(HelloWorldCommands)
-        // WTBMCommands.createCommand(InventoryTestCommands)
-        // WTBMCommands.createCommand(TeamCommands)
         CommandTreeSystem.createCommand(DebugCommand)
         CommandTreeSystem.createCommand(TaskTussleCommand)
 
