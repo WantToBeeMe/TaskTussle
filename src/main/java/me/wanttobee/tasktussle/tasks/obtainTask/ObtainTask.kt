@@ -16,16 +16,22 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import kotlin.math.min
 
-class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val amount: Int = 1) : ITask(associatedTeam){
-    private var alreadyObtained = 0
-    override val icon: TaskIcon = TaskIcon(itemToObtain, itemToObtain.getRealName(),ObtainTaskManager.taskName, {"$alreadyObtained/$amount"} ,
-        if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
-        else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
-
+class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private var obtainAmount: Int = 1) : ITask(associatedTeam){
     // handIn is the option if it should take 1 from the item stack or if it should leave the amount
     // This task will be generated with this value taken from ObtainTaskManager.handInItem,
     // but it will also be saved here for when ObtainTaskManager changes, to make sure this task doesn't break
     private var handIn = false
+
+    private var alreadyObtained = 0
+    override val icon: TaskIcon = TaskIcon(itemToObtain, itemToObtain.getRealName(),ObtainTaskManager.taskName, {"$alreadyObtained/${this.obtainAmount}"} ,
+        if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
+        else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
+
+    init{
+        // making sure that it is not impossible, 100 shovels is impossible because you don't have 100 inventory slots
+        this.obtainAmount = min(obtainAmount, itemToObtain.maxStackSize * (9*3))
+        icon.refreshProgression()
+    }
 
     private val pickupEvent : (EntityPickupItemEvent) -> Unit = event@{ event ->
         if(handIn) return@event
@@ -36,7 +42,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
         val itemType = event.item.itemStack.type
         if(itemType == itemToObtain){
             // if the amount was 1 (which is a lot of the times) we can skip the whole calculating bit
-            if(amount == 1){
+            if(obtainAmount == 1){
                 this.setCompleted()
                 return@event
             }
@@ -47,7 +53,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
                 if(item?.type != itemToObtain) 0
                 else item.amount
             }
-            val stillNeedToObtain = amount - alreadyObtained - alreadyOwns
+            val stillNeedToObtain = obtainAmount - alreadyObtained - alreadyOwns
             if(event.item.itemStack.amount >= stillNeedToObtain)
                 this.setCompleted()
         }
@@ -61,7 +67,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
 
         // When amount = 1
         // we check this first, even though it would also work in the other one, this is of-course the faster approach
-        if(amount == 1){
+        if(obtainAmount == 1){
             if(TaskTussleSystem.clickItem.isThisItem(cardItem)
                 && cursorItem?.type == itemToObtain){
                 this.setCompleted()
@@ -87,11 +93,11 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
             // when we click with an item in our hand we only want to remove it from the stack that we have in our hand
             if((TaskTussleSystem.clickItem.isThisItem(cardItem) || icon.isThisItem(cardItem))
                 && cursorItem?.type == itemToObtain){
-                val obtainingNow = min(cursorItem.amount, amount - alreadyObtained)
+                val obtainingNow = min(cursorItem.amount, obtainAmount - alreadyObtained)
                 cursorItem.amount -= obtainingNow
                 alreadyObtained += obtainingNow
                 icon.refreshProgression()
-                if(alreadyObtained == amount)
+                if(alreadyObtained == obtainAmount)
                     this.setCompleted()
                 else
                     player.playSound(player.location, Sound.ENTITY_LLAMA_CHEST, SoundCategory.MASTER, 0.2f, 1f)
@@ -108,7 +114,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
             // either you click with this item in hand, or you click on the task icon itself
             if(currentlyObtained > 0 || icon.isThisItem(cardItem)){
                 player.sendMessage("check $currentlyObtained")
-                if(currentlyObtained >= amount - alreadyObtained){
+                if(currentlyObtained >= obtainAmount - alreadyObtained){
                     // if this stack turns out to be enough already ,we don't have to loop through the whole inventory
                     this.setCompleted()
                     return@event
@@ -116,7 +122,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
                 val obtainItems = player.inventory.filter { itemStack -> itemStack?.type == itemToObtain }
                 currentlyObtained += obtainItems.sumOf { itemStack -> itemStack.amount }
                 player.sendMessage("check $currentlyObtained")
-                if(currentlyObtained >= amount - alreadyObtained)
+                if(currentlyObtained >= obtainAmount - alreadyObtained)
                     this.setCompleted()
             }
         }
@@ -143,6 +149,6 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private val 
     }
 
     override fun clone(otherTeam : Team): ObtainTask {
-        return ObtainTask(itemToObtain,otherTeam)
+        return ObtainTask(itemToObtain, otherTeam, obtainAmount)
     }
 }

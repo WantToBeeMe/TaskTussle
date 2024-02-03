@@ -6,6 +6,7 @@ import me.wanttobee.commandtree.nodes.*
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
+import me.wanttobee.tasktussle.TaskTussleSystem.title
 import me.wanttobee.tasktussle.games.bingo.BingoGameManager
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -39,7 +40,7 @@ object TaskTussleConfig : ICommandNamespace {
             },
             CommandEmptyLeaf("log"){ commander ->
                 TaskTussleSystem.canLog = !TaskTussleSystem.canLog
-                commander.sendMessage("${TaskTussleSystem.title} look at the server console")
+                commander.sendMessage("${title} look at the server console")
                 if(TaskTussleSystem.canLog)
                     minecraftPlugin.logger.info("Started Logging")
                 else minecraftPlugin.logger.info("Stopped Logging")
@@ -54,7 +55,10 @@ object TaskTussleConfig : ICommandNamespace {
 
     object SettingsTree : ICommandObject {
         override val helpText: String = "to view or change settings"
-        override val baseTree = CommandEmptyLeaf("settings"){p -> TaskTussleSettings.open(p)}
+        override val baseTree = CommandEmptyLeaf("settings"){p ->
+            TaskTussleSettings.open(p)
+            if(TaskTussleSystem.currentlyActiveGame()) p.sendMessage("${title}${ChatColor.RED} There is already a game running, most settings will not effect a game that is already running")
+        }
     }
 
     init{

@@ -17,6 +17,11 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
     var handInItem = false
         private set
 
+    // the amount the task has to obtain (for example, obtain 64 dirt)
+    private var easyCount = 1
+    private var normalCount = 1
+    private var hardCount = 1
+
     init{
         // hand in items
         val handInIcon = UniqueItemStack(Material.HOPPER,"", null)
@@ -46,6 +51,51 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
             fileNameIndex = (fileNameIndex+1)%options.size
             fileName = options[fileNameIndex]
         }
+
+        val countLore = listOf(
+            "${ChatColor.DARK_GRAY}Shift+L Click:${ChatColor.GRAY} +10",
+            "${ChatColor.DARK_GRAY}L Click:${ChatColor.GRAY} +1",
+            "${ChatColor.DARK_GRAY}R Click:${ChatColor.GRAY} -1",
+            "${ChatColor.DARK_GRAY}Shift+R Click:${ChatColor.GRAY} -10",
+        )
+        // easy count
+        val easyCountIcon = UniqueItemStack(Material.BRICK,"", countLore)
+            .updateEnchanted(handInItem)
+        settingsInventory.addSetting(easyCountIcon,{
+            easyCountIcon.updateTitle(
+                "${TaskTussleSettings.settingColor}Easy obtain count:${ChatColor.YELLOW} $easyCount"
+            ).pushUpdates()
+        }, {_,shift -> easyCount += if(shift) 10 else 1},
+            {_,shift ->
+                easyCount -= if(shift) 10 else 1
+                if(easyCount < 1) easyCount = 1
+            })
+
+        // normal count
+        val normalCountIcon = UniqueItemStack(Material.NETHER_BRICK,"", countLore)
+            .updateEnchanted(handInItem)
+        settingsInventory.addSetting(normalCountIcon,{
+            normalCountIcon.updateTitle(
+                "${TaskTussleSettings.settingColor}Normal obtain count:${ChatColor.YELLOW} $normalCount"
+            ).pushUpdates()
+        }, {_,shift -> normalCount += if(shift) 10 else 1},
+            {_,shift ->
+                normalCount -= if(shift) 10 else 1
+                if(normalCount < 1) normalCount = 1
+            })
+
+        // hard count
+        val hardCountIcon = UniqueItemStack(Material.NETHERITE_INGOT,"", countLore)
+            .updateEnchanted(handInItem)
+        settingsInventory.addSetting(hardCountIcon,{
+            hardCountIcon.updateTitle(
+                "${TaskTussleSettings.settingColor}Hard obtain count:${ChatColor.YELLOW} $hardCount"
+            ).pushUpdates()
+        }, {_,shift -> hardCount += if(shift) 10 else 1},
+            {_,shift ->
+                hardCount -= if(shift) 10 else 1
+                if(hardCount < 1) hardCount = 1
+            })
     }
 
     override fun generateTasks(associatedTeam: Team, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
@@ -63,12 +113,16 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
         normalAmount += amounts.third - realHardAmount
         val realNormalAmount = if(normalAmount > normalPool.size) normalPool.size else normalAmount
 
-        val selectedMaterials = mutableListOf<Material>()
-        selectedMaterials.addAll(easyPool.take(realEasyAmount))
-        selectedMaterials.addAll(normalPool.take(realNormalAmount))
-        selectedMaterials.addAll(hardPool.take(realHardAmount))
-        selectedMaterials.shuffle()
-        return Array(selectedMaterials.size) {i -> ObtainTask(selectedMaterials[i],associatedTeam ) }
+        val selectedMaterials = mutableListOf<ObtainTask>()
+        selectedMaterials.addAll(easyPool.take(realEasyAmount).map {
+            material -> ObtainTask(material,associatedTeam, easyCount ) })
+        selectedMaterials.addAll(normalPool.take(realNormalAmount).map {
+            material -> ObtainTask(material,associatedTeam, normalCount ) })
+        selectedMaterials.addAll(hardPool.take(realHardAmount).map {
+            material -> ObtainTask(material,associatedTeam, hardCount ) })
+        val arrayTasks = selectedMaterials.toTypedArray()
+        arrayTasks.shuffle()
+        return arrayTasks
     }
 
     override fun getExplanationText(clickItemName : String): String {

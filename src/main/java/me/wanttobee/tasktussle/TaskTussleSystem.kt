@@ -71,6 +71,10 @@ object TaskTussleSystem {
         return TaskFactory.createTasks(associatedTeam, amount, easyRatio, normalRatio, hardRatio, skips)
     }
 
+    fun currentlyActiveGame() : Boolean{
+        return gameSystem != null
+    }
+
     fun startGame(commander: Player, teamAmount : Int, game: ITTGameManager<*>){
         if(gameSystem != null ){
             commander.sendMessage("$title ${ChatColor.RED}there is already a game running")
