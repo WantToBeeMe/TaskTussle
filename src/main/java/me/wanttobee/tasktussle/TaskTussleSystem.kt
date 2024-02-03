@@ -4,8 +4,6 @@ import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarItem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
-import me.wanttobee.tasktussle.games.bingo.BingoGameCommands
-import me.wanttobee.tasktussle.generic.cards.ITTGameCommands
 import me.wanttobee.tasktussle.generic.cards.ITTGameManager
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
@@ -24,11 +22,6 @@ object TaskTussleSystem {
     // when adding a new task, you only have to add it to this list
     val taskManagers : List<ITaskManager<*>> = listOf(
         ObtainTaskManager,
-    )
-
-    // when adding a new gameMode, add the required commands here
-    val gameCommands : List<ITTGameCommands> = listOf(
-        BingoGameCommands,
     )
 
     // some default configurations so that everything is split up
@@ -54,12 +47,14 @@ object TaskTussleSystem {
     fun log(message: Any){
         minecraftPlugin.logger.info(message.toString())
     }
+
+
     // if this is set to true, that means tasks cant be completed, they are all locked, until this is set to false again
     var completeTasksLocked = false
 
     //task tussle settings (common settings, settings that are for every game)
     var choseTeamsBeforehand = false
-    //var gameTime = 60
+    var gameTime = 0
     var hideCard = false
     var easyRatio = 13
     var normalRatio = 8

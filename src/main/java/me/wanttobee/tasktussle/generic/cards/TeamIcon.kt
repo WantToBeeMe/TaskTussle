@@ -3,6 +3,7 @@ package me.wanttobee.tasktussle.generic.cards
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
+import me.wanttobee.tasktussle.Util.toLore
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -32,7 +33,7 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
         else {
             // we add it to the inventory
             if(clickable)
-                inv.addLockedItem(slot,publicTeamIcon){ player -> ownerInventory.open(player) }
+                inv.addLockedItem(slot,publicTeamIcon){ player,_ -> ownerInventory.open(player) }
             else
                 inv.addLockedItem(slot,publicTeamIcon)
 
@@ -46,7 +47,7 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
             }
             enableClickEvent.add {
                 inv.removeItem(publicTeamIcon)
-                inv.addLockedItem(slot,publicTeamIcon) { player ->
+                inv.addLockedItem(slot,publicTeamIcon) { player,_ ->
                     ownerInventory.open(player)
             } }
         }
@@ -87,11 +88,8 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
     fun refreshTeamVisual(){
         val memberString = "${ChatColor.GRAY}${associatedTeam.getMemberString()}"
         val amountText = "${ChatColor.GRAY}0/$totalTaskAmount"
-        publicTeamIcon.updateLore(
-            listOf(memberString, amountText)
-        ).pushUpdates()
-        privateTeamIcon.updateLore(
-            listOf(memberString, amountText)
-        ).pushUpdates()
+        val newLore = memberString.toLore(35) + amountText
+        publicTeamIcon.updateLore(newLore).pushUpdates()
+        privateTeamIcon.updateLore(newLore).pushUpdates()
     }
 }

@@ -1,29 +1,52 @@
 package me.wanttobee.tasktussle.tasks.obtainTask
 
-import me.wanttobee.commandtree.nodes.CommandBoolLeaf
-import me.wanttobee.commandtree.nodes.CommandStringLeaf
-import me.wanttobee.commandtree.nodes.ICommandNode
+import me.wanttobee.everythingitems.UniqueItemStack
+import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.teams.Team
+import org.bukkit.ChatColor
 import org.bukkit.Material
 
-object ObtainTaskManager : ITaskManager<ObtainTask>() {
+object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obtain Task",
+    "Obtain 1 or more of the randomly selected item (displayed on the task)") {
     private var fileName = "default.yml"
 
     // handInItem boolean determent if the item you obtain will remove 1 from the stack or just leave it as is
     var handInItem = false
         private set
 
-    override val taskTypeName: String = "obtain_task"
-    override val settings: Array<ICommandNode> = arrayOf(
-        CommandBoolLeaf("hand_in_item",
-            { p,arg -> handInItem = arg; settingIsChangedTo(p,"hand in item", arg) },
-            { p -> settingIsCurrently(p, "hand in item", handInItem) }),
-        CommandStringLeaf("file_name", { ObtainTaskFiles.getAllFileNames() },
-            { p,arg -> fileName = arg; settingIsChangedTo(p,"file_name", arg)},
-            { p -> settingIsCurrently(p, "file_name",fileName) }),
-    )
+    init{
+        // hand in items
+        val handInIcon = UniqueItemStack(Material.HOPPER,"", null)
+        settingsInventory.addSetting(handInIcon,{
+            val newTitle ="${TaskTussleSettings.settingColor}Hand in items: " +
+                    if(handInItem) "${ChatColor.GREEN}on"
+                    else "${ChatColor.RED}off"
+            handInIcon.updateTitle(newTitle)
+                .updateEnchanted(handInItem)
+                .pushUpdates()
+        }){_,_ -> handInItem = !handInItem}
+
+        // fileName
+        var fileNameIndex = 0
+        var fileNameIconSwap = false
+        val fileNameIcon = UniqueItemStack(Material.PAPER,"",
+            "${ChatColor.GRAY}Click to loop through the different options".toLore(32))
+            .updateEnchanted(handInItem)
+        settingsInventory.addSetting(fileNameIcon,{
+            fileNameIcon.updateTitle(
+                "${TaskTussleSettings.settingColor}File name:${ChatColor.YELLOW} $fileName"
+            ).updateMaterial(if(fileNameIconSwap) Material.PAPER else Material.MAP)
+                .pushUpdates()
+        }){_,_ ->
+            fileNameIconSwap = !fileNameIconSwap
+            val options = ObtainTaskFiles.getAllFileNames()
+            fileNameIndex = (fileNameIndex+1)%options.size
+            fileName = options[fileNameIndex]
+        }
+    }
 
     override fun generateTasks(associatedTeam: Team, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
         val taskPool = ObtainTaskFiles.readFile(fileName) ?: return null

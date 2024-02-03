@@ -1,34 +1,23 @@
 package me.wanttobee.tasktussle.generic.tasks
 
-import me.wanttobee.commandtree.nodes.CommandBoolLeaf
-import me.wanttobee.commandtree.nodes.ICommandNode
-import me.wanttobee.tasktussle.TaskTussleCommand
-import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 import me.wanttobee.tasktussle.teams.Team
-import org.bukkit.entity.Player
+import org.bukkit.Material
+import kotlin.math.max
+import kotlin.math.min
 
-abstract class ITaskManager<T : ITask> {
-    // taskEnabled boolean determent if this task will be added to the pool when generating the tasks
-    var taskEnabled = true
+abstract class ITaskManager<T : ITask>(val taskIconMaterial : Material, val taskName: String, val taskDescription : String) {
+    var occupationRatio = 10
         private set
 
-    abstract val taskTypeName : String
-    abstract val settings : Array<ICommandNode>
+    val settingsInventory = TaskSettings(this)
 
-    fun getSettingNodes() : Array<ICommandNode>{
-        return settings + CommandBoolLeaf("enabled",
-            { p,arg -> taskEnabled = arg; ObtainTaskManager.settingIsChangedTo(p, "enabled", arg) },
-            { p -> settingIsCurrently(p, "enabled",taskEnabled) })
+    fun setOccupationRatio(n : Int) : Boolean{
+        occupationRatio = max(0,min(n, 100))
+        return occupationRatio == n
     }
-
-    // the following 2 methods are to have a consistent message for checking and changing a setting
-    protected fun settingIsCurrently(commander : Player, settingName: String, currentValue: Any) {
-        TaskTussleCommand.settingIsCurrently(commander,settingName,currentValue,taskTypeName)
+    fun changeOccupationRatioBy(n: Int) : Boolean{
+        return setOccupationRatio(occupationRatio + n)
     }
-    protected fun settingIsChangedTo(commander : Player, settingName: String, newValue: Any) {
-        TaskTussleCommand.settingIsChangedTo(commander,settingName,newValue,taskTypeName)
-    }
-
 
     // this is to write your own implementation for generating tasks with the different difficulties
     abstract fun generateTasks(associatedTeam : Team, amounts : Triple<Int,Int,Int>, skip: List<ITask> = emptyList() ) : Array<T>?

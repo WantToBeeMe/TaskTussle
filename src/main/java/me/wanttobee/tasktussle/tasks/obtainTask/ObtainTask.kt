@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 
 class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(associatedTeam){
-    override val icon: TaskIcon = TaskIcon(itemToObtain, itemToObtain.getRealName(),"Obtain Item", {"0/1"} ,
+    override val icon: TaskIcon = TaskIcon(itemToObtain, itemToObtain.getRealName(),ObtainTaskManager.taskName, {"0/1"} ,
         if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
         else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
 
@@ -63,7 +63,7 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team) : ITask(ass
     override fun getSuccessMessage(hideDetails: Boolean): String {
         return if(hideDetails)
             "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task"
-        else "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
+        else "${associatedTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
     }
 
     override fun clone(otherTeam : Team): ObtainTask {

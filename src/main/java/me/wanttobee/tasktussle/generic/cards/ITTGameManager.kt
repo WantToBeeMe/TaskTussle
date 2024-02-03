@@ -1,22 +1,28 @@
 package me.wanttobee.tasktussle.generic.cards
 
+import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleSystem
+import me.wanttobee.tasktussle.generic.tasks.TaskSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.entity.Player
 
 // TaskTussle GAME MANAGER:
 //  The system object / singleton / manager  of the specified game (lets say for example bingo)
 //  This is the hub where everything related to bingo comes together
 //  Requests from the outside come here and will be handled, or changed on the inside will be handled
-interface ITTGameManager <T : ITTCard> {
+abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val gameName: String, val gameDescription: String) {
     // if there is a no game active, this set is null
-    var gameTeams : TeamSet<T>?
+    var gameTeams : TeamSet<T>? = null
+    val settingsInventory = TTGameSettings(this)
+
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
-    val defaultValue : ((Team) -> T)
-    val teamRange : IntRange
+    abstract val defaultValue : ((Team) -> T)
+    abstract val teamRange : IntRange
+    abstract val startCommand : ICommandNode
 
     // this method will eventually call startGame(commander, gameSet)
     // when the game has been made
@@ -55,10 +61,10 @@ interface ITTGameManager <T : ITTCard> {
 
     // this startGame version is called when the important things are already assigned,
     // so you only have to override this and do the last specific game related things
-    fun startGame(commander: Player, teams: TeamSet<T>)
+    abstract fun startGame(commander: Player, teams: TeamSet<T>)
 
     // this method will be called whenever a game finishes, the team that is put in as parameter is the winning team
-    fun finishGame(winningTeam : Team)
+    abstract fun finishGame(winningTeam : Team)
 
     // this method ends the game, if this is called before the game is finished, the game will not have a winner :(
     open fun endGame() : Boolean{

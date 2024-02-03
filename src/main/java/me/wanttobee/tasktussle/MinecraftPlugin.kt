@@ -6,7 +6,6 @@ import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.teams.TeamSystem
 import me.wanttobee.tasktussle.tests.DebugCommand
 import org.bukkit.ChatColor
-import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command
 import org.bukkit.plugin.java.annotation.command.Commands
@@ -44,7 +43,7 @@ class MinecraftPlugin : JavaPlugin() {
 
         ObtainTaskFiles.generateDefaultFolder()
         CommandTreeSystem.createCommand(DebugCommand)
-        CommandTreeSystem.createCommand(TaskTussleCommand)
+        CommandTreeSystem.createCommand(TaskTussleConfig)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")

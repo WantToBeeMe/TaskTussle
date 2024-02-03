@@ -4,6 +4,7 @@ package me.wanttobee.tasktussle.teams
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
+import me.wanttobee.tasktussle.Util.toLore
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -46,11 +47,11 @@ class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : 
                         memberString += ", "
                 }
                 item = UniqueItemStack( Material.WHITE_CONCRETE.colorize(team.color),
-                        team.getDisplayName(),memberString,teamMembers.size , true)
+                        team.getDisplayName(), memberString.toLore(35),teamMembers.size , true)
             }
 
             // make button click which will add a player to this team and remove it from the once it was previously in
-            this.addLockedItem(index, item) { player ->
+            this.addLockedItem(index, item) { player,_ ->
                 val thisTeam = teams[index]
                 if(thisTeam.containsMember(player))
                     thisTeam.removeMember(player)
