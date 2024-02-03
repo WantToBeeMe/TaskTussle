@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 
 // teamIndex is the index of the team within the teamSet
 // for example, you can be in `Team 1`, or in `Team 2`
-class Team(private val teamIndex : Int) {
+class Team(val teamIndex : Int) {
     private val members : MutableList<Player> = mutableListOf()
     private val observers : MutableList<ITeamObserver> = mutableListOf()
 

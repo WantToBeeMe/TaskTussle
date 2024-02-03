@@ -3,10 +3,10 @@ package me.wanttobee.tasktussle.generic.tasks
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.TaskTussleSystem
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 
 
 class TaskIcon(private val icon: Material, private val taskTitle : String, taskCategory: String, private val progression: ()->String, description : List<String>) {
@@ -16,6 +16,10 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
 
     fun addToInventory(slot: Int, inv : InteractiveInventory){
         inv.addLockedItem(slot,item)
+    }
+
+    fun isThisItem(other: ItemStack) : Boolean{
+        return item.equalsID(other)
     }
 
     init{

@@ -4,6 +4,8 @@ import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.generic.cards.ITTCard
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
+import org.bukkit.Sound
+import org.bukkit.SoundCategory
 
 //the stateCode's in order are
 // 0 -> active
@@ -25,6 +27,9 @@ abstract class ITask(val associatedTeam : Team) {
         internalEnable(callBackCard)
     }
     fun setCompleted(){
+        associatedTeam.forEachMember { p ->
+            p.playSound(p.location, Sound.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.MASTER, 0.3f, 1f)
+        }
         stateCode = TaskState.COMPLETED
         icon.setState(stateCode)
         internalDisable()

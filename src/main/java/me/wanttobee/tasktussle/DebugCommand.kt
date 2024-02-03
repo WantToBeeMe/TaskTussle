@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.tests
+package me.wanttobee.tasktussle
 
 import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject
@@ -13,7 +13,7 @@ object DebugCommand : ICommandNamespace {
     override val commandSummary: String = "check the different statuses of the different aspects of this plugin"
     override val hasOnlyOneGroupMember: Boolean = false
     override val isZeroParameterCommand: Boolean = false
-    override val systemCommands: Array<ICommandObject> = arrayOf(HotBarItems,IInventory,Teams)
+    override val systemCommands: Array<ICommandObject> = arrayOf(HotBarItems, IInventory, Teams)
 
     object HotBarItems : ICommandObject{
         override val helpText: String = "will print a list of all the active hotbar items"

@@ -2,9 +2,9 @@ package me.wanttobee.tasktussle;
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandtree.CommandTreeSystem
+import me.wanttobee.tasktussle.generic.TaskTussleConfig
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.teams.TeamSystem
-import me.wanttobee.tasktussle.tests.DebugCommand
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.annotation.command.Command

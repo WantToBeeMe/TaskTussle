@@ -1,12 +1,12 @@
-package me.wanttobee.tasktussle
+package me.wanttobee.tasktussle.generic
 
 import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject
 import me.wanttobee.commandtree.nodes.*
 import me.wanttobee.everythingitems.UniqueItemStack
+import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
 import me.wanttobee.tasktussle.games.bingo.BingoGameManager
-import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import kotlin.math.max

@@ -43,9 +43,9 @@ object TaskTussleSystem {
     // this is for testing so the check if the teamAmount is to big is ignored
     // (and if it is, it will just result in empty teams, a bit ugly but everything still works)
     const val ignoreTeamSize = true
-    var canLog = false
+    var canLog = true
     fun log(message: Any){
-        minecraftPlugin.logger.info(message.toString())
+        if(canLog) minecraftPlugin.logger.info(message.toString())
     }
 
 

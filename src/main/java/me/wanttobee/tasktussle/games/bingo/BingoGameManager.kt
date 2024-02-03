@@ -85,7 +85,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
             player.sendMessage("${messageColor}The goal is set to: ${ChatColor.GOLD}$winningCondition")
         }
 
-        val mutualTasksList = TaskTussleSystem.getTasks(Team(0), mutualTasks)
+        val mutualTasksList = TaskTussleSystem.getTasks(Team(-1), mutualTasks)
         if(mutualTasksList == null){
             commander.sendMessage("${ChatColor.RED}Cant start a game, task generation failed")
             return
@@ -99,7 +99,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
             else if(mutualTasks < 25){
                 val seperatedTasks = TaskTussleSystem.getTasks(team,25-mutualTasks, mutualTasksList.toList())
                 if(seperatedTasks == null){
-                    commander.sendMessage("${ChatColor.RED}Cant start a game, there are not enough tasks to make it (need 25)")
+                    commander.sendMessage("${ChatColor.RED}Cant start a game, task generation failed")
                     return@forEach
                 }
                 tasks = TaskFactory.combineTasks(mutualTasksList, seperatedTasks, team)
