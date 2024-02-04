@@ -19,6 +19,7 @@ abstract class ITask(val associatedTeam : Team) {
     private var callBackCard : ITTCard? = null
     var stateCode : TaskState = TaskState.HIDDEN
         private set
+    abstract val successMessage : String
 
     // we need to pass in the TaskCardManager in able to know to what manager this task should be subscribed
     fun setActive(callBackCard : ITTCard){
@@ -78,7 +79,11 @@ abstract class ITask(val associatedTeam : Team) {
     protected abstract fun disable()
     protected abstract fun enable()
 
-    abstract fun getSuccessMessage(hideDetails : Boolean) : String
+    fun getSuccessMessage(hideDetails: Boolean) : String {
+        return if(hideDetails)
+            "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task"
+        else successMessage
+    }
 
     abstract fun clone(otherTeam : Team) : ITask
 }

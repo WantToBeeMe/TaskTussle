@@ -7,7 +7,7 @@ import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
 import me.wanttobee.tasktussle.TaskTussleSystem.title
-import me.wanttobee.tasktussle.games.bingo.BingoGameManager
+import me.wanttobee.tasktussle.TaskTussleGrouper
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import kotlin.math.max
@@ -27,9 +27,9 @@ object TaskTussleConfig : ICommandNamespace {
 
     object StartTree : ICommandObject {
         override val helpText: String = "to start one of the games"
-        override val baseTree = CommandBranch("start", arrayOf(
-            BingoGameManager.startCommand
-        ))
+        override val baseTree = CommandBranch("start",
+            TaskTussleGrouper.gameManagers.map { manager -> manager.startCommand }.toTypedArray()
+        )
     }
 
     object DebugTree : ICommandObject {

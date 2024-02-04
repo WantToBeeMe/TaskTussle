@@ -16,16 +16,20 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import kotlin.math.min
 
-class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private var obtainAmount: Int = 1) : ITask(associatedTeam){
+class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var obtainAmount: Int = 1) : ITask(associatedTeam){
+    override val successMessage = "${associatedTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
+    override val icon: TaskIcon = TaskIcon(itemToObtain,
+        itemToObtain.getRealName(),ObtainTaskManager.taskName,
+        {"$alreadyObtained/${this.obtainAmount}"} ,
+        if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
+        else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
+
+
     // handIn is the option if it should take 1 from the item stack or if it should leave the amount
     // This task will be generated with this value taken from ObtainTaskManager.handInItem,
     // but it will also be saved here for when ObtainTaskManager changes, to make sure this task doesn't break
     private var handIn = false
-
     private var alreadyObtained = 0
-    override val icon: TaskIcon = TaskIcon(itemToObtain, itemToObtain.getRealName(),ObtainTaskManager.taskName, {"$alreadyObtained/${this.obtainAmount}"} ,
-        if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
-        else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
 
     init{
         // making sure that it is not impossible, 100 shovels is impossible because you don't have 100 inventory slots
@@ -131,24 +135,18 @@ class ObtainTask(val itemToObtain : Material, associatedTeam : Team,private var 
     override fun enable() {
         handIn = ObtainTaskManager.handInItem
         if(!handIn)
-            TaskEventsListener.entityPickupItemEvent.add(pickupEvent)
+            TaskEventsListener.entityPickupItemObservers.add(pickupEvent)
         // only when we are allowed to keep the item do we allow for pickups,
         // because we cant remove something from a stack in the pickup event for some reason
         TaskTussleSystem.log("enabling obtain task ${itemToObtain.name}")
         TaskEventsListener.inventoryClickObservers.add(inventoryClick)
     }
     override fun disable() {
-        TaskEventsListener.entityPickupItemEvent.remove(pickupEvent)
+        TaskEventsListener.entityPickupItemObservers.remove(pickupEvent)
         TaskEventsListener.inventoryClickObservers.remove(inventoryClick)
     }
 
-    override fun getSuccessMessage(hideDetails: Boolean): String {
-        return if(hideDetails)
-            "${associatedTeam.getDisplayName()}${ChatColor.RESET} got a task"
-        else "${associatedTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
-    }
-
     override fun clone(otherTeam : Team): ObtainTask {
-        return ObtainTask(itemToObtain, otherTeam, obtainAmount)
+        return ObtainTask(otherTeam, itemToObtain, obtainAmount)
     }
 }

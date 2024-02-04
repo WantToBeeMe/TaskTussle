@@ -1,4 +1,8 @@
-Easy: 
+# this file is hand sorted.
+# Beware, if you modify this file, you will lose those modifications on plugin reload (which also happens when server turns on and off).
+# So if you want to modify this file without losing the modification every time you reload, you need to copy it over (and give it another name obviously)
+# (because only default.yml will be recreated every reload)
+Easy:
 - BRICK
 - CLAY_BALL
 - DRIED_KELP_BLOCK

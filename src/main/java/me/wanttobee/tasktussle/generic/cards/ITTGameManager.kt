@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle.generic.cards
 
 import me.wanttobee.commandtree.nodes.ICommandNode
+import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.generic.tasks.TaskSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
@@ -40,20 +40,31 @@ abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val g
             commander.sendMessage("${TaskTussleSystem.title} ${ChatColor.RED}there are not enough players online to make${ChatColor.GRAY } $teamAmount ${ChatColor.RED}teams")
             return false
         }
-        // from here we check what can go wrong, and it will go good from here, so we can make the teams
+        // from here we are safe because we checked what could all go wrong, we can now safely create the teams and start the game
+
+        // if we want to choose the teams beforehand, we need to start the team maker and tell the team maker what to do with those teams
+        // if we don't want to choose, we can just generate the teams directly
         if(TaskTussleSystem.choseTeamsBeforehand){
-            // wer start the teams maker if we want to make the teams
             TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, "Bingo") { set ->
                 gameTeams = set
                 set.forEachObject { cardManager -> cardManager.card.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
                 set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
-                startGame(commander,set) }
+                // we make sure that if a task type wants to set something before the game starts, that we give it the time
+                // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
+                for(manager in TaskTussleGrouper.taskManagers)
+                    manager.prepareForThisTaskType(set)
+                startGame(commander,set)
+            }
         }
         else {
             // otherwise we generate the teams randomly
             gameTeams = TeamSystem.generateTeams(teamAmount, "Bingo", defaultValue)
             gameTeams!!.forEachObject{ cardManager -> cardManager.card.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
             gameTeams!!.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
+            // we make sure that if a task type wants to set something before the game starts, that we give it the time
+            // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
+            for(manager in TaskTussleGrouper.taskManagers)
+                manager.prepareForThisTaskType(gameTeams!!)
             startGame(commander, gameTeams!!)
         }
         return true

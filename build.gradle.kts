@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     implementation("com.github.WantToBeeMe:CommandTree:1.1.0")
-    implementation("com.github.WantToBeeMe:EverythingItems:2.2.2")
+    implementation("com.github.WantToBeeMe:EverythingItems:2.3.0")
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
     compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!

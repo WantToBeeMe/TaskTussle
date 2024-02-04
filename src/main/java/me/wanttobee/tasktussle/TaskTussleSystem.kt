@@ -19,11 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
 object TaskTussleSystem {
-    // when adding a new task, you only have to add it to this list
-    val taskManagers : List<ITaskManager<*>> = listOf(
-        ObtainTaskManager,
-    )
-
     // some default configurations so that everything is split up
     lateinit var minecraftPlugin : JavaPlugin
         private set
@@ -47,7 +42,6 @@ object TaskTussleSystem {
     fun log(message: Any){
         if(canLog) minecraftPlugin.logger.info(message.toString())
     }
-
 
     // if this is set to true, that means tasks cant be completed, they are all locked, until this is set to false again
     var completeTasksLocked = false
@@ -75,11 +69,17 @@ object TaskTussleSystem {
         return gameSystem != null
     }
 
+    // games must be started via here to ensure that everything runs correctly
     fun startGame(commander: Player, teamAmount : Int, game: ITTGameManager<*>){
         if(gameSystem != null ){
             commander.sendMessage("$title ${ChatColor.RED}there is already a game running")
             return
         }
+        // we shuffle the task array before we start each game
+        // we do this to ensure that the last task in the list doesn't have any big size (dis)advandate
+        // we also only do this before the game that during task generation in the game, the shuffle of the types is the same throughout
+        TaskTussleGrouper.taskManagers.shuffle()
+
         gameSystem = game
         gameSystem!!.startGame(commander, teamAmount)
     }

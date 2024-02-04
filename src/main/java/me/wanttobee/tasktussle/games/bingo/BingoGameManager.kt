@@ -8,6 +8,7 @@ import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.generic.cards.ITTGameManager
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.TaskFactory
+import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
@@ -74,7 +75,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
             player.sendMessage("${messageColor}Click with the $itemName in your hand to see your teams progress.")
             // we send all the explanations for the different tasks that are active (if they have it)
             // to tell the user how to complete curtain tasks if they don't know already
-            for(taskManager in TaskTussleSystem.taskManagers){
+            for(taskManager in TaskTussleGrouper.taskManagers){
                 if(taskManager.occupationRatio != 0 && taskManager.getExplanationText(itemName) != null){
                     player.sendMessage(
                         "${ChatColor.GRAY}(${taskManager.taskName}) $messageColor" +
@@ -108,7 +109,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
                 mutualTasksList.shuffle()
                 // there are more mutual tasks than there can be in 1 card.
                 // That means that the mutual tasks represent a smaller pool where all players take from
-                // that also means we have to shuffel the pool before we take from it
+                // that also means we have to shuffle the pool before we take from it
                 tasks = TaskFactory.combineTasks(mutualTasksList.take(25).toTypedArray(), emptyArray(), team)
             }
             tasks.shuffle()

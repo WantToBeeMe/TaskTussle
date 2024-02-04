@@ -3,7 +3,6 @@ package me.wanttobee.tasktussle;
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandtree.CommandTreeSystem
 import me.wanttobee.tasktussle.generic.TaskTussleConfig
-import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.teams.TeamSystem
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
@@ -41,7 +40,7 @@ class MinecraftPlugin : JavaPlugin() {
         TeamSystem.initialize(instance, "${ChatColor.AQUA}(T)$title")
         TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
 
-        ObtainTaskFiles.generateDefaultFolder()
+        TaskTussleGrouper.generateDefaultFolders()
         CommandTreeSystem.createCommand(DebugCommand)
         CommandTreeSystem.createCommand(TaskTussleConfig)
 

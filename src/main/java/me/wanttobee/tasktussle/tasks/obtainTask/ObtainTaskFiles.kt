@@ -5,37 +5,41 @@ import me.wanttobee.tasktussle.generic.tasks.ITaskFiles
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
 
 
 object ObtainTaskFiles : ITaskFiles("ObtainTask","all_obtainable_items.yml", "obtainTask_default.yml") {
+
+    // we always return a triple, because the base game is divided up in to 3 groups, Easy Normal and Hard
+    fun readFile(name: String): Triple<Array<Material>, Array<Material>, Array<Material>>? {
+        val file = getFile(name) ?: return null
+        val loadedFile: FileConfiguration = YamlConfiguration.loadConfiguration(file)
+
+        val easyMaterials = loadedFile.getStringList(EASY).mapNotNull { Material.getMaterial(it) }.toTypedArray()
+
+        val normalMaterials = loadedFile.getStringList(NORMAL).mapNotNull { Material.getMaterial(it) }.toTypedArray()
+        val hardMaterials = loadedFile.getStringList(HARD).mapNotNull { Material.getMaterial(it) }.toTypedArray()
+
+        return Triple(easyMaterials, normalMaterials, hardMaterials)
+    }
 
     override fun generateDefaultFolder(): Boolean {
         val base = super.generateDefaultFolder()
         if(!base) return false
 
-        val file = File(taskFolder, File.separator + allPossibilitiesFileName)
-        val obtainPool: FileConfiguration = YamlConfiguration.loadConfiguration(file)
-        if (file.exists()) return !file.exists()
-        val hardList = mutableListOf<String>()
-        val ultraHardList = mutableListOf<String>()
-        TaskTussleSystem.minecraftPlugin.server.scheduler
-            .runTaskAsynchronously(TaskTussleSystem.minecraftPlugin) { _ ->
-            obtainPool.createSection("Easy")
-            obtainPool.createSection("Normal")
-            obtainPool.createSection("Hard")
-            obtainPool.setComments("Easy", listOf(
-                "all task files are seperated in 3 categories: Easy / Normal / Hard",
-                "you can use these to make some tasks more frequent, and some more rare",
-                "in game you can use: `/taskTussle settings generic [easy_ratio/normal_ratio/hard_ratio]` to changes these values",
-                "by default it is set to:  ${TaskTussleSystem.easyRatio}/${TaskTussleSystem.normalRatio}/${TaskTussleSystem.hardRatio}   meaning, for every ${TaskTussleSystem.easyRatio} Easy, there are ${TaskTussleSystem.normalRatio} Normal, and ${TaskTussleSystem.hardRatio} Hard",
-                "(if you still dont understand,then just think `the bigger the number the more you get from that category`)",
-                " ",
-                "in this file you're currently reading, every possible item you can pick up is generated and just put under the Easy category,",
-                "though i did a little bit of effort to split the items you probably and definitely dont want in Normal and Hard (scroll to the end of this file)",
-                "I wouldn't use this current file to play, just use the given default or make your own",
-                "to change what file you are using, do: `/taskTussle settings tasks obtain_task file_name [otherFile.yml]`"
+
+        createFile(allPossibilitiesFileName).configureAndSaveYaml(true) { obtainPool->
+            obtainPool.createSection(EASY)
+            obtainPool.createSection(NORMAL)
+            obtainPool.createSection(HARD)
+            obtainPool.setComments(EASY, ratioExplanation + listOf(
+                "In this file you're currently reading, every possible item you can pick up is generated and just put under the Easy category,",
+                "though I did a little bit of effort to split the items you probably and definitely dont want in Normal and Hard (scroll to the end of this file)",
+                "I wouldn't use this current file to play, just use the given default.yml or make your own",
+                "to change what file you are using, do: `/taskTussle settings` and Shift+L click on the obtain task, there change the file that will be used to generate the tasks"
             ))
+
+            val hardList = mutableListOf<String>()
+            val ultraHardList = mutableListOf<String>()
             val filterMaterials = Material.values().filter itemCheck@ {
                 if(!it.isItem) return@itemCheck false
                 if(it.name.contains("COMMAND_BLOCK")) return@itemCheck false
@@ -97,11 +101,9 @@ object ObtainTaskFiles : ITaskFiles("ObtainTask","all_obtainable_items.yml", "ob
                 true
             }
             val materialList = filterMaterials.map { it.name }
-            obtainPool.set("Easy", materialList)
-            obtainPool.set("Normal", hardList)
-            obtainPool.set("Hard", ultraHardList)
-
-            obtainPool.save(file)
+            obtainPool.set(EASY, materialList)
+            obtainPool.set(NORMAL, hardList)
+            obtainPool.set(HARD, ultraHardList)
         }
         return true
     }

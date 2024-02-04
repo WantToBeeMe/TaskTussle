@@ -1,0 +1,129 @@
+# this file is hand sorted.
+# Beware, if you modify this file, you will lose those modifications on plugin reload (which also happens when server turns on and off).
+# So if you want to modify this file without losing the modification every time you reload, you need to copy it over (and give it another name obviously)
+# (because only default.yml will be recreated every reload)
+Easy:
+  - minecraft:story/root
+  - minecraft:story/mine_stone
+  - minecraft:story/upgrade_tools
+  - minecraft:story/smelt_iron
+  - minecraft:story/obtain_armor
+  - minecraft:story/lava_bucket
+  - minecraft:story/iron_tools
+  - minecraft:story/upgrade_tools
+  - minecraft:story/form_obsidian
+  - minecraft:story/deflect_arrow
+  - minecraft:story/enter_the_nether
+  - minecraft:adventure/root
+  - minecraft:adventure/kill_a_mob
+  - minecraft:adventure/sleep_in_bed
+  - minecraft:adventure/trade
+  - minecraft:adventure/ol_betsy
+  - minecraft:adventure/shoot_arrow
+  - minecraft:husbandry/root
+  - minecraft:husbandry/breed_an_animal
+  - minecraft:husbandry/tame_an_animal
+  - minecraft:husbandry/fishy_business
+  - minecraft:husbandry/plant_seed
+  - minecraft:husbandry/obtain_sniffer_egg
+  - minecraft:husbandry/tactical_fishing
+  - minecraft:nether/root
+  - minecraft:husbandry/make_a_sign_glow
+Normal:
+  - minecraft:story/shiny_gear
+  - minecraft:story/mine_diamond
+  - minecraft:nether/return_to_sender
+  - minecraft:nether/find_bastion
+  - minecraft:nether/find_fortress
+  - minecraft:nether/obtain_ancient_debris
+  - minecraft:nether/obtain_blaze_rod
+  - minecraft:nether/brew_potion
+  - minecraft:nether/ride_strider
+  - minecraft:nether/get_wither_skull
+  - minecraft:nether/obtain_crying_obsidian
+  - minecraft:nether/distract_piglin
+  - minecraft:adventure/summon_iron_golem
+  - minecraft:adventure/voluntary_exile
+  - minecraft:adventure/trim_with_any_armor_pattern
+  - minecraft:adventure/honey_block_slide
+  - minecraft:adventure/salvage_sherd
+  - minecraft:adventure/avoid_vibration
+  - minecraft:adventure/walk_on_powder_snow_with_leather_boots
+  - minecraft:adventure/whos_the_pillager_now
+  - minecraft:adventure/fall_from_world_height
+  - minecraft:adventure/bullseye
+  - minecraft:husbandry/wax_on
+  - minecraft:husbandry/wax_off
+  - minecraft:husbandry/safely_harvest_honey
+  - minecraft:husbandry/allay_deliver_item_to_player
+  - minecraft:husbandry/ride_a_boat_with_a_goat
+  - minecraft:husbandry/axolotl_in_a_bucket
+Hard:
+  - minecraft:nether/explore_nether
+  - minecraft:nether/fast_travel
+  - minecraft:story/follow_ender_eye
+  - minecraft:story/enchant_item
+  - minecraft:nether/use_lodestone
+  - minecraft:nether/summon_wither
+  - minecraft:nether/ride_strider_in_overworld_lava
+  - minecraft:nether/charge_respawn_anchor
+  - minecraft:nether/loot_bastion
+  - minecraft:nether/create_beacon
+  - minecraft:adventure/totem_of_undying
+  - minecraft:adventure/hero_of_the_village
+  - minecraft:adventure/spyglass_at_parrot
+  - minecraft:adventure/spyglass_at_ghast
+  - minecraft:adventure/throw_trident
+  - minecraft:adventure/play_jukebox_in_meadows
+  - minecraft:adventure/read_power_of_chiseled_bookshelf
+  - minecraft:adventure/trade_at_world_height
+  - minecraft:adventure/kill_mob_near_sculk_catalyst
+  - minecraft:adventure/craft_decorated_pot_using_only_sherds
+  - minecraft:adventure/sniper_duel
+  - minecraft:husbandry/silk_touch_nest
+  - minecraft:husbandry/allay_deliver_cake_to_note_block
+  - minecraft:husbandry/feed_snifflet
+  - minecraft:husbandry/plant_any_sniffer_seed
+
+## the once that are left out
+## Story
+#  - minecraft:story/cure_zombie_villager
+#  - minecraft:story/enter_the_end
+
+## Nether
+#  - minecraft:nether/all_effects
+#  - minecraft:nether/all_potions
+#  - minecraft:nether/create_full_beacon
+#  - minecraft:nether/netherite_armor
+#  - minecraft:nether/uneasy_alliance
+
+## End
+#  - minecraft:end/dragon_breath
+#  - minecraft:end/dragon_egg
+#  - minecraft:end/respawn_dragon
+#  - minecraft:end/elytra
+#  - minecraft:end/levitate
+#  - minecraft:end/kill_dragon
+#  - minecraft:end/find_end_city
+#  - minecraft:end/enter_end_gateway
+#  - minecraft:end/root
+
+## Adventure
+#  - minecraft:adventure/kill_all_mobs
+#  - minecraft:adventure/very_very_frightening
+#  - minecraft:adventure/arbalistic
+#  - minecraft:adventure/spyglass_at_dragon
+#  - minecraft:adventure/two_birds_one_arrow
+#  - minecraft:adventure/adventuring_time
+#  - minecraft:adventure/trim_with_all_exclusive_armor_patterns
+#  - minecraft:adventure/lightning_rod_with_villager_no_fire
+
+## Husbandry
+#  - minecraft:husbandry/froglights
+#  - minecraft:husbandry/bred_all_animals
+#  - minecraft:husbandry/tadpole_in_a_bucket
+#  - minecraft:husbandry/leash_all_frog_variants
+#  - minecraft:husbandry/balanced_diet
+#  - minecraft:husbandry/complete_catalogue
+#  - minecraft:husbandry/obtain_netherite_hoe
+#  - minecraft:husbandry/kill_axolotl_target

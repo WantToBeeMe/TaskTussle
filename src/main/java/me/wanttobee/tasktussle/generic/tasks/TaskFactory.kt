@@ -1,14 +1,10 @@
 package me.wanttobee.tasktussle.generic.tasks
 
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
+import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.teams.Team
 
 object TaskFactory {
-    private val taskManagers : List<ITaskManager<*>> = listOf(
-        ObtainTaskManager,
-    )
-
     fun <T: ITask, U: ITask> combineTasks(first: Array<T>, second : Array<U>, team: Team) : Array<ITask>{
         return (first.map { it.clone(team) } + second.map { it.clone(team) } ).toTypedArray()
     }
@@ -32,9 +28,9 @@ object TaskFactory {
         val totalDifficultyRatio = easyRatio + normalRatio + hardRatio
         if(totalDifficultyRatio == 0) return null
         // we put all the task in the pool that are enabled
-        val enabledManagersList = taskManagers.filter{ manager -> manager.occupationRatio > 0 }.shuffled()
+        val enabledManagersList = TaskTussleGrouper.taskManagers.filter{ manager -> manager.occupationRatio > 0 }
         if(enabledManagersList.isEmpty()) return null
-        val totalTaskRatio = enabledManagersList.sumOf{ manager -> manager.occupationRatio }
+        var totalTaskRatio = enabledManagersList.sumOf{ manager -> manager.occupationRatio }
 
         // we keep track of the amount that has eben generated already,
         // sometimes there is just not enough in 1 pool and thus there is more to generate in one of the next pools
@@ -43,12 +39,13 @@ object TaskFactory {
         var toBeGeneratedAmount = amount
         var generatedTasks : Array<ITask> = emptyArray()
         for(i in enabledManagersList.indices) {
-            val thisShouldGenerateAmount = toBeGeneratedAmount * (enabledManagersList[i].occupationRatio / totalTaskRatio)
-            val generationRatio = calculateRatioAmount( thisShouldGenerateAmount, easyRatio, normalRatio, hardRatio)
+            val thisShouldGenerateAmount = toBeGeneratedAmount * (enabledManagersList[i].occupationRatio / totalTaskRatio.toFloat())
+            val generationRatio = calculateRatioAmount( thisShouldGenerateAmount.toInt(), easyRatio, normalRatio, hardRatio)
             val partA = generatedTasks
             val partB = enabledManagersList[i].generateTasks(associatedTeam, generationRatio, skip)
             if(partB != null){
                 toBeGeneratedAmount -= partB.size
+                totalTaskRatio -= enabledManagersList[i].occupationRatio
                 generatedTasks = unSaveCombineTasks(partA, partB)
             }
         }

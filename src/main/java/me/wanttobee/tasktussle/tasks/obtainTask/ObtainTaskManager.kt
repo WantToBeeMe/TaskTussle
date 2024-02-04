@@ -5,6 +5,7 @@ import me.wanttobee.tasktussle.Util.toLore
 import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
+import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -39,7 +40,7 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
         var fileNameIconSwap = false
         val fileNameIcon = UniqueItemStack(Material.PAPER,"",
             "${ChatColor.GRAY}Click to loop through the different options".toLore(32))
-            .updateEnchanted(handInItem)
+            .updateEnchanted(true)
         settingsInventory.addSetting(fileNameIcon,{
             fileNameIcon.updateTitle(
                 "${TaskTussleSettings.settingColor}File name:${ChatColor.YELLOW} $fileName"
@@ -105,21 +106,15 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
         val normalPool = taskPool.second.filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()
         val hardPool  =  taskPool.third .filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()
 
-        val realEasyAmount = if(amounts.first > easyPool.size) easyPool.size else amounts.first
-        val realHardAmount = if(amounts.third > hardPool.size) hardPool.size else amounts.third
-
-        var normalAmount = amounts.second
-        normalAmount += amounts.first - realEasyAmount
-        normalAmount += amounts.third - realHardAmount
-        val realNormalAmount = if(normalAmount > normalPool.size) normalPool.size else normalAmount
+        val realAmounts = shiftAmounts(amounts, easyPool.size, normalPool.size, hardPool.size)
 
         val selectedMaterials = mutableListOf<ObtainTask>()
-        selectedMaterials.addAll(easyPool.take(realEasyAmount).map {
-            material -> ObtainTask(material,associatedTeam, easyCount ) })
-        selectedMaterials.addAll(normalPool.take(realNormalAmount).map {
-            material -> ObtainTask(material,associatedTeam, normalCount ) })
-        selectedMaterials.addAll(hardPool.take(realHardAmount).map {
-            material -> ObtainTask(material,associatedTeam, hardCount ) })
+        selectedMaterials.addAll(easyPool.take(realAmounts.first).map {
+            material -> ObtainTask(associatedTeam, material, easyCount ) })
+        selectedMaterials.addAll(normalPool.take(realAmounts.second).map {
+            material -> ObtainTask(associatedTeam, material, normalCount ) })
+        selectedMaterials.addAll(hardPool.take(realAmounts.third).map {
+            material -> ObtainTask(associatedTeam, material, hardCount ) })
         val arrayTasks = selectedMaterials.toTypedArray()
         arrayTasks.shuffle()
         return arrayTasks

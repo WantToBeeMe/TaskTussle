@@ -1,7 +1,6 @@
 package me.wanttobee.tasktussle
 
 object Util {
-    //Thanks ChatGPT :)
     fun String.toLore(maxLineLength: Int): List<String> {
         val loreResult = mutableListOf<String>()
         var colorBuffer = ""
