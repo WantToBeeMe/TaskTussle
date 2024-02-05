@@ -3,6 +3,7 @@ package me.wanttobee.tasktussle.generic.tasks
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.teams.Team
+import kotlin.math.roundToInt
 
 object TaskFactory {
     fun <T: ITask, U: ITask> combineTasks(first: Array<T>, second : Array<U>, team: Team) : Array<ITask>{
@@ -24,7 +25,7 @@ object TaskFactory {
     }
 
     // this method returns null if it's unable to generate tasks (ratio is impossible or every task is disabled)
-    fun createTasks(associatedTeam : Team, amount : Int, easyRatio : Int, normalRatio : Int, hardRatio: Int, skip: List<ITask> = emptyList() ) : Array<ITask>?{
+    fun generateTasks(associatedTeam : Team, amount : Int, easyRatio : Int, normalRatio : Int, hardRatio: Int, skip: List<ITask> = emptyList() ) : Array<ITask>?{
         val totalDifficultyRatio = easyRatio + normalRatio + hardRatio
         if(totalDifficultyRatio == 0) return null
         // we put all the task in the pool that are enabled
@@ -40,7 +41,7 @@ object TaskFactory {
         var generatedTasks : Array<ITask> = emptyArray()
         for(i in enabledManagersList.indices) {
             val thisShouldGenerateAmount = toBeGeneratedAmount * (enabledManagersList[i].occupationRatio / totalTaskRatio.toFloat())
-            val generationRatio = calculateRatioAmount( thisShouldGenerateAmount.toInt(), easyRatio, normalRatio, hardRatio)
+            val generationRatio = calculateRatioAmount( thisShouldGenerateAmount.roundToInt(), easyRatio, normalRatio, hardRatio)
             val partA = generatedTasks
             val partB = enabledManagersList[i].generateTasks(associatedTeam, generationRatio, skip)
             if(partB != null){
