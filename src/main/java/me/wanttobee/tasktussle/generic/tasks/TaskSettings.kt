@@ -7,6 +7,7 @@ import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.generic.TaskTussleSettings.taskColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
@@ -16,6 +17,13 @@ class TaskSettings<T: ITask>(private val manager: ITaskManager<T>) : Interactive
     private val updateItems : MutableList<() -> Unit> = mutableListOf()
     private var settingsIndex = 2 // we start the settings from index 2
     init{
+        val noSettingIcon = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS,
+            "${ChatColor.GRAY}Empty Setting slot",
+            "${ChatColor.DARK_GRAY}a spot for a future setting")
+        for(i in 2 until 9){
+            addLockedItem(i,noSettingIcon)
+        }
+
         setTaskIcon()
         addSeparator(1)
         TaskTussleSettings.addTaskSetting(manager)

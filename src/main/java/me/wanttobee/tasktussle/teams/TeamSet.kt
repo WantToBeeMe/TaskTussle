@@ -12,6 +12,15 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
     private val teams : MutableMap<Team, T> = mutableMapOf()
     private val observers : MutableList<ITeamSetObserver> = mutableListOf()
 
+    val size: Int
+        get() = teams.size
+
+    operator fun get(index: Int): Pair<Team, T> {
+        val keys = teams.keys.toList()
+        val key = keys[index]
+        val value = teams[key]!!
+        return Pair(key, value)
+    }
 
     init{
         TeamSystem.addTeamSet(this)
@@ -28,9 +37,7 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
     fun unSubscribe(sub : ITeamSetObserver){
         observers.remove(sub)
     }
-    fun getTeamCount() : Int{
-        return teams.size
-    }
+
 
     // clears everything that has to be cleared before the set can be deleted
     fun clear(){

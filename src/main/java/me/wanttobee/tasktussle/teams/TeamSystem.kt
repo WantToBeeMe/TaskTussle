@@ -43,6 +43,10 @@ object TeamSystem: Listener {
             activeTeamSets[0].clear()
     }
 
+    fun findSetByTeam(team: Team) : TeamSet<*>?{
+        return activeTeamSets.find { set -> set.containsTeam(team) }
+    }
+
     // writes a list of teams to the player specified
     fun debugStatus(commander : Player){
         commander.sendMessage("$title ${ChatColor.YELLOW}active teamSets:")

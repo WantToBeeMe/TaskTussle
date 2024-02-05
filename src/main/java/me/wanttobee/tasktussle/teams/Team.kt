@@ -121,4 +121,8 @@ class Team(val teamIndex : Int) {
     override fun toString(): String {
         return "${ChatColor.GOLD}Team $color-=$teamIndex=-${ChatColor.RESET}: ${getMemberString()} "
     }
+
+    fun getSet() : TeamSet<*>?{
+        return TeamSystem.findSetByTeam(this)
+    }
 }

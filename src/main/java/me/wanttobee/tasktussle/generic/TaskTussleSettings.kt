@@ -61,7 +61,7 @@ object TaskTussleSettings : InteractiveInventory() {
         updateItem.invoke()
         updateItems.add(updateItem)
         addLockedItem(
-            settingIndex++, item,
+            settingIndex, item,
             { player, shift ->
                 onLeftClick.invoke(player,shift)
                 updateItem.invoke()
@@ -69,6 +69,11 @@ object TaskTussleSettings : InteractiveInventory() {
                 onRightClick.invoke(player, shift)
                 updateItem.invoke()
             })
+
+        // this is really in efficient code, but it works as long as we have max 14 generic settings
+        settingIndex++
+        if(settingIndex == 7) settingIndex = 9
+        if(settingIndex == 15) return
     }
 
     fun <T: ITask> addTaskSetting(taskManager: ITaskManager<T>){
