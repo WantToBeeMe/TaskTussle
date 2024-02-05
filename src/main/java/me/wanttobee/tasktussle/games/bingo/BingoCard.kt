@@ -10,7 +10,7 @@ import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 
 class BingoCard(private val associatedTeam : Team) : ITTCard {
-    override val card: ITTCardGUI = BingoCardGUI(associatedTeam)
+    override val cardGui: ITTCardGUI = BingoCardGUI(associatedTeam)
     private lateinit var taskSet : Array<ITask>
 
     // we have to save the tasks here because we want to be aware whenever a task is completed or anything
@@ -18,12 +18,12 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         taskSet = tasks
         for (task in taskSet)
             task.setActive(this)
-        return card.displayTask(taskSet)
+        return cardGui.displayTask(taskSet)
     }
 
     // here we have no important business with the teams, however, we do need to inform the card itself to display it
     override fun <T : ITTCard> setTeams(teams: TeamSet<T>) {
-        card.displayTeams(teams)
+        cardGui.displayTeams(teams)
     }
 
     override fun onTaskDisabled(task: ITask) {
@@ -33,15 +33,7 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
             }
             return
         }
-        if(TaskTussleSystem.hideCard){
-            BingoGameManager.gameTeams?.forEach{ team,bingoCardManager ->
-              team.forEachMember { p -> p.sendMessage(task.getSuccessMessage(bingoCardManager != this)) }
-            }
-        }
-        else{
-            BingoGameManager.gameTeams?.forEachPlayer{ p -> p.sendMessage(task.getSuccessMessage(false)) }
-        }
-        card.teamIcon.setAmount(getCompletedAmount())
+        cardGui.teamIcon.setAmount(getCompletedAmount())
         BingoGameManager.checkCardForWin(this)
     }
 
@@ -81,5 +73,9 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         if(diagonalBool1) diagonal++
         if(diagonalBool2) diagonal++
         return Triple(horizontal,vertical,diagonal)
+    }
+
+    fun showContributions(){
+        cardGui.teamIcon.showContributions(taskSet)
     }
 }

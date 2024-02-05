@@ -8,6 +8,7 @@ import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsFiles
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
 import me.wanttobee.tasktussle.teams.Team
+import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 import org.bukkit.Material
 
@@ -84,7 +85,7 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
             })
     }
 
-    override fun generateTasks(associatedTeam: Team, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
+    override fun generateTasks(associatedTeam: Team?, associatedSet: TeamSet<*>, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
         val taskPool = ObtainTaskFiles.readFile(fileName!!) ?: return null
         val realSkip : List<ObtainTask> = skip.filterIsInstance<ObtainTask>()
         val easyPool  =  taskPool.first .filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()
@@ -95,11 +96,11 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
 
         val selectedMaterials = mutableListOf<ObtainTask>()
         selectedMaterials.addAll(easyPool.take(realAmounts.first).map {
-            material -> ObtainTask(associatedTeam, material, easyCount ) })
+            material -> ObtainTask(associatedTeam, associatedSet, material, easyCount ) })
         selectedMaterials.addAll(normalPool.take(realAmounts.second).map {
-            material -> ObtainTask(associatedTeam, material, normalCount ) })
+            material -> ObtainTask(associatedTeam, associatedSet, material, normalCount ) })
         selectedMaterials.addAll(hardPool.take(realAmounts.third).map {
-            material -> ObtainTask(associatedTeam, material, hardCount ) })
+            material -> ObtainTask(associatedTeam, associatedSet, material, hardCount ) })
         val arrayTasks = selectedMaterials.toTypedArray()
         arrayTasks.shuffle()
         return arrayTasks

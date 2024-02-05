@@ -103,25 +103,12 @@ class Team(val teamIndex : Int) {
         }
     }
 
-    // can be useful when you for example want to put the names on an item
-    // instead of getting all players and assembling this list youself, you can just call this method
-    fun getMemberString(separator : String = ", ") : String{
-        var text = ""
-        for(member in members){
-            text += member.name
-            if(member != members.last()){
-                text += separator
-            }
-        }
-        return text
-    }
     fun getDisplayName() : String{
         return "${color}Team $teamIndex"
     }
     override fun toString(): String {
-        return "${ChatColor.GOLD}Team $color-=$teamIndex=-${ChatColor.RESET}: ${getMemberString()} "
+        return "${ChatColor.GOLD}Team $color-=$teamIndex=-${ChatColor.RESET}: ${members.joinToString(", ") { p -> p.name }} "
     }
-
     fun getSet() : TeamSet<*>?{
         return TeamSystem.findSetByTeam(this)
     }

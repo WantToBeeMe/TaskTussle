@@ -5,24 +5,27 @@ import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.generic.tasks.TaskIcon
 import me.wanttobee.tasktussle.teams.Team
+import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.advancement.Advancement
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 
-class AdvancementsTask(associatedTeam : Team, val advancementToComplete: Advancement) : ITask(associatedTeam) {
+class AdvancementsTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val advancementToComplete: Advancement) : ITask(associatedTeam, associatedSet) {
     private val advancementTitle = advancementToComplete.display?.title ?: "Unknown Advancement"
-    override val successMessage =
-        "${associatedTeam.getDisplayName()}${ChatColor.RESET} got an advancements task ${ChatColor.GRAY}($advancementTitle)"
     override val icon: TaskIcon = TaskIcon(Material.KNOWLEDGE_BOOK, advancementTitle,
         AdvancementsTaskManager.taskName, {"0/1"}, listOf("get this advancement"))
 
+    override fun getSuccessMessage(completerTeam: Team): String {
+        return  "${completerTeam.getDisplayName()}${ChatColor.RESET} got an advancements task ${ChatColor.GRAY}($advancementTitle)"
+    }
+
     private val advancementsEvent : (PlayerAdvancementDoneEvent) -> Unit = event@{ event ->
         val player = event.player
-        if(!associatedTeam.containsMember(player)) return@event
+        if(!isPlayerAllowed(player)) return@event
         val advancement = event.advancement
         if (advancement.key == advancementToComplete.key)
-            this.setCompleted()
+            this.setCompleted(player)
     }
 
     override fun enable() {
@@ -34,6 +37,6 @@ class AdvancementsTask(associatedTeam : Team, val advancementToComplete: Advance
     }
 
     override fun clone(otherTeam: Team): ITask {
-        return AdvancementsTask(otherTeam, advancementToComplete)
+        return AdvancementsTask(otherTeam, associatedSet, advancementToComplete)
     }
 }

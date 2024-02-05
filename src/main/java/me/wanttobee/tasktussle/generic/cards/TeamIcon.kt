@@ -4,9 +4,11 @@ import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
 import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.entity.Player
 
 class TeamIcon(private val ownerInventory : InteractiveInventory, private val associatedTeam : Team, private val totalTaskAmount : Int?){
     // we save the unique items here ,but we don't subscribe to them because we don't really care
@@ -18,6 +20,7 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
     private val disableClickEvent : MutableList<()->Unit> = mutableListOf()
     private val enableClickEvent : MutableList<()->Unit> = mutableListOf()
     private var clickable = true
+    private var completedCount = 0
 
     init{
         refreshTeamVisual()
@@ -54,9 +57,10 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
     }
 
     fun setAmount(amount : Int){
-        val amountText = "${ChatColor.GRAY}$amount/$totalTaskAmount"
-        publicTeamIcon.updateCount(if(amount < 1) 1 else amount)
-        privateTeamIcon.updateCount(if(amount < 1) 1 else amount)
+        completedCount = amount
+        val amountText = "${ChatColor.GRAY}$completedCount/$totalTaskAmount"
+        publicTeamIcon.updateCount(if(completedCount < 1) 1 else completedCount)
+        privateTeamIcon.updateCount(if(completedCount < 1) 1 else completedCount)
 
         // changing the public amount
         val publicMeta = publicTeamIcon.itemMeta!!
@@ -86,9 +90,24 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
     // this recreates the teams visual under the item, can be useful whenever a team changes,
     // that you can make it refresh the list that it shows
     fun refreshTeamVisual(){
-        val memberString = "${ChatColor.GRAY}${associatedTeam.getMemberString()}"
-        val amountText = "${ChatColor.GRAY}0/$totalTaskAmount"
-        val newLore = memberString.toLore(35) + amountText
+        val newLore : MutableList<String> = mutableListOf()
+        val amountText = "${ChatColor.GRAY}$completedCount/$totalTaskAmount"
+        val memberString = "${ChatColor.GRAY}" + associatedTeam.getMembers().joinToString(", ") { p -> p.name }
+        newLore += memberString.toLore(35) + amountText
+        publicTeamIcon.updateLore(newLore).pushUpdates()
+        privateTeamIcon.updateLore(newLore).pushUpdates()
+    }
+
+    fun showContributions(taskList: Array<ITask>){
+        val newLore : MutableList<String> = mutableListOf()
+        newLore += "${ChatColor.GRAY}$completedCount/$totalTaskAmount"
+        val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
+        val totalCompleted = allCompleted.count()
+        for(member in associatedTeam.getMembers()){
+            val thisParticipation = allCompleted.count { task -> task.contributors?.contains(member) ?: false }
+            val percentage = ((thisParticipation/totalCompleted.toFloat()) * 10000).toInt().toFloat() / 100
+            newLore += "${ChatColor.GRAY}${member.name} = $percentage%"
+        }
         publicTeamIcon.updateLore(newLore).pushUpdates()
         privateTeamIcon.updateLore(newLore).pushUpdates()
     }

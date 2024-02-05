@@ -3,8 +3,11 @@ package me.wanttobee.tasktussle.generic.tasks
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
+import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
@@ -43,18 +46,14 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
         item.updateLore(baseLore).pushUpdates()
     }
 
-    fun setState(state: TaskState, teamColor: ChatColor? = null, teamTitle : String? = null){
+    fun setState(state: TaskState, team: Team? = null, contributors: Array<Player> = emptyArray()){
         when (state) {
             TaskState.ACTIVE -> setActive()
             TaskState.FAILED -> setFailed()
-            TaskState.COMPLETED -> setCompleted()
+            TaskState.COMPLETED -> setCompleted(contributors)
             TaskState.LOCKED -> setLocked()
             TaskState.HIDDEN -> setHidden()
-            TaskState.COMPLETED_BY -> {
-                if (teamColor != null && teamTitle != null)
-                    setCompletedBy(teamColor, teamTitle)
-                else setFailed()
-            }
+            TaskState.COMPLETED_BY -> setCompletedBy(team!!,contributors)
         }
         item.pushUpdates()
     }
@@ -85,18 +84,22 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
         item.updateMeta(meta)
         item.updateEnchanted(false)
     }
-    private fun setCompletedBy(teamColor : ChatColor, teamTitle: String){
-        item.type = Material.WHITE_STAINED_GLASS.colorize(teamColor)
+    private fun setCompletedBy( team: Team, contributors: Array<Player>){
+        item.type = Material.WHITE_STAINED_GLASS.colorize(team.color)
         val meta = item.itemMeta!!
-        meta.lore = listOf("${teamColor}Completed by $teamTitle")
-        meta.setDisplayName("$teamColor$taskTitle")
+        val newLore = mutableListOf("${team.color}Completed by ${team.getDisplayName()}")
+        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ") { p -> p.name }).toLore(35)
+        meta.lore = newLore
+        meta.setDisplayName("${team.color}$taskTitle")
         item.updateMeta(meta)
         item.updateEnchanted(true)
     }
-    private fun setCompleted(){
+    private fun setCompleted(contributors: Array<Player>){
         item.type = Material.LIME_STAINED_GLASS_PANE
         val meta = item.itemMeta!!
-        meta.lore = listOf("${ChatColor.GREEN}Completed")
+        val newLore = mutableListOf("${ChatColor.GREEN}Completed")
+        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ") { p -> p.name }).toLore(35)
+        meta.lore =newLore
         meta.setDisplayName("${ChatColor.GREEN}$taskTitle")
         item.updateMeta(meta)
         item.updateEnchanted(true)

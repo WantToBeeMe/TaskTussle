@@ -86,7 +86,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
             player.sendMessage("${messageColor}The goal is set to: ${ChatColor.GOLD}$winningCondition")
         }
 
-        val mutualTasksList = TaskTussleSystem.generateTasks(Team(-1), mutualTasks)
+        val mutualTasksList = TaskTussleSystem.generateTasks(mutualTasks, null, teams)
         if(mutualTasksList == null){
             commander.sendMessage("${ChatColor.RED}Cant start a game, task generation failed")
             return
@@ -98,7 +98,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
                 tasks = TaskFactory.combineTasks(mutualTasksList, emptyArray(), team)
             }
             else if(mutualTasks < 25){
-                val seperatedTasks = TaskTussleSystem.generateTasks(team,25-mutualTasks, mutualTasksList.toList())
+                val seperatedTasks = TaskTussleSystem.generateTasks(25-mutualTasks, team, teams, mutualTasksList.toList())
                 if(seperatedTasks == null){
                     commander.sendMessage("${ChatColor.RED}Cant start a game, task generation failed")
                     return@forEach
@@ -120,12 +120,15 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
 
     override fun finishGame(winningTeam: Team) {
         TaskTussleSystem.completeTasksLocked = true
-
         if(TaskTussleSystem.hideCard){
-            gameTeams!!.forEachObject { cardManager ->
-                cardManager.card.teamIcon.setClickable(true)
+            gameTeams!!.forEachObject { card ->
+                card.cardGui.teamIcon.setClickable(true)
             }
         }
+        gameTeams!!.forEachObject { card ->
+            card.showContributions()
+        }
+
         gameTeams!!.forEachPlayer  { p ->
             gameTeams!!.getObject(winningTeam)?.openCard(p)
             p.playSound(p.location, Sound.BLOCK_END_PORTAL_SPAWN, SoundCategory.MASTER, 0.2f, 1f)

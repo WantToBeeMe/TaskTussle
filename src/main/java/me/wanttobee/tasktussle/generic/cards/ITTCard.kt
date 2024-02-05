@@ -10,8 +10,8 @@ import org.bukkit.entity.Player
 //  (or more specific, each Card contains its own CardGUI)
 //  anyway, the Card is in control of the logic and the CardGUI is just the interface
 interface ITTCard {
-    val card : ITTCardGUI
-    fun openCard(player : Player){ card.open(player) }
+    val cardGui : ITTCardGUI
+    fun openCard(player : Player){ cardGui.open(player) }
 
     // this method is to make sure that taskCardManager knows what tasks are being used for this card
     // in the manager you might want to save it if this is being called, who knows

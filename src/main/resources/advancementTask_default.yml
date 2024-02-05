@@ -10,7 +10,6 @@ Easy:
   - minecraft:story/obtain_armor
   - minecraft:story/lava_bucket
   - minecraft:story/iron_tools
-  - minecraft:story/upgrade_tools
   - minecraft:story/form_obsidian
   - minecraft:story/deflect_arrow
   - minecraft:story/enter_the_nether
@@ -25,11 +24,11 @@ Easy:
   - minecraft:husbandry/tame_an_animal
   - minecraft:husbandry/fishy_business
   - minecraft:husbandry/plant_seed
-  - minecraft:husbandry/obtain_sniffer_egg
   - minecraft:husbandry/tactical_fishing
   - minecraft:nether/root
   - minecraft:husbandry/make_a_sign_glow
 Normal:
+  - minecraft:husbandry/obtain_sniffer_egg
   - minecraft:story/shiny_gear
   - minecraft:story/mine_diamond
   - minecraft:nether/return_to_sender
@@ -39,7 +38,6 @@ Normal:
   - minecraft:nether/obtain_blaze_rod
   - minecraft:nether/brew_potion
   - minecraft:nether/ride_strider
-  - minecraft:nether/get_wither_skull
   - minecraft:nether/obtain_crying_obsidian
   - minecraft:nether/distract_piglin
   - minecraft:adventure/summon_iron_golem
@@ -59,13 +57,13 @@ Normal:
   - minecraft:husbandry/ride_a_boat_with_a_goat
   - minecraft:husbandry/axolotl_in_a_bucket
 Hard:
+  - minecraft:nether/get_wither_skull
   - minecraft:nether/explore_nether
   - minecraft:nether/fast_travel
   - minecraft:story/follow_ender_eye
   - minecraft:story/enchant_item
   - minecraft:nether/use_lodestone
   - minecraft:nether/summon_wither
-  - minecraft:nether/ride_strider_in_overworld_lava
   - minecraft:nether/charge_respawn_anchor
   - minecraft:nether/loot_bastion
   - minecraft:nether/create_beacon
@@ -91,6 +89,7 @@ Hard:
 #  - minecraft:story/enter_the_end
 
 ## Nether
+#  - minecraft:nether/ride_strider_in_overworld_lava
 #  - minecraft:nether/all_effects
 #  - minecraft:nether/all_potions
 #  - minecraft:nether/create_full_beacon

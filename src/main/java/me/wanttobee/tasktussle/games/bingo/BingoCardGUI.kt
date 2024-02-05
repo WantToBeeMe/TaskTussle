@@ -2,7 +2,6 @@ package me.wanttobee.tasktussle.games.bingo
 
 import me.wanttobee.tasktussle.generic.cards.ITTCardGUI
 import me.wanttobee.tasktussle.generic.cards.ITTCard
-import me.wanttobee.tasktussle.generic.cards.TeamIcon
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
@@ -35,7 +34,7 @@ class BingoCardGUI(associatedTeam : Team) : ITTCardGUI(associatedTeam, 25,15,45,
                 addLockedItem( spot, emptyTeamIcon )
             else {
                 teamsMutableMap[index]
-                    .second.card.teamIcon
+                    .second.cardGui.teamIcon
                     .addToInventory(spot,this)
             }
         }

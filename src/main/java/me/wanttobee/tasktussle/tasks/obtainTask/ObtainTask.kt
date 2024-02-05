@@ -7,6 +7,7 @@ import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.TaskIcon
 import me.wanttobee.tasktussle.generic.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.Team
+import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -16,20 +17,24 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import kotlin.math.min
 
-class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var obtainAmount: Int = 1) : ITask(associatedTeam){
-    override val successMessage = "${associatedTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
+class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToObtain : Material, private var obtainAmount: Int = 1)
+    : ITask(associatedTeam, associatedSet){
     override val icon: TaskIcon = TaskIcon(itemToObtain,
         itemToObtain.getRealName(),ObtainTaskManager.taskName,
         {"$alreadyObtained/${this.obtainAmount}"} ,
         if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
         else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
 
+    override fun getSuccessMessage(completerTeam: Team): String {
+        return "${completerTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
+    }
 
     // handIn is the option if it should take 1 from the item stack or if it should leave the amount
     // This task will be generated with this value taken from ObtainTaskManager.handInItem,
     // but it will also be saved here for when ObtainTaskManager changes, to make sure this task doesn't break
     private var handIn = false
     private var alreadyObtained = 0
+    private val contributers: MutableSet<Player> = mutableSetOf()
 
     init{
         // making sure that it is not impossible, 100 shovels is impossible because you don't have 100 inventory slots
@@ -42,12 +47,12 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
         // this event will not be triggered if handIn is set to true, that means you can assume that
         // you can keep the item here. however, that also means that you have to do all the items at once
         val player = event.entity as? Player ?: return@event
-        if(!associatedTeam.containsMember(player)) return@event
+        if(!isPlayerAllowed(player)) return@event
         val itemType = event.item.itemStack.type
         if(itemType == itemToObtain){
             // if the amount was 1 (which is a lot of the times) we can skip the whole calculating bit
             if(obtainAmount == 1){
-                this.setCompleted()
+                this.setCompleted(player)
                 return@event
             }
 
@@ -59,13 +64,13 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
             }
             val stillNeedToObtain = obtainAmount - alreadyObtained - alreadyOwns
             if(event.item.itemStack.amount >= stillNeedToObtain)
-                this.setCompleted()
+                this.setCompleted(player)
         }
     }
 
     private val inventoryClick : (InventoryClickEvent) -> Unit = event@{ event ->
         val player = event.whoClicked as? Player ?: return@event
-        if(!associatedTeam.containsMember(player)) return@event
+        if(!isPlayerAllowed(player)) return@event
         val cardItem = event.currentItem ?: return@event
         val cursorItem = event.cursor
 
@@ -74,18 +79,18 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
         if(obtainAmount == 1){
             if(TaskTussleSystem.clickItem.isThisItem(cardItem)
                 && cursorItem?.type == itemToObtain){
-                this.setCompleted()
+                this.setCompleted(player)
                 if(handIn) cursorItem.amount -= 1
             }
             else if(icon.isThisItem(cardItem)){
                 if(cursorItem?.type == itemToObtain){
-                    this.setCompleted()
+                    this.setCompleted(player)
                     if(handIn) cursorItem.amount -= 1
                     return@event
                 }
                 val checkItem = player.inventory.find { item -> item?.type == itemToObtain }
                 if(checkItem != null){
-                    this.setCompleted()
+                    this.setCompleted(player)
                     if(handIn) checkItem.amount -= 1
                 }
             }
@@ -101,8 +106,9 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
                 cursorItem.amount -= obtainingNow
                 alreadyObtained += obtainingNow
                 icon.refreshProgression()
+                contributers.add(player)
                 if(alreadyObtained == obtainAmount)
-                    this.setCompleted()
+                    this.setCompleted(player, contributers.toTypedArray())
                 else
                     player.playSound(player.location, Sound.ENTITY_LLAMA_CHEST, SoundCategory.MASTER, 0.2f, 1f)
             }
@@ -120,14 +126,14 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
                 player.sendMessage("check $currentlyObtained")
                 if(currentlyObtained >= obtainAmount - alreadyObtained){
                     // if this stack turns out to be enough already ,we don't have to loop through the whole inventory
-                    this.setCompleted()
+                    this.setCompleted(player)
                     return@event
                 }
                 val obtainItems = player.inventory.filter { itemStack -> itemStack?.type == itemToObtain }
                 currentlyObtained += obtainItems.sumOf { itemStack -> itemStack.amount }
                 player.sendMessage("check $currentlyObtained")
                 if(currentlyObtained >= obtainAmount - alreadyObtained)
-                    this.setCompleted()
+                    this.setCompleted(player)
             }
         }
     }
@@ -147,6 +153,6 @@ class ObtainTask(associatedTeam : Team, val itemToObtain : Material, private var
     }
 
     override fun clone(otherTeam : Team): ObtainTask {
-        return ObtainTask(otherTeam, itemToObtain, obtainAmount)
+        return ObtainTask(otherTeam, associatedSet, itemToObtain, obtainAmount)
     }
 }

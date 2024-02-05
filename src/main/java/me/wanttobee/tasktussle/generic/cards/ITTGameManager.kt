@@ -47,7 +47,7 @@ abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val g
         if(TaskTussleSystem.choseTeamsBeforehand){
             TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, "Bingo") { set ->
                 gameTeams = set
-                set.forEachObject { cardManager -> cardManager.card.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
+                set.forEachObject { cardManager -> cardManager.cardGui.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
                 set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
                 // we make sure that if a task type wants to set something before the game starts, that we give it the time
                 // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
@@ -59,7 +59,7 @@ abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val g
         else {
             // otherwise we generate the teams randomly
             gameTeams = TeamSystem.generateTeams(teamAmount, "Bingo", defaultValue)
-            gameTeams!!.forEachObject{ cardManager -> cardManager.card.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
+            gameTeams!!.forEachObject{ cardManager -> cardManager.cardGui.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
             gameTeams!!.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
             // we make sure that if a task type wants to set something before the game starts, that we give it the time
             // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
@@ -80,7 +80,7 @@ abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val g
     // this method ends the game, if this is called before the game is finished, the game will not have a winner :(
     open fun endGame() : Boolean{
         if(gameTeams == null) return false
-        gameTeams!!.forEachObject { cardManager -> cardManager.card.clear() }
+        gameTeams!!.forEachObject { cardManager -> cardManager.cardGui.clear() }
         gameTeams!!.clear()
         gameTeams = null
         return true

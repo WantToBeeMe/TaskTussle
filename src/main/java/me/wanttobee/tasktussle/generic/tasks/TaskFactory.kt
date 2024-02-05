@@ -3,6 +3,7 @@ package me.wanttobee.tasktussle.generic.tasks
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.teams.Team
+import me.wanttobee.tasktussle.teams.TeamSet
 import kotlin.math.roundToInt
 
 object TaskFactory {
@@ -24,8 +25,15 @@ object TaskFactory {
         return Triple(easyAmount,normalAmount,hardAmount)
     }
 
+
     // this method returns null if it's unable to generate tasks (ratio is impossible or every task is disabled)
-    fun generateTasks(associatedTeam : Team, amount : Int, easyRatio : Int, normalRatio : Int, hardRatio: Int, skip: List<ITask> = emptyList() ) : Array<ITask>?{
+    // associatedTeam:
+    //   Team -> That teams is the only team that can complete this task
+    //   null -> all teams can complete this task (but tasks can still be completed only once of-coarse)
+    // TODO:
+    //  Instead of having `Team?` we could make it so we have `Array<Team>?`
+    //  null would still mean the same, but it would mean that multiple teams can complete the task, but not all teams
+    fun generateTasks(associatedTeam : Team?, associatedSet : TeamSet<*>, amount : Int, easyRatio : Int, normalRatio : Int, hardRatio: Int, skip: List<ITask> = emptyList() ) : Array<ITask>?{
         val totalDifficultyRatio = easyRatio + normalRatio + hardRatio
         if(totalDifficultyRatio == 0) return null
         // we put all the task in the pool that are enabled
@@ -43,14 +51,14 @@ object TaskFactory {
             val thisShouldGenerateAmount = toBeGeneratedAmount * (enabledManagersList[i].occupationRatio / totalTaskRatio.toFloat())
             val generationRatio = calculateRatioAmount( thisShouldGenerateAmount.roundToInt(), easyRatio, normalRatio, hardRatio)
             val partA = generatedTasks
-            val partB = enabledManagersList[i].generateTasks(associatedTeam, generationRatio, skip)
+            val partB = enabledManagersList[i].generateTasks(associatedTeam, associatedSet, generationRatio, skip)
             if(partB != null){
                 toBeGeneratedAmount -= partB.size
                 totalTaskRatio -= enabledManagersList[i].occupationRatio
                 generatedTasks = unSaveCombineTasks(partA, partB)
             }
         }
-        TaskTussleSystem.log("created ${generatedTasks.size} tasks (for team ${associatedTeam.teamIndex})")
+        TaskTussleSystem.log("created ${generatedTasks.size} tasks (for team ${associatedTeam?.teamIndex ?: "null"})")
         if(generatedTasks.size != amount){
             TaskTussleSystem.log("not enough tasks as expected, tasks will be discarded")
             return null
