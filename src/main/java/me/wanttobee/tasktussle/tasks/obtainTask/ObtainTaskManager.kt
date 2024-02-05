@@ -5,6 +5,7 @@ import me.wanttobee.tasktussle.Util.toLore
 import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.generic.tasks.ITask
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
+import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsFiles
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
@@ -12,7 +13,6 @@ import org.bukkit.Material
 
 object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obtain Task",
     "Obtain 1 or more of the randomly selected item (displayed on the task)") {
-    private var fileName = "default.yml"
 
     // handInItem boolean determent if the item you obtain will remove 1 from the stack or just leave it as is
     var handInItem = false
@@ -36,22 +36,7 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
         }){_,_ -> handInItem = !handInItem}
 
         // fileName
-        var fileNameIndex = 0
-        var fileNameIconSwap = false
-        val fileNameIcon = UniqueItemStack(Material.PAPER,"",
-            "${ChatColor.GRAY}Click to loop through the different options".toLore(32))
-            .updateEnchanted(true)
-        settingsInventory.addSetting(fileNameIcon,{
-            fileNameIcon.updateTitle(
-                "${TaskTussleSettings.settingColor}File name:${ChatColor.YELLOW} $fileName"
-            ).updateMaterial(if(fileNameIconSwap) Material.PAPER else Material.MAP)
-                .pushUpdates()
-        }){_,_ ->
-            fileNameIconSwap = !fileNameIconSwap
-            val options = ObtainTaskFiles.getAllFileNames()
-            fileNameIndex = (fileNameIndex+1)%options.size
-            fileName = options[fileNameIndex]
-        }
+        addFileSetting(ObtainTaskFiles)
 
         val countLore = listOf(
             "${ChatColor.DARK_GRAY}Shift+L Click:${ChatColor.GRAY} +10",
@@ -100,7 +85,7 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
     }
 
     override fun generateTasks(associatedTeam: Team, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
-        val taskPool = ObtainTaskFiles.readFile(fileName) ?: return null
+        val taskPool = ObtainTaskFiles.readFile(fileName!!) ?: return null
         val realSkip : List<ObtainTask> = skip.filterIsInstance<ObtainTask>()
         val easyPool  =  taskPool.first .filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()
         val normalPool = taskPool.second.filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()

@@ -1,7 +1,11 @@
 package me.wanttobee.tasktussle.generic.tasks
 
+import me.wanttobee.everythingitems.UniqueItemStack
+import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
+import org.bukkit.ChatColor
 import org.bukkit.Material
 import kotlin.math.max
 import kotlin.math.min
@@ -9,6 +13,16 @@ import kotlin.math.min
 abstract class ITaskManager<T : ITask>(val taskIconMaterial : Material, val taskName: String, val taskDescription : String) {
     var occupationRatio = 10
         private set
+
+    // By default, the file name is not set, for tasks that don't use any files, however,
+    // You can make it so the filename is set with addFileSetting() and give it the appropriate TaskFile manager
+    // initial will default to "default.yml" but you can also change this by entering another string in the second argument
+    var fileName : String? = null
+        set(value) {
+            if (value == null)
+                throw IllegalArgumentException("File name cannot be null")
+            field = value
+        }
 
     val settingsInventory = TaskSettings(this)
 
@@ -42,4 +56,17 @@ abstract class ITaskManager<T : ITask>(val taskIconMaterial : Material, val task
     }
 
     open fun prepareForThisTaskType(teamSet: TeamSet<*>){}
+
+    protected fun addFileSetting(fileManager: ITaskFiles, initialFileName: String = "default.yml"){
+        fileName = initialFileName
+
+        val fileNameIcon = UniqueItemStack(Material.NAME_TAG,"",
+            "${ChatColor.GRAY}Click to change the file that will be used to generate the tasks".toLore(32))
+            .updateEnchanted(true)
+        settingsInventory.addSetting(fileNameIcon,{
+            fileNameIcon.updateTitle(
+                "${TaskTussleSettings.settingColor}File name:${ChatColor.YELLOW} $fileName"
+            ).pushUpdates()
+        }){p,_ -> FileNamePicker(fileManager,this).open(p) }
+    }
 }

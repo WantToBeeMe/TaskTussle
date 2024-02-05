@@ -5,6 +5,7 @@ import me.wanttobee.tasktussle.generic.cards.ITTGameManager
 import me.wanttobee.tasktussle.generic.tasks.ITaskManager
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsFiles
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
+import me.wanttobee.tasktussle.tasks.clickTask.ClickTaskManager
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskFiles
 import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
 
@@ -17,7 +18,8 @@ object TaskTussleGrouper {
     )
     val taskManagers : Array<ITaskManager<*>> = arrayOf(
         ObtainTaskManager,
-        AdvancementsTaskManager
+        AdvancementsTaskManager,
+        ClickTaskManager
     )
 
     // when adding a game you have to add it here
