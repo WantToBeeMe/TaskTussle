@@ -1,7 +1,7 @@
-package me.wanttobee.tasktussle.generic.tasks
+package me.wanttobee.tasktussle.base.tasks
 
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.generic.cards.ITTCard
+import me.wanttobee.tasktussle.base.cards.ITTCard
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor

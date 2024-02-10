@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.generic.tasks
+package me.wanttobee.tasktussle.base.tasks
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory

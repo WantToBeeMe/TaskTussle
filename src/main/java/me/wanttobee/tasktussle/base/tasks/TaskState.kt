@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.generic.tasks
+package me.wanttobee.tasktussle.base.tasks
 
 enum class TaskState(val isCompleted: Boolean) {
     ACTIVE(false),

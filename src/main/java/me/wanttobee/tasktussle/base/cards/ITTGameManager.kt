@@ -1,8 +1,10 @@
-package me.wanttobee.tasktussle.generic.cards
+package me.wanttobee.tasktussle.base.cards
 
 import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.TaskTussleSystem
+import me.wanttobee.tasktussle.base.generic.IManager
+import me.wanttobee.tasktussle.base.generic.ManagerSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
@@ -14,10 +16,11 @@ import org.bukkit.entity.Player
 //  The system object / singleton / manager  of the specified game (lets say for example bingo)
 //  This is the hub where everything related to bingo comes together
 //  Requests from the outside come here and will be handled, or changed on the inside will be handled
-abstract class ITTGameManager <T : ITTCard>(val gameIconMaterial: Material,val gameName: String, val gameDescription: String) {
+abstract class ITTGameManager <T : ITTCard>(gameIconMaterial: Material, gameName: String, gameDescription: String, settingsRows : Int = 1) :
+    IManager(gameIconMaterial, gameName, gameDescription) {
     // if there is a no game active, this set is null
     var gameTeams : TeamSet<T>? = null
-    val settingsInventory = TTGameSettings(this)
+    val settingsInventory = ManagerSettings(this, settingsRows)
 
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
     abstract val defaultValue : ((Team) -> T)

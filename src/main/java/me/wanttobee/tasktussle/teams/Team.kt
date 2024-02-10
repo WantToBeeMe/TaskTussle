@@ -16,15 +16,10 @@ class Team(val teamIndex : Int) {
     var leaveTeamOnDeath = false
         private set
 
-    companion object{
-        // based on the teamIndex there will 1 color taken from this list that is the default color for that team
-        // if the index is bigger than this list, then it will start from the start again
-        private val defaultColors = arrayOf(ChatColor.BLUE, ChatColor.RED, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.LIGHT_PURPLE, ChatColor.GOLD, ChatColor.AQUA, ChatColor.DARK_GREEN, ChatColor.DARK_PURPLE, ChatColor.DARK_AQUA)
-    }
     init{
+        val defaultColors = arrayOf(ChatColor.BLUE, ChatColor.RED, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.LIGHT_PURPLE, ChatColor.GOLD, ChatColor.AQUA, ChatColor.DARK_GREEN, ChatColor.DARK_PURPLE, ChatColor.DARK_AQUA)
         this.color = if(teamIndex <= 0) ChatColor.WHITE else defaultColors[(teamIndex-1) % defaultColors.size]
     }
-
 
     fun setLeaveTeamOnQuit(value : Boolean) : Team {
         this.leaveTeamOnQuit = value

@@ -1,6 +1,6 @@
-package me.wanttobee.tasktussle.generic.cards
+package me.wanttobee.tasktussle.base.cards
 
-import me.wanttobee.tasktussle.generic.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.entity.Player
 

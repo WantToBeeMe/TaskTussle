@@ -1,10 +1,9 @@
-package me.wanttobee.tasktussle.generic.tasks
+package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
 import me.wanttobee.tasktussle.Util.toLore
-import me.wanttobee.tasktussle.generic.TaskTussleSettings
-import me.wanttobee.tasktussle.generic.TaskTussleSettings.taskColor
+import me.wanttobee.tasktussle.base.cards.ITTGameManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -12,32 +11,36 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
 
-class TaskSettings<T: ITask>(private val manager: ITaskManager<T>) : InteractiveInventory() {
-    override var inventory: Inventory = Bukkit.createInventory(null, 9, "${manager.taskName} Settings")
+class ManagerSettings(manager: IManager, settingRowCount : Int = 1)  : InteractiveInventory() {
+    override var inventory: Inventory = Bukkit.createInventory(null, 9 + 9*settingRowCount, "${manager.subjectName} Settings")
     private val updateItems : MutableList<() -> Unit> = mutableListOf()
-    private var settingsIndex = 2 // we start the settings from index 2
+    private var settingsIndex = 9
+
     init{
-        val noSettingIcon = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS,
+        val noSettingIcon = UniqueItemStack(
+            Material.LIGHT_GRAY_STAINED_GLASS,
             "${ChatColor.GRAY}Empty Setting slot",
             "${ChatColor.DARK_GRAY}a spot for a future setting")
-        for(i in 2 until 9){
+        for(i in 9 until (9 + settingRowCount*9)){
             addLockedItem(i,noSettingIcon)
         }
+        for(i in 0 until 9){
+            addSeparator(i)
+        }
 
-        setTaskIcon()
-        addSeparator(1)
-        TaskTussleSettings.addTaskSetting(manager)
-    }
-
-    private fun setTaskIcon(){
-        val taskIcon = UniqueItemStack(manager.taskIconMaterial, "${taskColor}${manager.taskName}",
+        val isGameManager = manager is ITTGameManager<*>
+        val color = if(isGameManager) TaskTussleSettings.gameColor else TaskTussleSettings.taskColor
+        val icon = UniqueItemStack(manager.iconMaterial, "$color${manager.subjectName}",
             listOf("${ChatColor.DARK_GRAY}Click: ${ChatColor.GRAY}Go back") +
-                    "${ChatColor.GRAY}${manager.taskDescription}".toLore(32)
-            ).updateEnchanted(true)
-        addLockedItem(0,taskIcon) { player, _ ->
+                    "${ChatColor.GRAY}${manager.iconDescription}".toLore(32)
+        ).updateEnchanted(true)
+        addLockedItem(4,icon) { player, _ ->
             TaskTussleSettings.open(player)
         }
+
+        TaskTussleSettings.addManagerSettings(manager)
     }
+
 
     fun addSetting(item: UniqueItemStack, updateItem: ()->Unit, onClick: (Player, Boolean) -> Unit){
         addSetting(item, updateItem, onClick, onClick)

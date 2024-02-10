@@ -1,8 +1,10 @@
-package me.wanttobee.tasktussle.generic.tasks
+package me.wanttobee.tasktussle.base.tasks
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.Util.toLore
-import me.wanttobee.tasktussle.generic.TaskTussleSettings
+import me.wanttobee.tasktussle.base.generic.IManager
+import me.wanttobee.tasktussle.base.generic.ManagerSettings
+import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
@@ -10,9 +12,14 @@ import org.bukkit.Material
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class ITaskManager<T : ITask>(val taskIconMaterial : Material, val taskName: String, val taskDescription : String) {
+abstract class ITaskManager<T : ITask>(taskIconMaterial : Material, taskName: String, taskDescription : String, settingsRows : Int = 1) :
+    IManager(taskIconMaterial, taskName, taskDescription) {
     var occupationRatio = 10
         private set
+
+    // just an alias
+    val taskName : String
+        get() = this.subjectName
 
     // By default, the file name is not set, for tasks that don't use any files, however,
     // You can make it so the filename is set with addFileSetting() and give it the appropriate TaskFile manager
@@ -24,7 +31,7 @@ abstract class ITaskManager<T : ITask>(val taskIconMaterial : Material, val task
             field = value
         }
 
-    val settingsInventory = TaskSettings(this)
+    val settingsInventory =  ManagerSettings(this, settingsRows)
 
     fun setOccupationRatio(n : Int) : Boolean{
         occupationRatio = max(0,min(n, 100))

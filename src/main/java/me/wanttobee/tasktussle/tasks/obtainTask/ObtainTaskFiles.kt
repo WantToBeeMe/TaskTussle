@@ -1,7 +1,6 @@
 package me.wanttobee.tasktussle.tasks.obtainTask
 
-import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.generic.tasks.ITaskFiles
+import me.wanttobee.tasktussle.base.tasks.ITaskFiles
 import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration

@@ -1,11 +1,9 @@
-package me.wanttobee.tasktussle.generic
+package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.generic.cards.ITTCard
-import me.wanttobee.tasktussle.generic.cards.ITTGameManager
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.ITaskManager
+import me.wanttobee.tasktussle.base.cards.ITTGameManager
+import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -76,8 +74,15 @@ object TaskTussleSettings : InteractiveInventory() {
         if(settingIndex == 15) return
     }
 
-    fun <T: ITask> addTaskSetting(taskManager: ITaskManager<T>){
-        val icon = UniqueItemStack(taskManager.taskIconMaterial, "", taskLore)
+    fun addManagerSettings(managerSettings : IManager){
+        if(managerSettings is ITaskManager<*>)
+            addTaskSetting(managerSettings)
+        if(managerSettings is ITTGameManager<*>)
+            addGameSetting(managerSettings)
+    }
+
+    private fun addTaskSetting(taskManager: ITaskManager<*>){
+        val icon = UniqueItemStack(taskManager.iconMaterial, "", taskLore)
         val updateIcon = {
             val title = "$taskColor${taskManager.taskName}: " +
                     if(taskManager.occupationRatio == 0)
@@ -105,8 +110,8 @@ object TaskTussleSettings : InteractiveInventory() {
         )
     }
 
-    fun <T:ITTCard> addGameSetting(gameManager : ITTGameManager<T>){
-        val icon = UniqueItemStack(gameManager.gameIconMaterial, "${gameColor}${gameManager.gameName}",
+    private fun addGameSetting(gameManager : ITTGameManager<*>){
+        val icon = UniqueItemStack(gameManager.iconMaterial, "$gameColor${gameManager.subjectName}",
             "${ChatColor.DARK_GRAY}Click:${ChatColor.GRAY} Open details")
         addLockedItem(
             gameRow + cardSettingIndex++, icon

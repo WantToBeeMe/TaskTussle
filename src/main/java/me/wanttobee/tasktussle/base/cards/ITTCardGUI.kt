@@ -1,8 +1,8 @@
-package me.wanttobee.tasktussle.generic.cards
+package me.wanttobee.tasktussle.base.cards
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.generic.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.ITeamObserver
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet

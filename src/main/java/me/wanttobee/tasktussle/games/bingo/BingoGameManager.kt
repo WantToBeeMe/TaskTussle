@@ -4,10 +4,10 @@ import me.wanttobee.commandtree.nodes.CommandIntLeaf
 import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.generic.TaskTussleSettings
-import me.wanttobee.tasktussle.generic.cards.ITTGameManager
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.TaskFactory
+import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
+import me.wanttobee.tasktussle.base.cards.ITTGameManager
+import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.TaskFactory
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet

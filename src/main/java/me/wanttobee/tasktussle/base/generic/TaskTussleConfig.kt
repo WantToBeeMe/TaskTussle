@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.generic
+package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject

@@ -3,9 +3,9 @@ package me.wanttobee.tasktussle.tasks.obtainTask
 import me.wanttobee.everythingitems.ItemUtil.getRealName
 import me.wanttobee.everythingitems.ItemUtil.getSubTitle
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.TaskIcon
-import me.wanttobee.tasktussle.generic.tasks.TaskEventsListener
+import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.TaskIcon
+import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor

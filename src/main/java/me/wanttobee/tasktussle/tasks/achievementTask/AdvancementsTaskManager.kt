@@ -1,16 +1,11 @@
 package me.wanttobee.tasktussle.tasks.achievementTask
 
-import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.Util.toLore
-import me.wanttobee.tasktussle.generic.TaskTussleSettings
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.ITaskManager
-import me.wanttobee.tasktussle.tasks.obtainTask.ObtainTaskManager
+import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.advancement.AdvancementProgress

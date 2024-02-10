@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle
 
 import me.wanttobee.tasktussle.games.bingo.BingoGameManager
-import me.wanttobee.tasktussle.generic.cards.ITTGameManager
-import me.wanttobee.tasktussle.generic.tasks.ITaskManager
+import me.wanttobee.tasktussle.base.cards.ITTGameManager
+import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsFiles
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
 import me.wanttobee.tasktussle.tasks.clickTask.ClickTaskManager

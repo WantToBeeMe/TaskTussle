@@ -1,8 +1,7 @@
 package me.wanttobee.tasktussle.tasks.clickTask
 
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.ITaskManager
-import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsTaskManager
+import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.Material

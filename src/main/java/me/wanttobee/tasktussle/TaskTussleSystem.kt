@@ -4,10 +4,10 @@ import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarItem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
-import me.wanttobee.tasktussle.generic.cards.ITTGameManager
-import me.wanttobee.tasktussle.generic.tasks.ITask
-import me.wanttobee.tasktussle.generic.tasks.TaskFactory
-import me.wanttobee.tasktussle.generic.tasks.TaskEventsListener
+import me.wanttobee.tasktussle.base.cards.ITTGameManager
+import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.TaskFactory
+import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem

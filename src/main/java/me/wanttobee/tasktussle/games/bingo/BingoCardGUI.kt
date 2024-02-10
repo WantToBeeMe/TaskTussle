@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle.games.bingo
 
-import me.wanttobee.tasktussle.generic.cards.ITTCardGUI
-import me.wanttobee.tasktussle.generic.cards.ITTCard
-import me.wanttobee.tasktussle.generic.tasks.ITask
+import me.wanttobee.tasktussle.base.cards.ITTCardGUI
+import me.wanttobee.tasktussle.base.cards.ITTCard
+import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 

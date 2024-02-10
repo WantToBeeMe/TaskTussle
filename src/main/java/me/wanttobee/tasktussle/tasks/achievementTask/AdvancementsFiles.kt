@@ -1,6 +1,6 @@
 package me.wanttobee.tasktussle.tasks.achievementTask
 
-import me.wanttobee.tasktussle.generic.tasks.ITaskFiles
+import me.wanttobee.tasktussle.base.tasks.ITaskFiles
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.advancement.AdvancementDisplayType

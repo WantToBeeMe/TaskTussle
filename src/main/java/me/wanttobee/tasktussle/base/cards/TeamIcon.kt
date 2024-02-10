@@ -1,14 +1,13 @@
-package me.wanttobee.tasktussle.generic.cards
+package me.wanttobee.tasktussle.base.cards
 
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
 import me.wanttobee.tasktussle.Util.toLore
-import me.wanttobee.tasktussle.generic.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
-import org.bukkit.entity.Player
 
 class TeamIcon(private val ownerInventory : InteractiveInventory, private val associatedTeam : Team, private val totalTaskAmount : Int?){
     // we save the unique items here ,but we don't subscribe to them because we don't really care
