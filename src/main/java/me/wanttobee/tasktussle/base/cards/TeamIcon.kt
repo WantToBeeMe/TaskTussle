@@ -3,7 +3,7 @@ package me.wanttobee.tasktussle.base.cards
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
@@ -103,7 +103,7 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
         val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
         val totalCompleted = allCompleted.count()
         for(member in associatedTeam.getMembers()){
-            val thisParticipation = allCompleted.count { task -> task.contributors?.contains(member) ?: false }
+            val thisParticipation = allCompleted.count { task -> task.contributors.contains(member.name) }
             val percentage = ((thisParticipation/totalCompleted.toFloat()) * 10000).toInt().toFloat() / 100
             newLore += "${ChatColor.GRAY}${member.name} = $percentage%"
         }

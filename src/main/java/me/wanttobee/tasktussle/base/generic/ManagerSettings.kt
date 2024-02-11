@@ -2,7 +2,7 @@ package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.cards.ITTGameManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor

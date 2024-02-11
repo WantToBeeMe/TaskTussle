@@ -1,10 +1,15 @@
 package me.wanttobee.tasktussle.base.cards
 
+import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
+import me.wanttobee.commandtree.nodes.CommandIntLeaf
 import me.wanttobee.commandtree.nodes.ICommandNode
+import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.TaskTussleSystem
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.generic.IManager
 import me.wanttobee.tasktussle.base.generic.ManagerSettings
+import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
@@ -16,16 +21,29 @@ import org.bukkit.entity.Player
 //  The system object / singleton / manager  of the specified game (lets say for example bingo)
 //  This is the hub where everything related to bingo comes together
 //  Requests from the outside come here and will be handled, or changed on the inside will be handled
-abstract class ITTGameManager <T : ITTCard>(gameIconMaterial: Material, gameName: String, gameDescription: String, settingsRows : Int = 1) :
+abstract class ITTGameManager <T : ITTCard>(private val teamRange: IntRange, gameName: String, gameIconMaterial: Material,  gameDescription: String, settingsRows : Int = 1) :
     IManager(gameIconMaterial, gameName, gameDescription) {
     // if there is a no game active, this set is null
     var gameTeams : TeamSet<T>? = null
     val settingsInventory = ManagerSettings(this, settingsRows)
 
+    var gameFinished = false
+        protected set
+
+    // this settings may be used for a lot more games, therefore its in the base class
+    protected var atOvertimeSetting : String? = null
+
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
     abstract val defaultValue : ((Team) -> T)
-    abstract val teamRange : IntRange
-    abstract val startCommand : ICommandNode
+    val startCommand : ICommandNode = if( teamRange.min() != teamRange.max() )
+        CommandIntLeaf(
+       gameName.lowercase().replace(' ', '_'), teamRange.min(), teamRange.max(),
+        {commander, size -> TaskTussleSystem.startGame(commander, size, this) },
+        {commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
+    ) else
+        CommandEmptyLeaf(gameName.lowercase().replace(' ', '_')) { commander ->
+        TaskTussleSystem.startGame(commander,  teamRange.min(), this)
+    }
 
     // this method will eventually call startGame(commander, gameSet)
     // when the game has been made
@@ -80,8 +98,17 @@ abstract class ITTGameManager <T : ITTCard>(gameIconMaterial: Material, gameName
     // this method will be called whenever a game finishes, the team that is put in as parameter is the winning team
     abstract fun finishGame(winningTeam : Team)
 
-    // this method ends the game, if this is called before the game is finished, the game will not have a winner :(
-    open fun endGame() : Boolean{
+    abstract fun drawGame()
+
+    // this method will be called whenever the time is up, you can decide what to do with this game whatever you want
+    // you can find a winner and call finishGame on that, or you can decide that it is always draw,
+    // or you do something else...
+    open fun timeUpEnding(){
+        drawGame()
+    }
+
+    // this method clear the game, if this is called before the game is finished, the game will not have a winner :(
+    open fun clearGame() : Boolean{
         if(gameTeams == null) return false
         gameTeams!!.forEachObject { cardManager -> cardManager.cardGui.clear() }
         gameTeams!!.clear()
@@ -90,4 +117,30 @@ abstract class ITTGameManager <T : ITTCard>(gameIconMaterial: Material, gameName
     }
 
     open fun debugStatus(commander: Player) {}
+
+
+    protected fun addOvertimeSetting(overtimeOptions : Array<String>){
+        atOvertimeSetting = overtimeOptions[0]
+
+        val drawInitiallyIcon = UniqueItemStack(Material.STICK, "",
+            ("${ChatColor.GRAY}If there is no game time left " +
+                "(aka, time hits 0 minutes). This does not effect games " +
+                    "played where the time is disabled.").toLore(32) )
+            .updateEnchanted(true)
+
+        var currentOptionIndex = 0
+        settingsInventory.addSetting(drawInitiallyIcon,{
+            drawInitiallyIcon
+                .updateTitle("${TaskTussleSettings.settingColor}Overdue:${ChatColor.YELLOW} $atOvertimeSetting")
+                .pushUpdates()
+        }, {_,_ ->
+            currentOptionIndex++
+            currentOptionIndex %= overtimeOptions.size
+            atOvertimeSetting = overtimeOptions[currentOptionIndex]
+        }, {_,_ ->
+            currentOptionIndex--
+            if(currentOptionIndex < 0) currentOptionIndex = 0
+            atOvertimeSetting = overtimeOptions[currentOptionIndex]
+        })
+    }
 }

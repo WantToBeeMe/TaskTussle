@@ -11,6 +11,7 @@ import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
+import me.wanttobee.tasktussle.util.TimerSystem
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -44,14 +45,17 @@ object TaskTussleSystem {
 
     // if this is set to true, that means tasks cant be completed, they are all locked, until this is set to false again
     var completeTasksLocked = false
+        private set
+    private val gameTimerKey = "TaskTussle"
 
     //task tussle settings (common settings, settings that are for every game)
     var choseTeamsBeforehand = false
-    var gameTime = 0
     var hideCard = false
     var easyRatio = 13
     var normalRatio = 8
     var hardRatio = 4
+    var gameTime = 0
+
 
     fun initialize(plugin: JavaPlugin, title: String?) {
         minecraftPlugin = plugin
@@ -86,6 +90,11 @@ object TaskTussleSystem {
         // we also only do this before the game that during task generation in the game, the shuffle of the types is the same throughout
         TaskTussleGrouper.taskManagers.shuffle()
 
+        if(gameTime != 0)
+            TimerSystem.createTimer(gameTimerKey, minecraftPlugin, gameTime*60, true) {
+                gameSystem?.timeUpEnding()
+            }
+
         gameSystem = game
         gameSystem!!.startGame(commander, teamAmount)
     }
@@ -95,10 +104,12 @@ object TaskTussleSystem {
             commander.sendMessage("$title ${ChatColor.RED}trying to stop a game that doesn't exists")
             return
         }
-        if(gameSystem!!.endGame())
+        if(gameSystem!!.clearGame())
             commander.sendMessage("$title ${ChatColor.GREEN}stopped the running game")
         else commander.sendMessage("$title ${ChatColor.YELLOW}stopped the running game, however, the game seemed to be broken")
         gameSystem = null
+        // removing the things related to the gameTime
+        TimerSystem.clearTimer(gameTimerKey)
         clickItem.removeFromEveryone()
         // we don't want to remove the clickItem, we only want it to be gone
         // the item itself is and stays correct at all times because we call openCard() which opens the newest game at all time
@@ -128,5 +139,33 @@ object TaskTussleSystem {
         InteractiveInventorySystem.debugStatus(commander)
         InteractiveHotBarSystem.debugStatus(commander)
         TeamSystem.debugStatus(commander)
+    }
+
+    fun drawGame(commander : Player){
+        if(gameSystem == null) {
+            commander.sendMessage("$title ${ChatColor.RED}trying finished a game that doesn't exists")
+            return
+        }
+        commander.sendMessage("$title ${ChatColor.GREEN}finished the running game")
+        gameSystem!!.drawGame()
+    }
+    fun outOfTimeGame(commander: Player){
+        if(gameSystem == null) {
+            commander.sendMessage("$title ${ChatColor.RED}trying to finish a game that doesn't exists")
+            return
+        }
+        commander.sendMessage("$title ${ChatColor.GREEN}finished the running game")
+        gameSystem!!.timeUpEnding()
+    }
+
+    // these methods will really do anything when there is no game running,
+    // sure it will lock the items, but that will be reset when the game starts anyway
+    fun pauseGame(){
+        completeTasksLocked = true
+        TimerSystem.pauseTimer(gameTimerKey)
+    }
+    fun resumeGame(){
+        completeTasksLocked = false
+        TimerSystem.resumeTimer(gameTimerKey)
     }
 }

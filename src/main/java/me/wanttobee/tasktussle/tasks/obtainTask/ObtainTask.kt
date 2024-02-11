@@ -34,7 +34,6 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
     // but it will also be saved here for when ObtainTaskManager changes, to make sure this task doesn't break
     private var handIn = false
     private var alreadyObtained = 0
-    private val contributers: MutableSet<Player> = mutableSetOf()
 
     init{
         // making sure that it is not impossible, 100 shovels is impossible because you don't have 100 inventory slots
@@ -106,9 +105,9 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
                 cursorItem.amount -= obtainingNow
                 alreadyObtained += obtainingNow
                 icon.refreshProgression()
-                contributers.add(player)
+                addContributor(player.name)
                 if(alreadyObtained == obtainAmount)
-                    this.setCompleted(player, contributers.toTypedArray())
+                    this.setCompleted(player)
                 else
                     player.playSound(player.location, Sound.ENTITY_LLAMA_CHEST, SoundCategory.MASTER, 0.2f, 1f)
             }

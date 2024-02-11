@@ -1,7 +1,7 @@
 package me.wanttobee.tasktussle.tasks.clickTask
 
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.base.tasks.TaskIcon

@@ -21,8 +21,8 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author
 
 @Commands(
     //Command(name = "helloWorld", aliases = ["hw","hello"], usage = "/helloWorld"),
-    Command(name = "debug_tt", usage = "/debug_tt"),
-    Command(name = "taskTussle", aliases = ["tt"], usage = "/taskTussle")
+    Command(name = "debug_tt", usage = "/debug_tt", permission = "admin.permission"),
+    Command(name = "taskTussle", aliases = ["tt"], usage = "/taskTussle", permission = "admin.permission")
 )
 
 // library has to be loaded in order to use kotlin

@@ -22,7 +22,8 @@ object TaskTussleConfig : ICommandNamespace {
         StartTree,
         StopTree,
         SettingsTree,
-        DebugTree
+        DebugTree,
+        FinishTree
     )
 
     object StartTree : ICommandObject {
@@ -49,9 +50,17 @@ object TaskTussleConfig : ICommandNamespace {
     }
 
     object StopTree : ICommandObject {
-        override val helpText: String = "to stop the current running game"
+        override val helpText: String = "to stop and clear the current running game"
         override val baseTree = CommandEmptyLeaf("stop") { commander -> TaskTussleSystem.stopGame(commander) }
     }
+    object FinishTree : ICommandObject {
+        override val helpText: String = "to finish the game early "
+        override val baseTree = CommandBranch("finish", arrayOf(
+            CommandEmptyLeaf("draw") {commander -> TaskTussleSystem.drawGame(commander) } ,
+            CommandEmptyLeaf("out_of_time") {commander -> TaskTussleSystem.outOfTimeGame(commander) } ,
+        ))
+    }
+
 
     object SettingsTree : ICommandObject {
         override val helpText: String = "to view or change settings"
@@ -137,9 +146,7 @@ object TaskTussleConfig : ICommandNamespace {
                 .updateTitle(newTitle)
                 .updateEnchanted(TaskTussleSystem.gameTime != 0)
                 .pushUpdates()
-        }) { p, _ ->
-            p.sendMessage("${ChatColor.RED}Does nothing yet")
-        }
+        }) { p, _ -> TimeSettings.open(p) }
 
         // Load PreSets setting
         val preSetItem = UniqueItemStack(

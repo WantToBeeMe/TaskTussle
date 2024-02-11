@@ -4,12 +4,11 @@ package me.wanttobee.tasktussle.teams
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 
 class TeamMakerInventory(private val teamCount : Int, private val maxTeamSize : Int = 100 )  : InteractiveInventory() {
     override var inventory: Inventory = Bukkit.createInventory(null,9 + 9 * (teamCount/9),"${ChatColor.GOLD}Team Maker")

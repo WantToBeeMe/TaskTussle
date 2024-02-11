@@ -7,13 +7,19 @@ import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
 import me.wanttobee.tasktussle.teams.TeamSystem
+import me.wanttobee.tasktussle.util.TimerSystem
 
 object DebugCommand : ICommandNamespace {
     override val commandName: String = "debug_tt"
     override val commandSummary: String = "check the different statuses of the different aspects of this plugin"
     override val hasOnlyOneGroupMember: Boolean = false
     override val isZeroParameterCommand: Boolean = false
-    override val systemCommands: Array<ICommandObject> = arrayOf(HotBarItems, IInventory, Teams)
+    override val systemCommands: Array<ICommandObject> = arrayOf(
+        HotBarItems,
+        IInventory,
+        Teams,
+        TimerDebug
+    )
 
     object HotBarItems : ICommandObject{
         override val helpText: String = "will print a list of all the active hotbar items"
@@ -31,6 +37,12 @@ object DebugCommand : ICommandNamespace {
         override val helpText: String = "will print a list of all the active teams"
         override val baseTree: ICommandNode = CommandEmptyLeaf("teams") { p ->
             TeamSystem.debugStatus(p)
+        }
+    }
+    object TimerDebug : ICommandObject{
+        override val helpText = "will print a list of all teh active timers"
+        override val baseTree = CommandEmptyLeaf("timers") { p ->
+            TimerSystem.debugStatus(p)
         }
     }
 }

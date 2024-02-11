@@ -3,11 +3,10 @@ package me.wanttobee.tasktussle.base.tasks
 import me.wanttobee.everythingitems.ItemUtil.colorize
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
@@ -46,7 +45,7 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
         item.updateLore(baseLore).pushUpdates()
     }
 
-    fun setState(state: TaskState, team: Team? = null, contributors: Array<Player> = emptyArray()){
+    fun setState(state: TaskState, team: Team? = null, contributors: Set<String> = emptySet()){
         when (state) {
             TaskState.ACTIVE -> setActive()
             TaskState.FAILED -> setFailed()
@@ -84,21 +83,21 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
         item.updateMeta(meta)
         item.updateEnchanted(false)
     }
-    private fun setCompletedBy( team: Team, contributors: Array<Player>){
+    private fun setCompletedBy( team: Team, contributors: Set<String>){
         item.type = Material.WHITE_STAINED_GLASS.colorize(team.color)
         val meta = item.itemMeta!!
         val newLore = mutableListOf("${team.color}Completed by ${team.getDisplayName()}")
-        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ") { p -> p.name }).toLore(35)
+        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ")).toLore(35)
         meta.lore = newLore
         meta.setDisplayName("${team.color}$taskTitle")
         item.updateMeta(meta)
         item.updateEnchanted(true)
     }
-    private fun setCompleted(contributors: Array<Player>){
+    private fun setCompleted(contributors: Set<String>){
         item.type = Material.LIME_STAINED_GLASS_PANE
         val meta = item.itemMeta!!
         val newLore = mutableListOf("${ChatColor.GREEN}Completed")
-        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ") { p -> p.name }).toLore(35)
+        newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ")).toLore(35)
         meta.lore =newLore
         meta.setDisplayName("${ChatColor.GREEN}$taskTitle")
         item.updateMeta(meta)

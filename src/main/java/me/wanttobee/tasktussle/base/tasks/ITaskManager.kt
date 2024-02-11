@@ -1,7 +1,7 @@
 package me.wanttobee.tasktussle.base.tasks
 
 import me.wanttobee.everythingitems.UniqueItemStack
-import me.wanttobee.tasktussle.Util.toLore
+import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.generic.IManager
 import me.wanttobee.tasktussle.base.generic.ManagerSettings
 import me.wanttobee.tasktussle.base.generic.TaskTussleSettings

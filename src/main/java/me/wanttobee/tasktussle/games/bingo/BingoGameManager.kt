@@ -1,7 +1,6 @@
 package me.wanttobee.tasktussle.games.bingo
 
-import me.wanttobee.commandtree.nodes.CommandIntLeaf
-import me.wanttobee.commandtree.nodes.ICommandNode
+import jdk.swing.interop.DragSourceContextWrapper
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
@@ -18,13 +17,9 @@ import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import kotlin.math.max
 
-object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo", "Every team has a cube of 5x5 tasks, the first team to get a bingo wins") {
+object BingoGameManager : ITTGameManager<BingoCard>( 1..15, "Bingo", Material.FILLED_MAP,
+    "Every team has a cube of 5x5 tasks, the first team to get a bingo wins") {
     override val defaultValue: (Team) -> BingoCard = { t -> BingoCard(t)}
-    override val teamRange: IntRange = 1..15
-    override val startCommand: ICommandNode = CommandIntLeaf(
-        "bingo", 1, 15, {commander, size -> TaskTussleSystem.startGame(commander,size,BingoGameManager) },
-        {commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
-    )
 
     //settings
     var mutualTasks = 15 // the amount of tasks that are the same in across the different teams
@@ -32,6 +27,9 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
     // "1 line","2 lines","3 lines", "4 lines","horizontal line","vertical line","diagonal line", "full card"
 
     init{
+        // note that if you change option here, you also have to change it at the overTimeMethod
+        addOvertimeSetting(arrayOf("draw","most tasks wins"))
+
         // mutual tasks
         val mutualTaskLore = listOf(
             "${ChatColor.DARK_GRAY}L Click: ${ChatColor.GRAY}Increase amount",
@@ -68,7 +66,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
     }
 
     override fun startGame(commander: Player, teams: TeamSet<BingoCard>) {
-        TaskTussleSystem.completeTasksLocked = false // we turn of the taskLock (so tasks can be completed again)
+        TaskTussleSystem.resumeGame()
         val messageColor = ChatColor.GREEN
         val itemName = "${ChatColor.GOLD}${TaskTussleSystem.clickItemName}$messageColor"
         teams.forEachPlayer { player ->
@@ -118,8 +116,7 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
         }
     }
 
-    override fun finishGame(winningTeam: Team) {
-        TaskTussleSystem.completeTasksLocked = true
+    private fun endGame(){
         if(TaskTussleSystem.hideCard){
             gameTeams!!.forEachObject { card ->
                 card.cardGui.teamIcon.setClickable(true)
@@ -128,14 +125,60 @@ object BingoGameManager : ITTGameManager<BingoCard>(Material.FILLED_MAP,"Bingo",
         gameTeams!!.forEachObject { card ->
             card.showContributions()
         }
+    }
+    override fun finishGame(winningTeam: Team) {
+        TaskTussleSystem.pauseGame()
+        endGame()
 
+        // everyone opening the winning card
         gameTeams!!.forEachPlayer  { p ->
             gameTeams!!.getObject(winningTeam)?.openCard(p)
+            p.sendMessage("${winningTeam.getDisplayName()}${ChatColor.GREEN} Won the game")
             p.playSound(p.location, Sound.BLOCK_END_PORTAL_SPAWN, SoundCategory.MASTER, 0.2f, 1f)
             p.playSound(p.location, Sound.ENTITY_ALLAY_AMBIENT_WITHOUT_ITEM, SoundCategory.MASTER, 0.9f, 2f)
-            p.playSound(p.location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.MASTER, 1f, 1f)
+            p.playSound(p.location, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.MASTER, 1f, 0.9f)
         }
     }
+
+    override fun drawGame() {
+        TaskTussleSystem.pauseGame()
+        endGame()
+
+        // everyone open their own card
+        gameTeams!!.forEach  { team, card ->
+            team.forEachMember { p ->
+                card.openCard(p)
+                p.sendMessage("${ChatColor.YELLOW}The game drew")
+                p.playSound(p.location, Sound.BLOCK_SCULK_CATALYST_PLACE, SoundCategory.MASTER, 0.5f, 0.7f)
+                p.playSound(p.location, Sound.BLOCK_SCULK_SENSOR_CLICKING, SoundCategory.MASTER, 0.6f, 0.5f)
+                p.playSound(p.location, Sound.ENTITY_ALLAY_ITEM_GIVEN, SoundCategory.MASTER, 1f, 0.5f)
+            }
+        }
+    }
+
+
+    override fun timeUpEnding() {
+        if(atOvertimeSetting == "most tasks wins"){
+            var currentBestCount = -1
+            var currentBestTeam : Team? = null
+            gameTeams!!.forEach {team, card ->
+                val thisCompleted = card.getCompletedAmount()
+                if(thisCompleted == currentBestCount){
+                    currentBestTeam = null
+                }
+                if(thisCompleted > currentBestCount){
+                    currentBestCount = thisCompleted
+                    currentBestTeam = team
+                }
+            }
+            if(currentBestTeam != null){
+                finishGame(currentBestTeam!!)
+                return
+            }
+        }
+        drawGame()
+    }
+
 
     fun checkCardForWin(cardManager: BingoCard) {
         val completed = cardManager.getCompletedLines()
