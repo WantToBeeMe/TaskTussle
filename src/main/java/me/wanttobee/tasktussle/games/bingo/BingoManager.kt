@@ -16,7 +16,7 @@ import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import kotlin.math.max
 
-object BingoGameManager : ITTGameManager<BingoCard>(
+object BingoManager : ITTGameManager<BingoCard>(
     1..15,
     "Bingo", Material.FILLED_MAP,
     "Every team has a cube of 5x5 tasks, the first team to get a bingo wins") {
@@ -118,15 +118,11 @@ object BingoGameManager : ITTGameManager<BingoCard>(
         }
     }
 
-    private fun endGame(){
+    override fun finishGame(winningTeam: Team) {
+        TaskTussleSystem.pauseGame()
         gameTeams!!.forEachObject { card ->
             card.endGame()
         }
-    }
-    override fun finishGame(winningTeam: Team) {
-        TaskTussleSystem.pauseGame()
-        endGame()
-
         // everyone opening the winning card
         gameTeams!!.forEachPlayer  { p ->
             gameTeams!!.getObject(winningTeam)?.openCard(p)
@@ -139,7 +135,9 @@ object BingoGameManager : ITTGameManager<BingoCard>(
 
     override fun drawGame() {
         TaskTussleSystem.pauseGame()
-        endGame()
+        gameTeams!!.forEachObject { card ->
+            card.endGame()
+        }
 
         // everyone open their own card
         gameTeams!!.forEach  { team, card ->

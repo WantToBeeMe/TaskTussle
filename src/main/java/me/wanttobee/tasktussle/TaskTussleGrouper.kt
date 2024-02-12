@@ -1,6 +1,6 @@
 package me.wanttobee.tasktussle
 
-import me.wanttobee.tasktussle.games.bingo.BingoGameManager
+import me.wanttobee.tasktussle.games.bingo.BingoManager
 import me.wanttobee.tasktussle.base.cards.ITTGameManager
 import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import me.wanttobee.tasktussle.tasks.achievementTask.AdvancementsFiles
@@ -24,7 +24,7 @@ object TaskTussleGrouper {
 
     // when adding a game you have to add it here
     val gameManagers : Array<ITTGameManager<*>> = arrayOf(
-        BingoGameManager
+        BingoManager
     )
 
     fun generateDefaultFolders(){

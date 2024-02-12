@@ -13,6 +13,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 
+// note that this inventory will always close whenever you use one of the tokens
+// this is because you then set the state of the task to something that will disable the task
+// while disabling the task, this inventory also always gets removed, thus closing it
 class TaskOptions(private val task: ITask) : InteractiveInventory() {
     override var inventory: Inventory = Bukkit.createInventory(null, InventoryType.HOPPER, task.icon.taskTitle)
 
@@ -82,8 +85,6 @@ class TaskOptions(private val task: ITask) : InteractiveInventory() {
             }
         }
     }
-
-
 
     // we only want this inventory to exist whenever we open it
     override fun closeEvent(player: Player, event: InventoryCloseEvent) {

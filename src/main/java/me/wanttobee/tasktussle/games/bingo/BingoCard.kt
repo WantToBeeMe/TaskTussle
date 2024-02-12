@@ -40,7 +40,7 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         }
         val currentlyCompleted = getCompletedAmount()
         cardGui.teamIcon.updateProgression("$currentlyCompleted/25", currentlyCompleted)
-        BingoGameManager.checkCardForWin(this)
+        BingoManager.checkCardForWin(this)
     }
 
     fun getCompletedAmount() : Int {

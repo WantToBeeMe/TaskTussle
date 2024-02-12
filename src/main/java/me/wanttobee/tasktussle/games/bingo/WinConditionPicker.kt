@@ -35,13 +35,13 @@ class WinConditionPicker : InteractiveInventory() {
                 continue
             }
             val icon = UniqueItemStack(pair.first, "${ChatColor.LIGHT_PURPLE}${pair.second}",null)
-            if(BingoGameManager.winningCondition == pair.second)
+            if(BingoManager.winningCondition == pair.second)
                 icon.updateEnchanted(true)
                     .updateLore(listOf("${ChatColor.GRAY}current"))
 
             addLockedItem(pairIndex,icon){p,_ ->
-                BingoGameManager.winningCondition = pair.second
-                BingoGameManager.settingsInventory.open(p)
+                BingoManager.winningCondition = pair.second
+                BingoManager.settingsInventory.open(p)
             }
         }
     }
