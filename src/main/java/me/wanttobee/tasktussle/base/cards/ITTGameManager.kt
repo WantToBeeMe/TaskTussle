@@ -16,12 +16,16 @@ import me.wanttobee.tasktussle.teams.TeamSystem
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import kotlin.math.max
+import kotlin.math.min
 
 // TaskTussle GAME MANAGER:
 //  The system object / singleton / manager  of the specified game (lets say for example bingo)
 //  This is the hub where everything related to bingo comes together
 //  Requests from the outside come here and will be handled, or changed on the inside will be handled
-abstract class ITTGameManager <T : ITTCard>(private val teamRange: IntRange, gameName: String, gameIconMaterial: Material,  gameDescription: String, settingsRows : Int = 1) :
+abstract class ITTGameManager <T : ITTCard>(
+    private val teamRange: IntRange, gameName: String, gameIconMaterial: Material,
+    gameDescription: String, settingsRows : Int = 1) :
     IManager(gameIconMaterial, gameName, gameDescription) {
     // if there is a no game active, this set is null
     var gameTeams : TeamSet<T>? = null
@@ -68,7 +72,7 @@ abstract class ITTGameManager <T : ITTCard>(private val teamRange: IntRange, gam
         if(TaskTussleSystem.choseTeamsBeforehand){
             TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, "Bingo") { set ->
                 gameTeams = set
-                set.forEachObject { cardManager -> cardManager.cardGui.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
+                set.forEachObject { card -> card.cardGui.teamIcon.setClickable(TaskTussleSystem.cardVisibility != "visible") }
                 set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
                 // we make sure that if a task type wants to set something before the game starts, that we give it the time
                 // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
@@ -80,7 +84,7 @@ abstract class ITTGameManager <T : ITTCard>(private val teamRange: IntRange, gam
         else {
             // otherwise we generate the teams randomly
             gameTeams = TeamSystem.generateTeams(teamAmount, "Bingo", defaultValue)
-            gameTeams!!.forEachObject{ cardManager -> cardManager.cardGui.teamIcon.setClickable(!TaskTussleSystem.hideCard) }
+            gameTeams!!.forEachObject{ cardManager -> cardManager.cardGui.teamIcon.setClickable(TaskTussleSystem.cardVisibility == "visible") }
             gameTeams!!.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
             // we make sure that if a task type wants to set something before the game starts, that we give it the time
             // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
@@ -142,5 +146,44 @@ abstract class ITTGameManager <T : ITTCard>(private val teamRange: IntRange, gam
             if(currentOptionIndex < 0) currentOptionIndex = 0
             atOvertimeSetting = overtimeOptions[currentOptionIndex]
         })
+    }
+
+    protected fun addSkipTokenSetting(){
+        val tokenIcon = UniqueItemStack(Material.RED_CANDLE, "",
+            listOf(
+                "${ChatColor.DARK_GRAY}L Click: ${ChatColor.GRAY}Increase amount",
+                "${ChatColor.DARK_GRAY}R Click: ${ChatColor.GRAY}Decrease amount"
+            ) +
+            "${ChatColor.GRAY}Skip tokens allow teams to skip a task by failing it.".toLore(32) )
+
+        settingsInventory.addSetting(tokenIcon,{
+            tokenIcon
+                .updateTitle("${TaskTussleSettings.settingColor}Skip token:${ChatColor.YELLOW} ${TaskTussleSystem.skipTokens}")
+                .updateCount(max(1, TaskTussleSystem.skipTokens))
+                .updateEnchanted(TaskTussleSystem.skipTokens > 0)
+                .pushUpdates()
+        },
+            {_,_ -> TaskTussleSystem.skipTokens = min(100,TaskTussleSystem.skipTokens+1) },
+            {_,_ -> TaskTussleSystem.skipTokens = max(0, TaskTussleSystem.skipTokens -1) }
+        )
+    }
+    protected fun addSucceedTokenSetting(){
+        val tokenIcon = UniqueItemStack(Material.LIME_CANDLE, "",
+            listOf(
+                "${ChatColor.DARK_GRAY}L Click: ${ChatColor.GRAY}Increase amount",
+                "${ChatColor.DARK_GRAY}R Click: ${ChatColor.GRAY}Decrease amount"
+            ) +
+                    "${ChatColor.GRAY}Succeed tokens allow teams to complete a task instantly".toLore(32) )
+
+        settingsInventory.addSetting(tokenIcon,{
+            tokenIcon
+                .updateTitle("${TaskTussleSettings.settingColor}Succeed token:${ChatColor.YELLOW} ${TaskTussleSystem.succeedTokens}")
+                .updateCount(max(1, TaskTussleSystem.succeedTokens))
+                .updateEnchanted(TaskTussleSystem.succeedTokens > 0)
+                .pushUpdates()
+        },
+            {_,_ -> TaskTussleSystem.succeedTokens = min(100,TaskTussleSystem.succeedTokens+1) },
+            {_,_ -> TaskTussleSystem.succeedTokens = max(0, TaskTussleSystem.succeedTokens -1) }
+        )
     }
 }

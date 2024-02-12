@@ -1,6 +1,5 @@
 package me.wanttobee.tasktussle.games.bingo
 
-import jdk.swing.interop.DragSourceContextWrapper
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
@@ -17,7 +16,9 @@ import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import kotlin.math.max
 
-object BingoGameManager : ITTGameManager<BingoCard>( 1..15, "Bingo", Material.FILLED_MAP,
+object BingoGameManager : ITTGameManager<BingoCard>(
+    1..15,
+    "Bingo", Material.FILLED_MAP,
     "Every team has a cube of 5x5 tasks, the first team to get a bingo wins") {
     override val defaultValue: (Team) -> BingoCard = { t -> BingoCard(t)}
 
@@ -28,6 +29,7 @@ object BingoGameManager : ITTGameManager<BingoCard>( 1..15, "Bingo", Material.FI
 
     init{
         // note that if you change option here, you also have to change it at the overTimeMethod
+        addSucceedTokenSetting()
         addOvertimeSetting(arrayOf("draw","most tasks wins"))
 
         // mutual tasks
@@ -117,7 +119,7 @@ object BingoGameManager : ITTGameManager<BingoCard>( 1..15, "Bingo", Material.FI
     }
 
     private fun endGame(){
-        if(TaskTussleSystem.hideCard){
+        if(TaskTussleSystem.cardVisibility != "visible"){
             gameTeams!!.forEachObject { card ->
                 card.cardGui.teamIcon.setClickable(true)
             }

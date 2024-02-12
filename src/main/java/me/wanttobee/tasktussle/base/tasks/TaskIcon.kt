@@ -11,38 +11,35 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 
-class TaskIcon(private val icon: Material, private val taskTitle : String, taskCategory: String, private val progression: ()->String, description : List<String>) {
+class TaskIcon(val iconMaterial: Material, val taskTitle : String, taskCategory: String, private val progression: ()->String, description : String) {
     // we save the unique items here ,but we don't subscribe to them because we don't really care
-    private val item = UniqueItemStack(Material.BARRIER,"unknown",null )
+    private val uniqueItem = UniqueItemStack(Material.BARRIER,"unknown",null )
     private var baseLore : MutableList<String>
 
     fun addToInventory(slot: Int, inv : InteractiveInventory){
-        inv.addLockedItem(slot,item)
+        inv.addLockedItem(slot,uniqueItem)
     }
 
     fun isThisItem(other: ItemStack) : Boolean{
-        return item.equalsID(other)
+        return uniqueItem.equalsID(other)
     }
 
     init{
         setHidden()
-        item.pushUpdates()
+        uniqueItem.pushUpdates()
         baseLore = mutableListOf(
             "${ChatColor.GOLD}Task: ${ChatColor.WHITE}$taskCategory",
             "${ChatColor.GREEN}Progress: ${ChatColor.WHITE}${progression.invoke()}",
         )
-        val newDesc : MutableList<String> = description.toMutableList()
-        for(descLine in newDesc.indices){
-            if(descLine == 0)newDesc[descLine] = "${ChatColor.AQUA}Description: ${ChatColor.WHITE}${newDesc[descLine]}"
-            else newDesc[descLine] = "${ChatColor.WHITE}${newDesc[descLine]}"
-        }
-        baseLore += newDesc
+        baseLore += "${ChatColor.AQUA}Description: ${ChatColor.WHITE}$description".toLore(35)
+        // // this line below makes it more cluttered than it already is, so i rather not, but maybe i must...
+        // baseLore += "${ChatColor.DARK_GRAY}Right Click: ${ChatColor.GRAY}options & details"
     }
 
     // this method is called whenever you want to update the progression
     fun refreshProgression(){
         baseLore[1] = "${ChatColor.GREEN}Progress: ${ChatColor.WHITE}${progression.invoke()}"
-        item.updateLore(baseLore).pushUpdates()
+        uniqueItem.updateLore(baseLore).pushUpdates()
     }
 
     fun setState(state: TaskState, team: Team? = null, contributors: Set<String> = emptySet()){
@@ -54,61 +51,61 @@ class TaskIcon(private val icon: Material, private val taskTitle : String, taskC
             TaskState.HIDDEN -> setHidden()
             TaskState.COMPLETED_BY -> setCompletedBy(team!!,contributors)
         }
-        item.pushUpdates()
+        uniqueItem.pushUpdates()
     }
 
     private fun setActive(){
-        item.type = icon
-        val meta = item.itemMeta!!
+        uniqueItem.type = iconMaterial
+        val meta = uniqueItem.itemMeta!!
         meta.lore = baseLore
         meta.setDisplayName("${ChatColor.WHITE}$taskTitle")
-        item.updateMeta(meta)
-        item.updateEnchanted(false)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(false)
     }
     private fun setHidden(){
-        item.type = Material.GRAY_STAINED_GLASS_PANE
-        val meta = item.itemMeta!!
+        uniqueItem.type = Material.GRAY_STAINED_GLASS_PANE
+        val meta = uniqueItem.itemMeta!!
         meta.lore = listOf("${ChatColor.GRAY}this task is not available (yet)")
         meta.setDisplayName("${ChatColor.GRAY}????")
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
-        item.updateMeta(meta)
-        item.updateEnchanted(false)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(false)
     }
     private fun setLocked(){
-        item.type = Material.GRAY_STAINED_GLASS_PANE
-        val meta = item.itemMeta!!
+        uniqueItem.type = Material.GRAY_STAINED_GLASS_PANE
+        val meta = uniqueItem.itemMeta!!
         meta.lore = listOf("${ChatColor.GRAY}this task is not available (yet)")
         meta.setDisplayName("${ChatColor.GRAY}$taskTitle")
-        item.updateMeta(meta)
-        item.updateEnchanted(false)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(false)
     }
     private fun setCompletedBy( team: Team, contributors: Set<String>){
-        item.type = Material.WHITE_STAINED_GLASS.colorize(team.color)
-        val meta = item.itemMeta!!
+        uniqueItem.type = Material.WHITE_STAINED_GLASS.colorize(team.color)
+        val meta = uniqueItem.itemMeta!!
         val newLore = mutableListOf("${team.color}Completed by ${team.getDisplayName()}")
         newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ")).toLore(35)
         meta.lore = newLore
         meta.setDisplayName("${team.color}$taskTitle")
-        item.updateMeta(meta)
-        item.updateEnchanted(true)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(true)
     }
     private fun setCompleted(contributors: Set<String>){
-        item.type = Material.LIME_STAINED_GLASS_PANE
-        val meta = item.itemMeta!!
+        uniqueItem.type = Material.LIME_STAINED_GLASS_PANE
+        val meta = uniqueItem.itemMeta!!
         val newLore = mutableListOf("${ChatColor.GREEN}Completed")
         newLore += ("${ChatColor.GRAY}" + contributors.joinToString(", ")).toLore(35)
         meta.lore =newLore
         meta.setDisplayName("${ChatColor.GREEN}$taskTitle")
-        item.updateMeta(meta)
-        item.updateEnchanted(true)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(true)
     }
     private fun setFailed(){
-        item.type = Material.RED_STAINED_GLASS_PANE
-        val meta = item.itemMeta!!
+        uniqueItem.type = Material.RED_STAINED_GLASS_PANE
+        val meta = uniqueItem.itemMeta!!
         meta.lore = listOf("${ChatColor.RED}Failed")
         meta.setDisplayName("${ChatColor.RED}$taskTitle")
-        item.updateMeta(meta)
-        item.updateEnchanted(true)
+        uniqueItem.updateMeta(meta)
+        uniqueItem.updateEnchanted(true)
     }
 }

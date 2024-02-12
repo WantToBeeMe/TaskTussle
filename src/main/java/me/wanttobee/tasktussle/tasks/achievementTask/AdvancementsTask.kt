@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent
 class AdvancementsTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val advancementToComplete: Advancement) : ITask(associatedTeam, associatedSet) {
     private val advancementTitle = advancementToComplete.display?.title ?: "Unknown Advancement"
     override val icon: TaskIcon = TaskIcon(Material.KNOWLEDGE_BOOK, advancementTitle,
-        AdvancementsTaskManager.taskName, {"0/1"}, listOf("get this advancement"))
+        AdvancementsTaskManager.taskName, {"0/1"}, "complete this advancement")
 
     override fun getSuccessMessage(completerTeam: Team): String {
         return  "${completerTeam.getDisplayName()}${ChatColor.RESET} got an advancements task ${ChatColor.GRAY}($advancementTitle)"

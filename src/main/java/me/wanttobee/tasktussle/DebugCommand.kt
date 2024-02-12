@@ -6,6 +6,7 @@ import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
 import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
+import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.TeamSystem
 import me.wanttobee.tasktussle.util.TimerSystem
 
@@ -18,8 +19,16 @@ object DebugCommand : ICommandNamespace {
         HotBarItems,
         IInventory,
         Teams,
-        TimerDebug
+        TimerDebug,
+        TaskEventDebug
     )
+
+    object TaskEventDebug : ICommandObject{
+        override val helpText = "will print the amount of tasks that are active, and how much events they have"
+        override val baseTree: ICommandNode = CommandEmptyLeaf("task_events"){ p ->
+            TaskEventsListener.debugStatus(p)
+        }
+    }
 
     object HotBarItems : ICommandObject{
         override val helpText: String = "will print a list of all the active hotbar items"

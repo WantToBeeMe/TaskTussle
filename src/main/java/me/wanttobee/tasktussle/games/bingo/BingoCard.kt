@@ -13,6 +13,11 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
     override val cardGui: ITTCardGUI = BingoCardGUI(associatedTeam)
     private lateinit var taskSet : Array<ITask>
 
+    override var skipTokens: Int = 0
+    override var successTokens: Int = TaskTussleSystem.succeedTokens
+    override val skipTokensMax: Int = skipTokens
+    override val successTokensMax: Int = successTokens
+
     // we have to save the tasks here because we want to be aware whenever a task is completed or anything
     override fun setTasks(tasks: Array<ITask>): Boolean {
         taskSet = tasks

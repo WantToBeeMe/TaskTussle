@@ -2,6 +2,7 @@ package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
+import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.base.cards.ITTGameManager
 import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import org.bukkit.Bukkit
@@ -43,8 +44,8 @@ object TaskTussleSettings : InteractiveInventory() {
         fillGapsWithSeparator()
 
         for(i in 0..8){
-            val noTask = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS, "${ChatColor.GRAY}Empty Task Slot", "${ChatColor.DARK_GRAY}a spot for a future task")
-            val noGame = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS, "${ChatColor.GRAY}Empty Game Slot", "${ChatColor.DARK_GRAY}a spot for a future game")
+            val noTask = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS, "${ChatColor.GRAY}Empty task slot", "${ChatColor.DARK_GRAY}a spot for a future task")
+            val noGame = UniqueItemStack(Material.LIGHT_GRAY_STAINED_GLASS, "${ChatColor.GRAY}Empty game slot", "${ChatColor.DARK_GRAY}a spot for a future game")
             addLockedItem(taskRow +i, noTask)
             addLockedItem(gameRow +i, noGame)
         }

@@ -50,11 +50,15 @@ object TaskTussleSystem {
 
     //task tussle settings (common settings, settings that are for every game)
     var choseTeamsBeforehand = false
-    var hideCard = false
+    val cardVisibilityOptions = arrayOf("progress only","visible","hidden")
+    var cardVisibility = cardVisibilityOptions.first()
     var easyRatio = 13
     var normalRatio = 8
     var hardRatio = 4
     var gameTime = 0
+
+    var skipTokens = 0
+    var succeedTokens = 0
 
 
     fun initialize(plugin: JavaPlugin, title: String?) {
@@ -62,7 +66,9 @@ object TaskTussleSystem {
         plugin.server.pluginManager.registerEvents(TaskEventsListener, plugin)
         this.title = title
     }
-    fun disablePlugin(){}
+    fun disablePlugin(){
+        TimerSystem.clearTimer(gameTimerKey)
+    }
 
     // generates a bunch of tasks for the designated team
     // associatedTeam:
@@ -75,7 +81,7 @@ object TaskTussleSystem {
         return TaskFactory.generateTasks(associatedTeam,associatedSet, amount, easyRatio, normalRatio, hardRatio, skips)
     }
 
-    fun currentlyActiveGame() : Boolean{
+    fun gameIsRunning() : Boolean{
         return gameSystem != null
     }
 
@@ -109,13 +115,14 @@ object TaskTussleSystem {
         else commander.sendMessage("$title ${ChatColor.YELLOW}stopped the running game, however, the game seemed to be broken")
         gameSystem = null
         // removing the things related to the gameTime
+        TaskEventsListener.clear()
         TimerSystem.clearTimer(gameTimerKey)
         clickItem.removeFromEveryone()
         // we don't want to remove the clickItem, we only want it to be gone
         // the item itself is and stays correct at all times because we call openCard() which opens the newest game at all time
     }
 
-    private fun openCard(p : Player){
+    fun openCard(p : Player){
         if(gameSystem == null) {
             p.sendMessage("$title ${ChatColor.RED}no game to open")
             return
@@ -136,6 +143,7 @@ object TaskTussleSystem {
             gameSystem!!.debugStatus(commander)
         }
 
+        TaskEventsListener.debugStatus(commander)
         InteractiveInventorySystem.debugStatus(commander)
         InteractiveHotBarSystem.debugStatus(commander)
         TeamSystem.debugStatus(commander)

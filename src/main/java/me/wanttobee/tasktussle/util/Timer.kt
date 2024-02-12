@@ -30,6 +30,7 @@ class Timer(
 
 
     fun resume(){
+        if(task != null) return
         if(gameTimeBar != null){
             gameTimeBar.progress = remainingSeconds.toDouble()/totalSecond.toDouble()
             gameTimeBar.color = if(remainingSeconds > showSecondsThreshold) BarColor.GREEN else BarColor.YELLOW
@@ -64,9 +65,9 @@ class Timer(
         if(gameTimeBar == null) return
         val minutes = remainingSeconds / 60
         val seconds = remainingSeconds % 60
-        val title = if (remainingSeconds <= showSecondsThreshold)
-            String.format("%d:%02d", minutes, seconds)
-        else minutes.toString()
+        val title = if (remainingSeconds <= showSecondsThreshold) {
+            String.format("%d minute%s, %02d second%s", minutes, if (minutes != 1) "s" else "", seconds, if (seconds != 1) "s" else "")
+        } else "$minutes minute${if (minutes != 1) "s" else ""}"
         gameTimeBar.progress = remainingSeconds.toDouble() / totalSecond.toDouble()
         gameTimeBar.color = if (remainingSeconds > showSecondsThreshold) BarColor.GREEN else BarColor.YELLOW
         gameTimeBar.setTitle("Time Left: $title")

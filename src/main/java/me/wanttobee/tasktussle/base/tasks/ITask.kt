@@ -8,6 +8,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
 
 //the stateCode's in order are
 // 0 -> active
@@ -18,13 +19,18 @@ import org.bukkit.entity.Player
 // 5 -> Failed
 abstract class ITask(val associatedTeam : Team?, val associatedSet : TeamSet<*>) {
     abstract val icon : TaskIcon
-    private var callBackCard : ITTCard? = null
+    var assosiatedCard : ITTCard? = null
+        private set
     var stateCode : TaskState = TaskState.HIDDEN
         private set
     var completerTeam : Team? = null
         private set
     var contributors : MutableSet<String> = mutableSetOf()
         private set
+
+    // this is the inventory for the options for this task
+    // its only something when it is being used, otherwise its null
+    private var taskOptions : TaskOptions? = null
 
     fun addContributor(playerName: String) : Boolean{
         return contributors.add(playerName)
@@ -54,13 +60,15 @@ abstract class ITask(val associatedTeam : Team?, val associatedSet : TeamSet<*>)
         stateCode = if(associatedTeam != null) TaskState.COMPLETED else TaskState.COMPLETED_BY
         icon.setState(stateCode, completerTeam, contributors)
 
-        if(TaskTussleSystem.hideCard && associatedTeam != null){
+        if(TaskTussleSystem.cardVisibility != "visible" && associatedTeam != null){
             associatedSet.forEachTeam{ team ->
                 team.forEachMember { p ->
                     if(team == completerTeam)
                         p.sendMessage(getSuccessMessage(completerTeam))
-                    else
+                    else if(TaskTussleSystem.cardVisibility != "hidden"){
                         p.sendMessage("${completerTeam.getDisplayName()}${ChatColor.RESET} got a task")
+                    }
+
                 } }
         }
         else{
@@ -90,10 +98,13 @@ abstract class ITask(val associatedTeam : Team?, val associatedSet : TeamSet<*>)
     // this method will be called only from this abstract class, it is to make sure the task will not work anymore
     // the public implementation is just disable()
     private fun internalDisable(){
-        if(callBackCard == null)
+        if(assosiatedCard == null)
             TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant do task-callback for disable call (no card manager assigned)")
         else{
-            callBackCard!!.onTaskDisabled(this)
+            assosiatedCard!!.onTaskDisabled(this)
+            TaskEventsListener.taskObserver.remove(this)
+            taskOptions?.clear()
+            taskOptions = null
             disable()
         }
 
@@ -102,11 +113,12 @@ abstract class ITask(val associatedTeam : Team?, val associatedSet : TeamSet<*>)
     // this method will be called only from this abstract class, it is to make sure the task will work
     // the public implementation is just enable()
     private fun internalEnable(callBackCard : ITTCard){
-        this.callBackCard = callBackCard
+        this.assosiatedCard = callBackCard
+        TaskEventsListener.taskObserver.add(this)
         enable()
     }
 
-    protected fun isPlayerAllowed(potentialCompleter : Player) : Boolean{
+    fun isPlayerAllowed(potentialCompleter : Player) : Boolean{
         return associatedTeam?.containsMember(potentialCompleter) ?: associatedSet.containsPlayer(potentialCompleter)
     }
 
@@ -115,4 +127,19 @@ abstract class ITask(val associatedTeam : Team?, val associatedSet : TeamSet<*>)
 
     abstract fun getSuccessMessage(completerTeam: Team) : String
     abstract fun clone(otherTeam : Team) : ITask
+
+    // this method will run when you left or right-click on the tasks icon AND the player doing so is allowed to complete the task.
+    // if a task is tied to a team. this player belongs to that team, or if more teams are allowed to complete the task,
+    // than the player belongs to one of those teams
+    open fun onLeftClickIcon(player : Player, shift: Boolean, event: InventoryClickEvent){/* nothing by default */ }
+    open fun onRightClickIcon(player : Player, shift: Boolean, event: InventoryClickEvent){
+        if((assosiatedCard?.skipTokensMax ?: 0) == 0 &&
+            (assosiatedCard?.successTokensMax ?: 0) == 0) {
+            // when we didn't have any tokens to begin with, we can just ignore this call and not open the inventory at all, there is no use anyway
+            return
+        }
+
+        if(taskOptions == null) taskOptions = TaskOptions(this)
+        taskOptions!!.open(player)
+    }
 }

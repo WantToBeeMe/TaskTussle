@@ -19,7 +19,7 @@ class ManagerSettings(manager: IManager, settingRowCount : Int = 1)  : Interacti
     init{
         val noSettingIcon = UniqueItemStack(
             Material.LIGHT_GRAY_STAINED_GLASS,
-            "${ChatColor.GRAY}Empty Setting slot",
+            "${ChatColor.GRAY}Empty setting slot",
             "${ChatColor.DARK_GRAY}a spot for a future setting")
         for(i in 9 until (9 + settingRowCount*9)){
             addLockedItem(i,noSettingIcon)

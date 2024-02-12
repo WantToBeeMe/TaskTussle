@@ -47,7 +47,7 @@ object AdvancementsTaskManager : ITaskManager<AdvancementsTask>(Material.KNOWLED
     }
 
     override fun prepareForThisTaskType(teamSet: TeamSet<*>) {
-        if (TaskTussleSystem.hideCard) {
+        if (TaskTussleSystem.cardVisibility != "visible") {
             TaskTussleSystem.minecraftPlugin.server.worlds.forEach { world ->
                 world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
             }

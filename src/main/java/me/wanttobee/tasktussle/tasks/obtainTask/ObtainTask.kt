@@ -15,6 +15,7 @@ import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToObtain : Material, private var obtainAmount: Int = 1)
@@ -22,8 +23,8 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
     override val icon: TaskIcon = TaskIcon(itemToObtain,
         itemToObtain.getRealName(),ObtainTaskManager.taskName,
         {"$alreadyObtained/${this.obtainAmount}"} ,
-        if(itemToObtain.getSubTitle() == null) listOf("obtain this item")
-        else listOf("obtain this item","${ChatColor.GRAY}${itemToObtain.getSubTitle()}") )
+        if(itemToObtain.getSubTitle() == null) "obtain this item"
+        else "obtain this item. ${ChatColor.GRAY}${itemToObtain.getSubTitle()}" )
 
     override fun getSuccessMessage(completerTeam: Team): String {
         return "${completerTeam.getDisplayName()}${ChatColor.RESET} got an obtain task ${ChatColor.GRAY}(${itemToObtain.getRealName()})"
@@ -41,18 +42,40 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
         icon.refreshProgression()
     }
 
-    private val pickupEvent : (EntityPickupItemEvent) -> Unit = event@{ event ->
-        if(handIn) return@event
+    override fun onLeftClickIcon(player: Player, shift: Boolean, event: InventoryClickEvent) {
+        val cursorItem = event.cursor
+        // When amount = 1
+        // we check this first, even though it would also work in the other one, this is of-course the faster approach
+        if(obtainAmount == 1){
+            val checkItem = if(cursorItem?.type == itemToObtain)
+                cursorItem
+            else player.inventory.find { item -> item?.type == itemToObtain }
+            if(checkItem != null){
+                this.setCompleted(player)
+                if(handIn) checkItem.amount -= 1
+            }
+            return
+        }
+
+        if(handIn){
+            onHandInMultiple(player,cursorItem)
+            return
+        }
+        onKeepMultiple(player, cursorItem, true)
+    }
+
+    private fun pickupEvent(event: EntityPickupItemEvent ){
+        if(handIn) return
         // this event will not be triggered if handIn is set to true, that means you can assume that
         // you can keep the item here. however, that also means that you have to do all the items at once
-        val player = event.entity as? Player ?: return@event
-        if(!isPlayerAllowed(player)) return@event
+        val player = event.entity as? Player ?: return
+        if(!isPlayerAllowed(player)) return
         val itemType = event.item.itemStack.type
         if(itemType == itemToObtain){
             // if the amount was 1 (which is a lot of the times) we can skip the whole calculating bit
             if(obtainAmount == 1){
                 this.setCompleted(player)
-                return@event
+                return
             }
 
             // we also check how much the player has of this item,
@@ -67,88 +90,76 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
         }
     }
 
-    private val inventoryClick : (InventoryClickEvent) -> Unit = event@{ event ->
-        val player = event.whoClicked as? Player ?: return@event
-        if(!isPlayerAllowed(player)) return@event
-        val cardItem = event.currentItem ?: return@event
+    private fun inventoryClick(event: InventoryClickEvent){
+        val player = event.whoClicked as? Player ?: return
+        if(!isPlayerAllowed(player)) return
+        val cardItem = event.currentItem ?: return
+        if(!TaskTussleSystem.clickItem.isThisItem(cardItem)) return
         val cursorItem = event.cursor
 
         // When amount = 1
         // we check this first, even though it would also work in the other one, this is of-course the faster approach
-        if(obtainAmount == 1){
-            if(TaskTussleSystem.clickItem.isThisItem(cardItem)
-                && cursorItem?.type == itemToObtain){
-                this.setCompleted(player)
-                if(handIn) cursorItem.amount -= 1
-            }
-            else if(icon.isThisItem(cardItem)){
-                if(cursorItem?.type == itemToObtain){
-                    this.setCompleted(player)
-                    if(handIn) cursorItem.amount -= 1
-                    return@event
-                }
-                val checkItem = player.inventory.find { item -> item?.type == itemToObtain }
-                if(checkItem != null){
-                    this.setCompleted(player)
-                    if(handIn) checkItem.amount -= 1
-                }
-            }
-            return@event
+        if(obtainAmount == 1 &&
+            cursorItem?.type == itemToObtain){
+            this.setCompleted(player)
+            if(handIn) cursorItem.amount -= 1
+            return
         }
 
-        // When amount is bigger than 1, and you have to hand it in
+        // When amount is bigger than 1, and you have to hand it in, it will get removed from your hand
         if(handIn){
-            // when we click with an item in our hand we only want to remove it from the stack that we have in our hand
-            if((TaskTussleSystem.clickItem.isThisItem(cardItem) || icon.isThisItem(cardItem))
-                && cursorItem?.type == itemToObtain){
-                val obtainingNow = min(cursorItem.amount, obtainAmount - alreadyObtained)
-                cursorItem.amount -= obtainingNow
-                alreadyObtained += obtainingNow
-                icon.refreshProgression()
-                addContributor(player.name)
-                if(alreadyObtained == obtainAmount)
-                    this.setCompleted(player)
-                else
-                    player.playSound(player.location, Sound.ENTITY_LLAMA_CHEST, SoundCategory.MASTER, 0.2f, 1f)
-            }
+            onHandInMultiple(player,cursorItem)
+            return
         }
-
         // When amount is bigger than 1, and you get to keep everything
-        else{
-            var currentlyObtained = 0
-            if((TaskTussleSystem.clickItem.isThisItem(cardItem) || icon.isThisItem(cardItem))
-                && cursorItem?.type == itemToObtain){
-                currentlyObtained = cursorItem.amount
-            }
-            // either you click with this item in hand, or you click on the task icon itself
-            if(currentlyObtained > 0 || icon.isThisItem(cardItem)){
-                player.sendMessage("check $currentlyObtained")
-                if(currentlyObtained >= obtainAmount - alreadyObtained){
-                    // if this stack turns out to be enough already ,we don't have to loop through the whole inventory
-                    this.setCompleted(player)
-                    return@event
-                }
-                val obtainItems = player.inventory.filter { itemStack -> itemStack?.type == itemToObtain }
-                currentlyObtained += obtainItems.sumOf { itemStack -> itemStack.amount }
-                player.sendMessage("check $currentlyObtained")
-                if(currentlyObtained >= obtainAmount - alreadyObtained)
-                    this.setCompleted(player)
-            }
+        onKeepMultiple(player,cursorItem, false)
+    }
+
+    private fun onHandInMultiple(player :Player, cursorItem : ItemStack?){
+        if(cursorItem?.type == itemToObtain){
+            val obtainingNow = min(cursorItem.amount, obtainAmount - alreadyObtained)
+            cursorItem.amount -= obtainingNow
+            alreadyObtained += obtainingNow
+            icon.refreshProgression()
+            addContributor(player.name)
+            if(alreadyObtained == obtainAmount)
+                this.setCompleted(player)
+            else
+                player.playSound(player.location, Sound.ENTITY_LLAMA_CHEST, SoundCategory.MASTER, 0.2f, 1f)
         }
     }
+    private fun onKeepMultiple(player: Player, cursorItem: ItemStack?, clickedOnIcon: Boolean){
+        var currentlyObtained = 0
+        if(cursorItem?.type == itemToObtain)
+            currentlyObtained = cursorItem.amount
+
+        // either you click with this item in your cursor, or you click on the task icon itself
+        if(currentlyObtained > 0 || clickedOnIcon){
+            if(currentlyObtained >= obtainAmount - alreadyObtained){
+                // if this stack turns out to be enough already ,we don't have to loop through the whole inventory
+                this.setCompleted(player)
+                return
+            }
+            val obtainItems = player.inventory.filter { itemStack -> itemStack?.type == itemToObtain }
+            currentlyObtained += obtainItems.sumOf { itemStack -> itemStack.amount }
+            if(currentlyObtained >= obtainAmount - alreadyObtained)
+                this.setCompleted(player)
+        }
+    }
+
 
     override fun enable() {
         handIn = ObtainTaskManager.handInItem
         if(!handIn)
-            TaskEventsListener.entityPickupItemObservers.add(pickupEvent)
+            TaskEventsListener.entityPickupItemObservers.add(this::pickupEvent)
         // only when we are allowed to keep the item do we allow for pickups,
         // because we cant remove something from a stack in the pickup event for some reason
         TaskTussleSystem.log("enabling obtain task ${itemToObtain.name}")
-        TaskEventsListener.inventoryClickObservers.add(inventoryClick)
+        TaskEventsListener.inventoryClickObservers.add(this::inventoryClick)
     }
     override fun disable() {
-        TaskEventsListener.entityPickupItemObservers.remove(pickupEvent)
-        TaskEventsListener.inventoryClickObservers.remove(inventoryClick)
+        TaskEventsListener.entityPickupItemObservers.remove(this::pickupEvent)
+        TaskEventsListener.inventoryClickObservers.remove(this::inventoryClick)
     }
 
     override fun clone(otherTeam : Team): ObtainTask {

@@ -66,20 +66,27 @@ object TaskTussleConfig : ICommandNamespace {
         override val helpText: String = "to view or change settings"
         override val baseTree = CommandEmptyLeaf("settings"){p ->
             TaskTussleSettings.open(p)
-            if(TaskTussleSystem.currentlyActiveGame()) p.sendMessage("${title}${ChatColor.RED} There is already a game running, most settings will not effect a game that is already running")
+            if(TaskTussleSystem.gameIsRunning()) p.sendMessage("${title}${ChatColor.RED} There is already a game running, most settings will not effect a game that is already running")
         }
     }
 
     init{
-        // Hide card
-        val hideCardItem = UniqueItemStack(Material.PAPER, "", null)
-        TaskTussleSettings.addGenericSetting(hideCardItem, {
-            val newTitle = "${TaskTussleSettings.settingColor}Card Visibility:${ChatColor.YELLOW} " +
-                    if (TaskTussleSystem.hideCard) "hidden" else "visible"
-            hideCardItem.updateTitle(newTitle)
-                .updateMaterial(if (TaskTussleSystem.hideCard) Material.MAP else Material.FILLED_MAP)
+        // visibility setting
+        val visibilityItem = UniqueItemStack(Material.PAPER, "", null)
+        var currentVisiblityIndex = 0
+        TaskTussleSettings.addGenericSetting(visibilityItem, {
+            visibilityItem
+                .updateTitle("${TaskTussleSettings.settingColor}Card Visibility:${ChatColor.YELLOW} ${TaskTussleSystem.cardVisibility}")
+                .updateMaterial(when (TaskTussleSystem.cardVisibility){
+                    "visible" -> Material.ENDER_EYE
+                    "hidden" -> Material.FIREWORK_STAR
+                    else -> Material.ENDER_PEARL
+                })
                 .pushUpdates()
-        }) { _, _ -> TaskTussleSystem.hideCard = !TaskTussleSystem.hideCard }
+        }) { _, _ ->
+            currentVisiblityIndex = (currentVisiblityIndex+1)%TaskTussleSystem.cardVisibilityOptions.size
+            TaskTussleSystem.cardVisibility = TaskTussleSystem.cardVisibilityOptions[currentVisiblityIndex]
+        }
 
 
         // Easy Ratio
@@ -152,7 +159,7 @@ object TaskTussleConfig : ICommandNamespace {
         val preSetItem = UniqueItemStack(
             Material.WRITABLE_BOOK,
             "${TaskTussleSettings.settingColor}Load a pre-set", null)
-        TaskTussleSettings.addLockedItem(9 * 2 - 1, preSetItem) { p, _ ->
+        TaskTussleSettings.addLockedItem(8, preSetItem) { p, _ ->
             p.sendMessage("${ChatColor.RED}Does nothing yet")
         }
     }
