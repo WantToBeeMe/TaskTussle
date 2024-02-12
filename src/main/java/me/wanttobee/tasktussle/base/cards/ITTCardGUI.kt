@@ -18,11 +18,11 @@ import org.bukkit.inventory.Inventory
 //  Your card has is build out of 2 parts, the Card and the CardGUI
 //  (or more specific, each Card contains its own CardGUI)
 //  anyway, the Card is in control of the logic and the CardGUI is just the interface
-abstract class ITTCardGUI(protected val associatedTeam : Team, val taskAmount : Int, val teamCount : Int, inventorySlotAmount : Int, inventoryTitle: String) : InteractiveInventory() , ITeamObserver {
+abstract class ITTCardGUI(protected val associatedTeam : Team, val teamCount : Int, inventorySlotAmount : Int, inventoryTitle: String) : InteractiveInventory() , ITeamObserver {
     companion object{
         val emptyTeamIcon = UniqueItemStack(Material.GRAY_STAINED_GLASS, "${ChatColor.RESET}${ChatColor.GRAY}Empty Card", null)
     }
-    open val teamIcon : TeamIcon  = TeamIcon(this, associatedTeam, taskAmount)
+    abstract val teamIcon : TeamIcon
     override var inventory: Inventory = if(inventorySlotAmount == 5)
         Bukkit.createInventory(null, InventoryType.HOPPER, inventoryTitle)
         else Bukkit.createInventory(null, inventorySlotAmount, inventoryTitle)
@@ -43,7 +43,7 @@ abstract class ITTCardGUI(protected val associatedTeam : Team, val taskAmount : 
     }
 
     // whenever the team members get an update, we also want the teamIcon to update to represent the correct team members
-    override fun onAddMember(member: Player) { teamIcon.refreshTeamVisual() }
-    override fun onRemoveMember(member: Player) { teamIcon.refreshTeamVisual() }
-    override fun onSwapMember(leave: Player, enter: Player) { teamIcon.refreshTeamVisual() }
+    override fun onAddMember(member: Player) { teamIcon.refresh() }
+    override fun onRemoveMember(member: Player) { teamIcon.refresh() }
+    override fun onSwapMember(leave: Player, enter: Player) { teamIcon.refresh() }
 }

@@ -86,6 +86,7 @@ object TaskTussleConfig : ICommandNamespace {
         }) { _, _ ->
             currentVisiblityIndex = (currentVisiblityIndex+1)%TaskTussleSystem.cardVisibilityOptions.size
             TaskTussleSystem.cardVisibility = TaskTussleSystem.cardVisibilityOptions[currentVisiblityIndex]
+            TaskTussleSystem.updateVisibility()
         }
 
 

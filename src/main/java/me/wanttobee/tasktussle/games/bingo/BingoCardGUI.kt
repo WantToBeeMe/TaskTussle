@@ -2,11 +2,15 @@ package me.wanttobee.tasktussle.games.bingo
 
 import me.wanttobee.tasktussle.base.cards.ITTCardGUI
 import me.wanttobee.tasktussle.base.cards.ITTCard
+import me.wanttobee.tasktussle.base.cards.TeamIcon
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 
-class BingoCardGUI(associatedTeam : Team) : ITTCardGUI(associatedTeam, 25,15,45,"${associatedTeam.getDisplayName()} - Bingo") {
+class BingoCardGUI(associatedTeam : Team) : ITTCardGUI(associatedTeam, 15,45,"${associatedTeam.getDisplayName()} - Bingo") {
+    private val taskAmount = 25
+    override val teamIcon: TeamIcon = TeamIcon(this,associatedTeam,"0/25")
+
     override fun displayTask(tasks: Array<ITask>) : Boolean {
         if(tasks.size != taskAmount) return false
         val teamSetSize = associatedTeam.getSet()?.size ?: 1

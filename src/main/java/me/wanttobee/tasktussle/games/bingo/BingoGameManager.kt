@@ -119,13 +119,8 @@ object BingoGameManager : ITTGameManager<BingoCard>(
     }
 
     private fun endGame(){
-        if(TaskTussleSystem.cardVisibility != "visible"){
-            gameTeams!!.forEachObject { card ->
-                card.cardGui.teamIcon.setClickable(true)
-            }
-        }
         gameTeams!!.forEachObject { card ->
-            card.showContributions()
+            card.endGame()
         }
     }
     override fun finishGame(winningTeam: Team) {

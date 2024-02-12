@@ -38,7 +38,8 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
             }
             return
         }
-        cardGui.teamIcon.setAmount(getCompletedAmount())
+        val currentlyCompleted = getCompletedAmount()
+        cardGui.teamIcon.updateProgression("$currentlyCompleted/25", currentlyCompleted)
         BingoGameManager.checkCardForWin(this)
     }
 
@@ -80,7 +81,8 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         return Triple(horizontal,vertical,diagonal)
     }
 
-    fun showContributions(){
-        cardGui.teamIcon.showContributions(taskSet)
+    // this method is being called whenever the game ends, currently only enabling the teamvisial
+    fun endGame(){
+        cardGui.teamIcon.finishIcon(taskSet)
     }
 }

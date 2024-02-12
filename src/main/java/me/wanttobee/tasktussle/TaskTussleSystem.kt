@@ -176,4 +176,16 @@ object TaskTussleSystem {
         completeTasksLocked = false
         TimerSystem.resumeTimer(gameTimerKey)
     }
+
+    // this is to update the visibility of the game while the game is running
+    // there is not real reason why you should be able to change it mid-game, however,
+    // I still have it here just in case someone accedently did it
+    // (but if it is becoming really anoying to make this compatible with other changes, then this is the first thing that will be removed)
+    // also note that when there is no game running yet, that this method does literally nothing,
+    // games that start will read from the system itself if it should be visible or not
+    fun updateVisibility(){
+        gameSystem?.gameTeams?.forEachObject { card ->
+            card.cardGui.teamIcon.refresh()
+        }
+    }
 }
