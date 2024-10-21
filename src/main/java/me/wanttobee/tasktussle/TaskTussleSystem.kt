@@ -4,7 +4,7 @@ import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarItem
 import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
-import me.wanttobee.tasktussle.base.cards.ITTGameManager
+import me.wanttobee.tasktussle.base.games.ITTGameManager
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskFactory
 import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
@@ -185,7 +185,7 @@ object TaskTussleSystem {
     // games that start will read from the system itself if it should be visible or not
     fun updateVisibility(){
         gameSystem?.gameTeams?.forEachObject { card ->
-            card.cardGui.teamIcon.refresh()
+            card.teamIcon.refresh()
         }
     }
 }

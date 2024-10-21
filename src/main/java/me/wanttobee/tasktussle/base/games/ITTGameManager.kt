@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.base.cards
+package me.wanttobee.tasktussle.base.games
 
 import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
 import me.wanttobee.commandtree.nodes.CommandIntLeaf
@@ -6,27 +6,22 @@ import me.wanttobee.commandtree.nodes.ICommandNode
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.util.toLore
 import me.wanttobee.tasktussle.base.generic.IManager
 import me.wanttobee.tasktussle.base.generic.ManagerSettings
 import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
+import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import me.wanttobee.tasktussle.teams.TeamSystem
+import me.wanttobee.tasktussle.util.toLore
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import kotlin.math.max
 import kotlin.math.min
 
-// FIXME: Note that this class is not in use anymore
-
-// TaskTussle GAME MANAGER:
-//  The system object / singleton / manager  of the specified game (lets say for example bingo)
-//  This is the hub where everything related to bingo comes together
-//  Requests from the outside come here and will be handled, or changed on the inside will be handled
-abstract class ITTGameManager <T : ITTCard>(
-    private val teamRange: IntRange, gameName: String, gameIconMaterial: Material,
+abstract class ITTGameManager <T : ITTGameTeam>(
+    private val teamRange: IntRange, val gameName: String, gameIconMaterial: Material,
     gameDescription: String, settingsRows : Int = 1) :
     IManager(gameIconMaterial, gameName, gameDescription) {
     // if there is a no game active, this set is null
@@ -43,13 +38,13 @@ abstract class ITTGameManager <T : ITTCard>(
     abstract val defaultValue : ((Team) -> T)
     val startCommand : ICommandNode = if( teamRange.min() != teamRange.max() )
         CommandIntLeaf(
-       gameName.lowercase().replace(' ', '_'), teamRange.min(), teamRange.max(),
-        {commander, size -> /*TaskTussleSystem.startGame(commander, size, this)*/ },
-        {commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
-    ) else
+            gameName.lowercase().replace(' ', '_'), teamRange.min(), teamRange.max(),
+            {commander, size -> TaskTussleSystem.startGame(commander, size, this) },
+            {commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
+        ) else
         CommandEmptyLeaf(gameName.lowercase().replace(' ', '_')) { commander ->
-        //TaskTussleSystem.startGame(commander,  teamRange.min(), this)
-    }
+            TaskTussleSystem.startGame(commander,  teamRange.min(), this)
+        }
 
     // this method will eventually call startGame(commander, gameSet)
     // when the game has been made
@@ -69,29 +64,23 @@ abstract class ITTGameManager <T : ITTCard>(
         }
         // from here we are safe because we checked what could all go wrong, we can now safely create the teams and start the game
 
-        // if we want to choose the teams beforehand, we need to start the team maker and tell the team maker what to do with those teams
-        // if we don't want to choose, we can just generate the teams directly
-        if(TaskTussleSystem.choseTeamsBeforehand){
-            TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, "Bingo") { set ->
-                gameTeams = set
-                set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
-                // we make sure that if a task type wants to set something before the game starts, that we give it the time
-                // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
-                for(manager in TaskTussleGrouper.taskManagers)
-                    manager.prepareForThisTaskType(set)
-                startGame(commander,set)
-            }
-        }
-        else {
-            // otherwise we generate the teams randomly
-            gameTeams = TeamSystem.generateTeams(teamAmount, "Bingo", defaultValue)
-            gameTeams!!.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
+        val startEffect :(TeamSet<T>) -> Unit = { set ->
+            gameTeams = set
+            set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
             // we make sure that if a task type wants to set something before the game starts, that we give it the time
             // for example, advancements task needs all advancements to be cleared otherwise they can't be completed anymore
             for(manager in TaskTussleGrouper.taskManagers)
-                manager.prepareForThisTaskType(gameTeams!!)
-            startGame(commander, gameTeams!!)
+                manager.prepareForThisTaskType(set)
+
+            set.forEachObject { teamObject -> teamObject.associatedCard?.selectCardGui(set) }
+            startGame(commander,set)
         }
+
+        // if we want to choose the teams beforehand, we need to start the team maker and tell the team maker what to do with those teams
+        // if we don't want to choose, we can just generate the teams directly
+        if(TaskTussleSystem.choseTeamsBeforehand)
+            TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, gameName, startEffect)
+        else startEffect.invoke(TeamSystem.generateTeams(teamAmount, gameName, defaultValue))
         return true
     }
 
@@ -114,7 +103,7 @@ abstract class ITTGameManager <T : ITTCard>(
     // this method clear the game, if this is called before the game is finished, the game will not have a winner :(
     open fun clearGame() : Boolean{
         if(gameTeams == null) return false
-        gameTeams!!.forEachObject { cardManager -> cardManager.cardGui.clear() }
+        gameTeams!!.forEachObject { cardManager -> cardManager.clear() }
         gameTeams!!.clear()
         gameTeams = null
         return true
@@ -122,13 +111,18 @@ abstract class ITTGameManager <T : ITTCard>(
 
     open fun debugStatus(commander: Player) {}
 
+    open fun requestTasks(amount: Int, team: Team) : Array<ITask>? {
+        return TaskTussleSystem.generateTasks(amount, team, gameTeams!!, emptyList())
+    }
+
 
     protected fun addOvertimeSetting(overtimeOptions : Array<String>){
         atOvertimeSetting = overtimeOptions[0]
 
-        val drawInitiallyIcon = UniqueItemStack(Material.STICK, "",
+        val drawInitiallyIcon = UniqueItemStack(
+            Material.STICK, "",
             ("${ChatColor.GRAY}If there is no game time left " +
-                "(aka, time hits 0 minutes). This does not effect games " +
+                    "(aka, time hits 0 minutes). This does not effect games " +
                     "played where the time is disabled.").toLore(32) )
             .updateEnchanted(true)
 
@@ -149,12 +143,13 @@ abstract class ITTGameManager <T : ITTCard>(
     }
 
     protected fun addSkipTokenSetting(){
-        val tokenIcon = UniqueItemStack(Material.RED_CANDLE, "",
+        val tokenIcon = UniqueItemStack(
+            Material.RED_CANDLE, "",
             listOf(
                 "${ChatColor.DARK_GRAY}L Click: ${ChatColor.GRAY}Increase amount",
                 "${ChatColor.DARK_GRAY}R Click: ${ChatColor.GRAY}Decrease amount"
             ) +
-            "${ChatColor.GRAY}Skip tokens allow teams to skip a task by failing it.".toLore(32) )
+                    "${ChatColor.GRAY}Skip tokens allow teams to skip a task by failing it.".toLore(32) )
 
         settingsInventory.addSetting(tokenIcon,{
             tokenIcon
@@ -163,12 +158,13 @@ abstract class ITTGameManager <T : ITTCard>(
                 .updateEnchanted(TaskTussleSystem.skipTokens > 0)
                 .pushUpdates()
         },
-            {_,_ -> TaskTussleSystem.skipTokens = min(100,TaskTussleSystem.skipTokens+1) },
+            {_,_ -> TaskTussleSystem.skipTokens = min(100, TaskTussleSystem.skipTokens+1) },
             {_,_ -> TaskTussleSystem.skipTokens = max(0, TaskTussleSystem.skipTokens -1) }
         )
     }
     protected fun addSucceedTokenSetting(){
-        val tokenIcon = UniqueItemStack(Material.LIME_CANDLE, "",
+        val tokenIcon = UniqueItemStack(
+            Material.LIME_CANDLE, "",
             listOf(
                 "${ChatColor.DARK_GRAY}L Click: ${ChatColor.GRAY}Increase amount",
                 "${ChatColor.DARK_GRAY}R Click: ${ChatColor.GRAY}Decrease amount"
@@ -182,7 +178,7 @@ abstract class ITTGameManager <T : ITTCard>(
                 .updateEnchanted(TaskTussleSystem.succeedTokens > 0)
                 .pushUpdates()
         },
-            {_,_ -> TaskTussleSystem.succeedTokens = min(100,TaskTussleSystem.succeedTokens+1) },
+            {_,_ -> TaskTussleSystem.succeedTokens = min(100, TaskTussleSystem.succeedTokens+1) },
             {_,_ -> TaskTussleSystem.succeedTokens = max(0, TaskTussleSystem.succeedTokens -1) }
         )
     }

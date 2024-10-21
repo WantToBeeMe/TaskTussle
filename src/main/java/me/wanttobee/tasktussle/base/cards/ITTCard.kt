@@ -32,5 +32,4 @@ interface ITTCard {
     fun <T:ITTCard> setTeams(teams : TeamSet<T>)
 
     fun onTaskDisabled(task : ITask)
-
 }
