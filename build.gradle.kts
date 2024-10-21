@@ -2,10 +2,44 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "1.8.0" // kotlin!!
-    kotlin("kapt") version "1.7.10" // kotlin/annotation!!
     // if you are using libraries, but they return errors when loading in game, you may want to use this
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0"
     // and if you do, also build your jars like this ./gradle clean build shadowJar
+}
+
+bukkitPluginYaml  {
+    // https://github.com/jpenilla/resource-factory/tree/master
+    main.set("me.wanttobee.tasktussle.MinecraftPlugin")
+    apiVersion.set("1.20")
+
+    name.set("TaskTussle")
+    version.set("1.0.1")
+    authors.add("WantToBeeMe")
+    description.set("A plugin with a lot of possibilities for all kinds of task based games")
+
+    libraries.add("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin !!
+
+    commands {
+        // register("helloWorld") {
+        // //  permission.set("admin.permission")
+        //     usage.set("/helloWorld")
+        //     aliases.add("hw")
+        //     aliases.add("hello")
+        //     description.set("hello world command")
+        // }
+        register("debug_tt") {
+            permission.set("admin.permission")
+            usage.set("/debug_tt")
+            description.set("debug command for task tussle")
+        }
+        register("taskTussle") {
+            permission.set("admin.permission")
+            usage.set("/taskTussle")
+            aliases.add("tt")
+            description.set("command for task tussle")
+        }
+    }
 }
 
 group = "me.wanttobeeme"
@@ -32,8 +66,6 @@ dependencies {
     implementation("com.github.WantToBeeMe:EverythingItems:2.3.0")
     compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
-    compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
-    kapt("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
 }
 
 // Configures a task to process resources, such as a plugin.yml file,
