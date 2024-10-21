@@ -8,21 +8,19 @@ plugins {
     // and if you do, also build your jars like this ./gradle clean build shadowJar
 }
 
+group = "me.wanttobeeme"
+version = "1.0.1"
+
 bukkitPluginYaml  {
     // https://github.com/jpenilla/resource-factory/tree/master
     main.set("me.wanttobee.tasktussle.MinecraftPlugin")
     apiVersion.set("1.20")
-
-    name.set("TaskTussle")
-    version.set("1.0.1")
     authors.add("WantToBeeMe")
     description.set("A plugin with a lot of possibilities for all kinds of task based games")
-
     libraries.add("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin !!
 
     commands {
         // register("helloWorld") {
-        // //  permission.set("admin.permission")
         //     usage.set("/helloWorld")
         //     aliases.add("hw")
         //     aliases.add("hello")
@@ -41,9 +39,6 @@ bukkitPluginYaml  {
         }
     }
 }
-
-group = "me.wanttobeeme"
-version = "1.0"
 
 repositories {
     mavenCentral()
