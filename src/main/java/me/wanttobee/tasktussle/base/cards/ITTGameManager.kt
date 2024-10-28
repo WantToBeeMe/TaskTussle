@@ -1,8 +1,9 @@
 package me.wanttobee.tasktussle.base.cards
 
-import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
-import me.wanttobee.commandtree.nodes.CommandIntLeaf
-import me.wanttobee.commandtree.nodes.ICommandNode
+
+import me.wanttobee.commandtree.partials.ICommandPartial
+import me.wanttobee.commandtree.partials.EmptyPartial
+import me.wanttobee.commandtree.partials.IntPartial
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleGrouper
 import me.wanttobee.tasktussle.TaskTussleSystem
@@ -39,15 +40,14 @@ abstract class ITTGameManager <T : ITTCard>(
 
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
     abstract val defaultValue : ((Team) -> T)
-    val startCommand : ICommandNode = if( teamRange.min() != teamRange.max() )
-        CommandIntLeaf(
-       gameName.lowercase().replace(' ', '_'), teamRange.min(), teamRange.max(),
-        {commander, size -> TaskTussleSystem.startGame(commander, size, this) },
-        {commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
-    ) else
-        CommandEmptyLeaf(gameName.lowercase().replace(' ', '_')) { commander ->
-        TaskTussleSystem.startGame(commander,  teamRange.min(), this)
-    }
+    val startCommand : ICommandPartial = if( teamRange.min() != teamRange.max() )
+        IntPartial(gameName.lowercase().replace(' ', '_')).setStaticRange(teamRange.min(), teamRange.max())
+            .setEffect{commander, size -> TaskTussleSystem.startGame(commander, size, this) }
+            .setEmptyEffect{commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
+    else
+        EmptyPartial(gameName.lowercase().replace(' ', '_')).setEffect { commander ->
+            TaskTussleSystem.startGame(commander, teamRange.min(), this)
+        }
 
     // this method will eventually call startGame(commander, gameSet)
     // when the game has been made

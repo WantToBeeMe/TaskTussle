@@ -1,5 +1,6 @@
 package me.wanttobee.tasktussle
 
+/*
 import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject
 import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
@@ -9,8 +10,10 @@ import me.wanttobee.everythingitems.interactiveitems.InteractiveHotBarSystem
 import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.TeamSystem
 import me.wanttobee.tasktussle.util.TimerSystem
+*/
 
-object DebugCommand : ICommandNamespace {
+object DebugCommand  {
+    /*
     override val commandName: String = "debug_tt"
     override val commandSummary: String = "check the different statuses of the different aspects of this plugin"
     override val hasOnlyOneGroupMember: Boolean = false
@@ -53,5 +56,5 @@ object DebugCommand : ICommandNamespace {
         override val baseTree = CommandEmptyLeaf("timers") { p ->
             TimerSystem.debugStatus(p)
         }
-    }
+    }*/
 }

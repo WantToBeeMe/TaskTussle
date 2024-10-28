@@ -1,12 +1,14 @@
 package me.wanttobee.tasktussle.teams
-
+/*
 import me.wanttobee.commandtree.ICommandNamespace
 import me.wanttobee.commandtree.ICommandObject
 import me.wanttobee.commandtree.nodes.CommandEmptyLeaf
 import me.wanttobee.commandtree.nodes.CommandIntLeaf
 import me.wanttobee.commandtree.nodes.ICommandNode
+*/
 
-object TeamCommands : ICommandNamespace {
+object TeamCommands  { //ICommandNamespace
+    /*
     override val commandName: String = "teams"
     override val commandSummary: String = "everything you will need for creating, managing and/or debugging teams"
     override val hasOnlyOneGroupMember: Boolean = false
@@ -29,4 +31,5 @@ object TeamCommands : ICommandNamespace {
         override val helpText: String = "will open a team maker with the specific settings your provided"
         override val baseTree: ICommandNode =CommandIntLeaf("teamMaker", 2, 54,  {p,i -> TeamSystem.startTeamMaker(p,{},i,"Command Made"){} } )
     }
+     */
 }

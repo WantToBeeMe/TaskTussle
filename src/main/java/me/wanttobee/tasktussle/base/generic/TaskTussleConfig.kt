@@ -1,8 +1,8 @@
 package me.wanttobee.tasktussle.base.generic
 
-import me.wanttobee.commandtree.ICommandNamespace
-import me.wanttobee.commandtree.ICommandObject
-import me.wanttobee.commandtree.nodes.*
+import me.wanttobee.commandtree.Description
+import me.wanttobee.commandtree.ITreeCommand
+import me.wanttobee.commandtree.partials.*
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
@@ -13,62 +13,37 @@ import org.bukkit.Material
 import kotlin.math.max
 import kotlin.math.min
 
-object TaskTussleConfig : ICommandNamespace {
-    override val commandName: String = "taskTussle"
-    override val commandSummary: String = "to start a game or change settings before starting the game"
-    override val hasOnlyOneGroupMember: Boolean = false
-    override val isZeroParameterCommand: Boolean = false
-    override val systemCommands: Array<ICommandObject> = arrayOf(
-        StartTree,
-        StopTree,
-        SettingsTree,
-        DebugTree,
-        FinishTree
-    )
+object TaskTussleConfig : ITreeCommand {
+    override val description = Description("to start a game or change settings before starting the game")
+        .addSubDescription(name="start", description = "to start one of the games")
+        .addSubDescription(name="debug", description = "check some information just about its current running game (no real usage besides that)")
+        .addSubDescription(name="stop", description = "to stop and clear the current running game")
+        .addSubDescription(name="finish", description = "to finish the game early ")
+        .addSubDescription(name="settings", description = "to view or change settings")
 
-    object StartTree : ICommandObject {
-        override val helpText: String = "to start one of the games"
-        override val baseTree = CommandBranch("start",
-            TaskTussleGrouper.gameManagers.map { manager -> manager.startCommand }.toTypedArray()
-        )
-    }
-
-    object DebugTree : ICommandObject {
-        override val helpText: String = "check some information just about its current running game (no real usage besides that)"
-        override val baseTree = CommandBranch("debug", arrayOf(
-            CommandEmptyLeaf("status"){ commander ->
-                TaskTussleSystem.debugStatus(commander)
-            },
-            CommandEmptyLeaf("log"){ commander ->
+    override val command = BranchPartial("taskTussle").setStaticPartials(
+        BranchPartial("start").setDynamicPartials { TaskTussleGrouper.gameManagers.map { manager -> manager.startCommand }.toTypedArray() },
+        BranchPartial("debug").setStaticPartials(
+            EmptyPartial("status").setEffect { commander -> TaskTussleSystem.debugStatus(commander) },
+            EmptyPartial("log").setEffect { commander ->
                 TaskTussleSystem.canLog = !TaskTussleSystem.canLog
                 commander.sendMessage("${title} look at the server console")
                 if(TaskTussleSystem.canLog)
                     minecraftPlugin.logger.info("Started Logging")
                 else minecraftPlugin.logger.info("Stopped Logging")
-            },
-        ))
-    }
-
-    object StopTree : ICommandObject {
-        override val helpText: String = "to stop and clear the current running game"
-        override val baseTree = CommandEmptyLeaf("stop") { commander -> TaskTussleSystem.stopGame(commander) }
-    }
-    object FinishTree : ICommandObject {
-        override val helpText: String = "to finish the game early "
-        override val baseTree = CommandBranch("finish", arrayOf(
-            CommandEmptyLeaf("draw") {commander -> TaskTussleSystem.drawGame(commander) } ,
-            CommandEmptyLeaf("out_of_time") {commander -> TaskTussleSystem.outOfTimeGame(commander) } ,
-        ))
-    }
-
-
-    object SettingsTree : ICommandObject {
-        override val helpText: String = "to view or change settings"
-        override val baseTree = CommandEmptyLeaf("settings"){p ->
+            }
+        ),
+        EmptyPartial("stop").setEffect { commander -> TaskTussleSystem.stopGame(commander) },
+        BranchPartial("finish").setStaticPartials(
+            EmptyPartial("draw").setEffect {commander -> TaskTussleSystem.drawGame(commander) },
+            EmptyPartial("out_of_time").setEffect {commander -> TaskTussleSystem.outOfTimeGame(commander) }
+        ),
+        EmptyPartial("settings").setEffect {p ->
             TaskTussleSettings.open(p)
-            if(TaskTussleSystem.gameIsRunning()) p.sendMessage("${title}${ChatColor.RED} There is already a game running, most settings will not effect a game that is already running")
+            if(TaskTussleSystem.gameIsRunning())
+                p.sendMessage("${title}${ChatColor.RED} There is already a game running, most settings will not effect a game that is already running")
         }
-    }
+    )
 
     init{
         // visibility setting

@@ -9,15 +9,15 @@ plugins {
 }
 
 group = "me.wanttobeeme"
-version = "1.0.1"
+version = "1.0.2.21"
 
 bukkitPluginYaml  {
     // https://github.com/jpenilla/resource-factory/tree/master
     main.set("me.wanttobee.tasktussle.MinecraftPlugin")
-    apiVersion.set("1.20")
+    apiVersion.set("1.21")
     authors.add("WantToBeeMe")
     description.set("A plugin with a lot of possibilities for all kinds of task based games")
-    libraries.add("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin !!
+    libraries.add("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin !!
 
     commands {
         // register("helloWorld") {
@@ -57,10 +57,10 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.WantToBeeMe:CommandTree:1.1.0")
-    implementation("com.github.WantToBeeMe:EverythingItems:2.3.0")
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
+    implementation("com.github.WantToBeeMe:CommandTree:2.213.0")
+    implementation("com.github.WantToBeeMe:EverythingItems:3.213.1")
+    compileOnly("org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin!!
 }
 
 // Configures a task to process resources, such as a plugin.yml file,

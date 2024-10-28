@@ -21,7 +21,7 @@ class MinecraftPlugin : JavaPlugin() {
         TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
 
         TaskTussleGrouper.generateDefaultFolders()
-        CommandTreeSystem.createCommand(DebugCommand)
+        // CommandTreeSystem.createCommand(DebugCommand)
         CommandTreeSystem.createCommand(TaskTussleConfig)
 
         server.onlinePlayers.forEach { player ->
