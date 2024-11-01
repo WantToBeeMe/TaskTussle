@@ -31,6 +31,8 @@ object StartHelper : ITreeCommand, Listener {
     private var lobbyActive = false
     private var lobbyWorldBorder: WorldBorder? = null
 
+    // It is safe to recall this method.
+    // It wil just replace the location of the border, that's it
     fun startLobby(invoker: Player) {
         lobbyActive = true
         for (player in invoker.server.onlinePlayers) {
@@ -53,7 +55,10 @@ object StartHelper : ITreeCommand, Listener {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set 0")
     }
     fun clearLobby(invoker: Player) {
+        if (!lobbyActive)
+            return
         lobbyActive = false
+
         for (player in invoker.server.onlinePlayers) {
             removeLobbyEffectsFromPlayer(player)
         }
