@@ -37,6 +37,11 @@ bukkitPluginYaml  {
             aliases.add("tt")
             description.set("command for task tussle")
         }
+        register("lobby") {
+            permission.set("admin.permission")
+            usage.set("/lobby")
+            description.set("lobby stuff, like border, saturation effect, and stuff. just use it you will understand")
+        }
     }
 }
 

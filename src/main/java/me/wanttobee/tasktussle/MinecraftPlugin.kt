@@ -3,7 +3,9 @@ package me.wanttobee.tasktussle;
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandtree.CommandTreeSystem
 import me.wanttobee.tasktussle.base.generic.TaskTussleConfig
+import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.TeamSystem
+import me.wanttobee.tasktussle.util.StartHelper
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -19,10 +21,12 @@ class MinecraftPlugin : JavaPlugin() {
         ItemUtil.initialize(instance, "${ChatColor.LIGHT_PURPLE}(I)$title")
         TeamSystem.initialize(instance, "${ChatColor.AQUA}(T)$title")
         TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
+        server.pluginManager.registerEvents(StartHelper, this)
 
         TaskTussleGrouper.generateDefaultFolders()
         // CommandTreeSystem.createCommand(DebugCommand)
         CommandTreeSystem.createCommand(TaskTussleConfig)
+        CommandTreeSystem.createCommand(StartHelper)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")
