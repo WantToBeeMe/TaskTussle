@@ -46,9 +46,9 @@ bukkitPluginYaml  {
 }
 
 repositories {
-    mavenCentral()
     // mavenLocal()
     // instead of mavenLocal() when you have uploaded it to GitHub and made a release
+    mavenCentral()
      maven {
             url = uri("https://jitpack.io") // Use JitPack as a resolver for GitHub releases
         }
@@ -63,8 +63,8 @@ repositories {
 
 dependencies {
     implementation("com.github.WantToBeeMe:CommandTree:2.213.0")
-    implementation("com.github.WantToBeeMe:EverythingItems:3.213.1")
-    compileOnly("org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT")
+    implementation("com.github.WantToBeeMe:EverythingItems:3.2110.1")
+    compileOnly("org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin!!
 }
 
