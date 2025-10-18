@@ -2,7 +2,6 @@ package me.wanttobee.tasktussle.base.generic
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
-import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.base.cards.ITTGameManager
 import me.wanttobee.tasktussle.base.tasks.ITaskManager
 import org.bukkit.Bukkit
@@ -83,7 +82,8 @@ object TaskTussleSettings : InteractiveInventory() {
     }
 
     private fun addTaskSetting(taskManager: ITaskManager<*>){
-        val icon = UniqueItemStack(taskManager.iconMaterial, "", taskLore)
+        val icon = UniqueItemStack(taskManager.iconMaterial, "", taskLore).updateMaxStackSize(64)
+
         val updateIcon = {
             val title = "$taskColor${taskManager.taskName}: " +
                     if(taskManager.occupationRatio == 0)

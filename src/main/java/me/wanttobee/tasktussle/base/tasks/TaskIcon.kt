@@ -68,7 +68,7 @@ class TaskIcon(val iconMaterial: Material, val taskTitle : String, taskCategory:
         meta.lore = listOf("${ChatColor.GRAY}this task is not available (yet)")
         meta.setDisplayName("${ChatColor.GRAY}????")
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         uniqueItem.updateMeta(meta)
         uniqueItem.updateEnchanted(false)
     }

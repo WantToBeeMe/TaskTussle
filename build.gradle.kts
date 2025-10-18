@@ -2,19 +2,53 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "1.8.0" // kotlin!!
-    kotlin("kapt") version "1.7.10" // kotlin/annotation!!
     // if you are using libraries, but they return errors when loading in game, you may want to use this
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.2.0"
     // and if you do, also build your jars like this ./gradle clean build shadowJar
 }
 
 group = "me.wanttobeeme"
-version = "1.0"
+version = "1.0.2.21"
+
+bukkitPluginYaml  {
+    // https://github.com/jpenilla/resource-factory/tree/master
+    main.set("me.wanttobee.tasktussle.MinecraftPlugin")
+    apiVersion.set("1.21")
+    authors.add("WantToBeeMe")
+    description.set("A plugin with a lot of possibilities for all kinds of task based games")
+    libraries.add("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin !!
+
+    commands {
+        // register("helloWorld") {
+        //     usage.set("/helloWorld")
+        //     aliases.add("hw")
+        //     aliases.add("hello")
+        //     description.set("hello world command")
+        // }
+        register("debug_tt") {
+            permission.set("admin.permission")
+            usage.set("/debug_tt")
+            description.set("debug command for task tussle")
+        }
+        register("taskTussle") {
+            permission.set("admin.permission")
+            usage.set("/taskTussle")
+            aliases.add("tt")
+            description.set("command for task tussle")
+        }
+        register("lobby") {
+            permission.set("admin.permission")
+            usage.set("/lobby")
+            description.set("lobby stuff, like border, saturation effect, and stuff. just use it you will understand")
+        }
+    }
+}
 
 repositories {
-    mavenCentral()
     // mavenLocal()
     // instead of mavenLocal() when you have uploaded it to GitHub and made a release
+    mavenCentral()
      maven {
             url = uri("https://jitpack.io") // Use JitPack as a resolver for GitHub releases
         }
@@ -28,12 +62,10 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.WantToBeeMe:CommandTree:1.1.0")
-    implementation("com.github.WantToBeeMe:EverythingItems:2.3.0")
-    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22") // kotlin!!
-    compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
-    kapt("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT") // annotations!!
+    implementation("com.github.WantToBeeMe:CommandTree:2.213.0")
+    implementation("com.github.WantToBeeMe:EverythingItems:3.2110.1")
+    compileOnly("org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin!!
 }
 
 // Configures a task to process resources, such as a plugin.yml file,

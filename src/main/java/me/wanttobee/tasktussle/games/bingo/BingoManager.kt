@@ -38,7 +38,7 @@ object BingoManager : ITTGameManager<BingoCard>(
             "${ChatColor.DARK_GRAY}R Click: ${ChatColor.GRAY}Decrease amount",
             "${ChatColor.DARK_GRAY}Shift+L Click: ${ChatColor.GRAY}Set amount to 25",
             "${ChatColor.DARK_GRAY}Shift+R Click: ${ChatColor.GRAY}Set amount to 0")
-        val mutualTasksIcon = UniqueItemStack(Material.ENDER_PEARL,"", mutualTaskLore)
+        val mutualTasksIcon = UniqueItemStack(Material.ENDER_PEARL,"", mutualTaskLore).updateMaxStackSize(64)
         settingsInventory.addSetting(mutualTasksIcon,{
             val newTitle = "${TaskTussleSettings.settingColor}"+
                     (if(mutualTasks <= 25) "Mutual tasks" else "Task pool") +
