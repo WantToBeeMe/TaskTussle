@@ -44,11 +44,11 @@ abstract class ITTGameManager <T : ITTCard>(
     abstract val defaultValue : ((Team) -> T)
     val startCommand : ICommandPartial = if( teamRange.min() != teamRange.max() )
         IntPartial(gameName.lowercase().replace(' ', '_')).setStaticRange(teamRange.min(), teamRange.max())
-            .setEffect{commander, size -> TaskTussleSystem.startGame(commander, size, this) }
+            .setEffect{commander, size -> /* TaskTussleSystem.startGame(commander, size, this) */ }
             .setEmptyEffect{commander -> commander.sendMessage("${ChatColor.RED}you must specify the amount of teams you want to play with") }
     else
         EmptyPartial(gameName.lowercase().replace(' ', '_')).setEffect { commander ->
-            TaskTussleSystem.startGame(commander, teamRange.min(), this)
+           // TaskTussleSystem.startGame(commander, teamRange.min(), this)
         }
 
     // this method will eventually call startGame(commander, gameSet)
