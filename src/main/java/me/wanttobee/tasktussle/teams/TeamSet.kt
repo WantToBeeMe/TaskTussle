@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 // for example this object can be a single number (Int) which would represent the score of that team
 // however, it also can be a lot more complicated like some kind of BingoCard, where each time has 1 bingo card assigned to it
 // In other words, the definition of a team is a list of players, and 1 object shared across these team members
-class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val title : String = "") {
+class TeamSet<T>(private val teamObjectInitializer : (Team, TeamSet<T>) -> T, private val title : String = "") {
     private val teams : MutableMap<Team, T> = mutableMapOf()
     private val observers : MutableList<ITeamSetObserver> = mutableListOf()
 
@@ -73,7 +73,7 @@ class TeamSet<T>(private val teamObjectInitializer : (Team) -> T, private val ti
         teams[team] = value
     }
     fun addTeam(team: Team) {
-        return addTeam(team, teamObjectInitializer.invoke(team))
+        return addTeam(team, teamObjectInitializer.invoke(team, this))
     }
 
     fun getTeam(player: Player): Team? {

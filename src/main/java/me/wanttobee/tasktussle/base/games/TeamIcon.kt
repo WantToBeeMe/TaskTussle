@@ -10,7 +10,7 @@ import me.wanttobee.tasktussle.teams.Team
 import org.bukkit.ChatColor
 import org.bukkit.Material
 
-class TeamIcon(private val ownerInventory : ITTGameTeam , private val associatedTeam : Team, startingProgression: String){
+class TeamIcon(private val ownerInventory : ITTGameTeam, private val associatedTeam : Team, startingProgression: String){
     // we save the unique items here ,but we don't subscribe to them because we don't really care
     private val publicTeamIcon = UniqueItemStack(
         Material.WHITE_STAINED_GLASS.colorize(associatedTeam.color), associatedTeam.getDisplayName(), null)
@@ -42,9 +42,9 @@ class TeamIcon(private val ownerInventory : ITTGameTeam , private val associated
         else {
             // we add it to the inventory
             if(currentlyClickable)
-                inv.addLockedItem(slot,publicTeamIcon){ player,_ -> ownerInventory.openCard(player) }
+                inv.addLockedItem(slot, publicTeamIcon){ player,_ -> ownerInventory.openCard(player) }
             else
-                inv.addLockedItem(slot,publicTeamIcon)
+                inv.addLockedItem(slot, publicTeamIcon)
 
             // we make sure that we can disable and enable the item
             // TODO:
@@ -52,11 +52,11 @@ class TeamIcon(private val ownerInventory : ITTGameTeam , private val associated
             //  we could make it so it will only replace the event
             disableClickEvent.add {
                 inv.removeItem(publicTeamIcon)
-                inv.addLockedItem(slot,publicTeamIcon,null)
+                inv.addLockedItem(slot, publicTeamIcon,null)
             }
             enableClickEvent.add {
                 inv.removeItem(publicTeamIcon)
-                inv.addLockedItem(slot,publicTeamIcon) { player,_ ->
+                inv.addLockedItem(slot, publicTeamIcon) { player,_ ->
                     ownerInventory.openCard(player)
             } }
         }
@@ -68,22 +68,25 @@ class TeamIcon(private val ownerInventory : ITTGameTeam , private val associated
         refresh()
     }
 
+    // TODO: This should probably be moved out, i dont think its the teamIcon responsibility to calculate what the final
+    // status is
     fun finishIcon(taskList: Array<ITask>?){
-        if(taskList == null){
-            // if its null, we "un finish" this icon lol
-            gameFinished = null
-            refresh()
-            return
-        }
-        val newContributionLore : MutableList<String> = mutableListOf()
-        val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
-        val totalCompleted = allCompleted.count()
-        for(member in associatedTeam.getMembers()){
-            val thisParticipation = allCompleted.count { task -> task.contributors.contains(member.name) }
-            val percentage = ((thisParticipation/totalCompleted.toFloat()) * 10000).toInt().toFloat() / 100
-            newContributionLore += "${ChatColor.GRAY}${member.name} = $percentage%"
-        }
-        gameFinished = newContributionLore
+       // if(taskList == null){
+       //     // if its null, we "un finish" this icon lol
+       //     gameFinished = null
+       //     refresh()
+       //     return
+       // }
+       // val newContributionLore : MutableList<String> = mutableListOf()
+       // val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
+       // val totalCompleted = allCompleted.count()
+       // for(member in associatedTeam.getMembers()){
+       //     val thisParticipation = allCompleted.count { task -> task.contributors.contains(member.name) }
+       //     val percentage = ((thisParticipation/totalCompleted.toFloat()) * 10000).toInt().toFloat() / 100
+       //     newContributionLore += "${ChatColor.GRAY}${member.name} = $percentage%"
+       // }
+       // gameFinished = newContributionLore
+        gameFinished = if(taskList == null) null else listOf("${ChatColor.YELLOW}TODO: fix contributions text")
         refresh()
     }
 

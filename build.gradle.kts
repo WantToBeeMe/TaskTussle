@@ -26,6 +26,11 @@ bukkitPluginYaml  {
         //     aliases.add("hello")
         //     description.set("hello world command")
         // }
+        register("teams") {
+            permission.set("admin.permission")
+            usage.set("/teams")
+            description.set("everything you will need for creating, managing and/or debugging teams")
+        }
         register("debug_tt") {
             permission.set("admin.permission")
             usage.set("/debug_tt")
@@ -37,16 +42,17 @@ bukkitPluginYaml  {
             aliases.add("tt")
             description.set("command for task tussle")
         }
-        register("lobby") {
+        register("worldSetup") {
             permission.set("admin.permission")
-            usage.set("/lobby")
-            description.set("lobby stuff, like border, saturation effect, and stuff. just use it you will understand")
+            usage.set("/worldsetup <start / clear>")
+            aliases.add("wsetup")
+            description.set("world setup stuff, like border, saturation effect, and stuff. just use it you will understand")
         }
     }
 }
 
 repositories {
-    // mavenLocal()
+   // mavenLocal()
     // instead of mavenLocal() when you have uploaded it to GitHub and made a release
     mavenCentral()
      maven {
@@ -63,7 +69,7 @@ repositories {
 
 dependencies {
     implementation("com.github.WantToBeeMe:CommandTree:2.213.0")
-    implementation("com.github.WantToBeeMe:EverythingItems:3.2110.1")
+    implementation("com.github.WantToBeeMe:EverythingItems:3.2110.2")
     compileOnly("org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.20") // kotlin!!
 }

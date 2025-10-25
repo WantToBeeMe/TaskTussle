@@ -1,33 +1,18 @@
 package me.wanttobee.tasktussle.util
 
-import me.wanttobee.commandtree.Description
-import me.wanttobee.commandtree.ITreeCommand
-import me.wanttobee.commandtree.partials.BranchPartial
-import me.wanttobee.commandtree.partials.EmptyPartial
-import me.wanttobee.commandtree.partials.ICommandPartial
 import org.bukkit.Bukkit
 import org.bukkit.WorldBorder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 
 // This class is used to set up the border and saturation effect for everyone for example
 // and to remove it again when you actually start the game
-object StartHelper : ITreeCommand, Listener {
-    override val description = Description("used to set the border and saturation effect and stuff like that")
-        .addSubDescription("start", "to start the lobby thing")
-        .addSubDescription("clear", "to clear the lobby thing")
-
-    override val command: ICommandPartial = BranchPartial("lobby").setStaticPartials(
-        EmptyPartial("start").setEffect { invoker -> startLobby(invoker) },
-        EmptyPartial("clear").setEffect { invoker -> clearLobby(invoker) },
-    )
-
+object WorldSetupHelper : Listener {
     private var lobbyActive = false
     private var lobbyWorldBorder: WorldBorder? = null
 

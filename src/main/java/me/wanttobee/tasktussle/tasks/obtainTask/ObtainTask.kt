@@ -7,7 +7,6 @@ import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskIcon
 import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
 import me.wanttobee.tasktussle.teams.Team
-import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -18,8 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
-class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToObtain : Material, private var obtainAmount: Int = 1)
-    : ITask(associatedTeam, associatedSet){
+class ObtainTask(val itemToObtain : Material, private var obtainAmount: Int = 1) : ITask(){
     override val icon: TaskIcon = TaskIcon(itemToObtain,
         itemToObtain.getRealName(),ObtainTaskManager.taskName,
         {"$alreadyObtained/${this.obtainAmount}"} ,
@@ -162,7 +160,7 @@ class ObtainTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val itemToOb
         TaskEventsListener.inventoryClickObservers.remove(this::inventoryClick)
     }
 
-    override fun clone(otherTeam : Team): ObtainTask {
-        return ObtainTask(otherTeam, associatedSet, itemToObtain, obtainAmount)
+    override fun clone(): ObtainTask {
+        return ObtainTask(itemToObtain, obtainAmount)
     }
 }

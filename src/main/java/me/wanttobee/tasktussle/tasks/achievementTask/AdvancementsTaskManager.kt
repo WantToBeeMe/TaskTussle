@@ -19,7 +19,7 @@ object AdvancementsTaskManager : ITaskManager<AdvancementsTask>(Material.KNOWLED
         addFileSetting(AdvancementsFiles)
     }
 
-    override fun generateTasks(associatedTeam: Team?, associatedSet: TeamSet<*>, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<AdvancementsTask>? {
+    override fun generateTasks( amounts: Triple<Int, Int, Int>, skip: Collection<ITask>): Array<AdvancementsTask>? {
         val taskPool = AdvancementsFiles.readFile(fileName!!) ?: return null
         val realSkip : List<AdvancementsTask> = skip.filterIsInstance<AdvancementsTask>()
         val easyPool  =  taskPool.first .filter{adv -> !realSkip.any { task -> task.advancementToComplete.key == adv }}.shuffled()
@@ -31,15 +31,15 @@ object AdvancementsTaskManager : ITaskManager<AdvancementsTask>(Material.KNOWLED
         val selectedAdvancements = mutableListOf<AdvancementsTask>()
         selectedAdvancements.addAll(
             easyPool.take(realAmounts.first).mapNotNull { namespace ->
-                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(associatedTeam, associatedSet, it) }
+                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(it) }
             })
         selectedAdvancements.addAll(
             normalPool.take(realAmounts.second).mapNotNull { namespace ->
-                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(associatedTeam, associatedSet, it) }
+                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(it) }
             })
         selectedAdvancements.addAll(
             hardPool.take(realAmounts.third).mapNotNull { namespace ->
-                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(associatedTeam, associatedSet, it) }
+                Bukkit.getAdvancement(namespace)?.let { AdvancementsTask(it) }
             })
         val arrayTasks = selectedAdvancements.toTypedArray()
         arrayTasks.shuffle()

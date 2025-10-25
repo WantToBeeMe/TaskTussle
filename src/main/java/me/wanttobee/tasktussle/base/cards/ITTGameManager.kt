@@ -41,7 +41,7 @@ abstract class ITTGameManager <T : ITTCard>(
     protected var atOvertimeSetting : String? = null
 
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
-    abstract val defaultValue : ((Team) -> T)
+    abstract val defaultValue : ((Team, TeamSet<T>) -> T)
     val startCommand : ICommandPartial = if( teamRange.min() != teamRange.max() )
         IntPartial(gameName.lowercase().replace(' ', '_')).setStaticRange(teamRange.min(), teamRange.max())
             .setEffect{commander, size -> /* TaskTussleSystem.startGame(commander, size, this) */ }
@@ -72,7 +72,7 @@ abstract class ITTGameManager <T : ITTCard>(
         // if we want to choose the teams beforehand, we need to start the team maker and tell the team maker what to do with those teams
         // if we don't want to choose, we can just generate the teams directly
         if(TaskTussleSystem.choseTeamsBeforehand){
-            TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, "Bingo") { set ->
+            TeamSystem.startTeamMaker(commander, defaultValue, teamAmount, "Bingo") { set ->
                 gameTeams = set
                 set.forEachPlayer { player -> TaskTussleSystem.clickItem.giveToPlayer(player) }
                 // we make sure that if a task type wants to set something before the game starts, that we give it the time

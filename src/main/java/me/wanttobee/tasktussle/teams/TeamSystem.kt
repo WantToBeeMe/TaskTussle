@@ -58,13 +58,13 @@ object TeamSystem: Listener {
             commander.sendMessage("${ChatColor.YELLOW}- ${ChatColor.RESET}$set")
     }
 
-    fun <T> createTeams(teamPreset: List<Collection<Player>>, teamObjectInitializer: (Team) -> T): TeamSet<T> {
+    fun <T> createTeams(teamPreset: List<Collection<Player>>, teamObjectInitializer: (Team, TeamSet<T>) -> T): TeamSet<T> {
         return createTeams(teamPreset.map { col -> Pair(col, null) }, "Unknown Team Set", teamObjectInitializer )
     }
     //fun <T> createTeams(teamPreset: List<Collection<Player>>, setTitle : String, teamObjectInitializer: (Team) -> T): TeamSet<T> {
     //    return createTeams(teamPreset.map { col -> Pair(col, null) }, setTitle, teamObjectInitializer)
     //}
-    fun <T> createTeams(teamPreset: List<Pair<Collection<Player>,T?>>, setTitle : String, teamObjectInitializer : (Team) -> T ) : TeamSet<T> {
+    fun <T> createTeams(teamPreset: List<Pair<Collection<Player>,T?>>, setTitle : String, teamObjectInitializer : (Team, TeamSet<T>) -> T ) : TeamSet<T> {
         val set =TeamSet(teamObjectInitializer,setTitle)
         for(i in teamPreset.indices){
             val team = Team(i+1)
@@ -79,19 +79,19 @@ object TeamSystem: Listener {
 
     // a method that creates a set with teams of equal size with all the players that are online
     // The last parameter makes sure that each team has there designated team value
-    fun <T> generateTeams(teamCount : Int, teamObjectInitializer : (Team) -> T) : TeamSet<T> {
+    fun <T> generateTeams(teamCount : Int, teamObjectInitializer : (Team, TeamSet<T>) -> T) : TeamSet<T> {
         return generateTeams(teamCount, "Unknown Team Set", null, teamObjectInitializer)
     }
-    fun <T> generateTeams(teamCount : Int, setTitle : String, teamObjectInitializer : (Team) -> T) : TeamSet<T> {
+    fun <T> generateTeams(teamCount : Int, setTitle : String, teamObjectInitializer : (Team, TeamSet<T>) -> T) : TeamSet<T> {
         return generateTeams(teamCount,setTitle, null, teamObjectInitializer )
     }
-    fun <T> generateTeams(teamCount : Int, setTitle : String, preGeneratedValues : Array<T>?, teamObjectInitializer : (Team) -> T ) : TeamSet<T> {
+    fun <T> generateTeams(teamCount : Int, setTitle : String, preGeneratedValues : Array<T>?, teamObjectInitializer : (Team, TeamSet<T>) -> T ) : TeamSet<T> {
         val onlinePlayers = minecraftPlugin.server.onlinePlayers.shuffled()
         val playerCount = onlinePlayers.size
         val teamSize = playerCount / teamCount // we try to make each team the same size
         val remainingPlayers = playerCount % teamCount // but it may just be that there will be some players remaining
         var currentPlayerIndex = 0
-        val set = TeamSet(teamObjectInitializer,setTitle)
+        val set = TeamSet(teamObjectInitializer, setTitle)
         for(i in 0 until teamCount){
             // the first n remaining players will be split up in the first n teams
             val size = teamSize + if (i < remainingPlayers) 1 else 0
@@ -111,16 +111,16 @@ object TeamSystem: Listener {
     // the teamMaker is a menu which will allows everyone to choice there teams
     // the processStarter is the player who invoked the teamMaker menu
     // when something goes wrong while creating the teams, then this player will get the messages in its chat
-    fun <T> startTeamMaker(processStarter : Player, teamObjectInitializer : (Team) -> T, teamCount: Int, title:String, preGeneratedValues : Array<T>?, effect: (TeamSet<T>) -> Unit) {
+    fun <T> startTeamMaker(processStarter : Player, teamObjectInitializer : (Team, TeamSet<T>) -> T, teamCount: Int, title:String, preGeneratedValues : Array<T>?, effect: (TeamSet<T>) -> Unit) {
         return startTeamMaker(processStarter, teamObjectInitializer, teamCount,title,100,preGeneratedValues,effect)
     }
-    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team) -> T, teamCount: Int, title:String, effect:(TeamSet<T>) -> Unit) {
+    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team, TeamSet<T>) -> T, teamCount: Int, title:String, effect:(TeamSet<T>) -> Unit) {
         return startTeamMaker(processStarter,teamObjectInitializer, teamCount,title,100,null,effect)
     }
-    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team) -> T, teamCount: Int, effect: (TeamSet<T>) -> Unit){
+    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team, TeamSet<T>) -> T, teamCount: Int, effect: (TeamSet<T>) -> Unit){
         return startTeamMaker(processStarter,teamObjectInitializer, teamCount, "Unknown Team Set", 100,null, effect)
     }
-    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team) -> T, teamCount: Int, title : String, maxTeamSize : Int, preGeneratedValues : Array<T>?, effect : (TeamSet<T>) -> Unit){
+    fun <T> startTeamMaker(processStarter:Player, teamObjectInitializer : (Team, TeamSet<T>) -> T, teamCount: Int, title : String, maxTeamSize : Int, preGeneratedValues : Array<T>?, effect : (TeamSet<T>) -> Unit){
         if(teamCount == 1){
             // when there is 1 team, there is no choice, so we will instantly create the teams
             processStarter.sendMessage("$title ${ChatColor.RED}with 1 team to chose from there isn't any choice, so it has been completed already")

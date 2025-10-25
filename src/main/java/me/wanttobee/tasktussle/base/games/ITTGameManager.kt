@@ -20,12 +20,16 @@ import org.bukkit.entity.Player
 import kotlin.math.max
 import kotlin.math.min
 
+// The game manager is responsible for handling the entire game, from start to end and anything that is global.
+// Most games however are just multiple games at the same time (e.g. a bingo game is just multiple bingo cards/games at the same time by different teams)
+// One individual game is handled by the Card Logic.
+
 abstract class ITTGameManager <T : ITTGameTeam>(
     private val teamRange: IntRange, val gameName: String, gameIconMaterial: Material,
     gameDescription: String, settingsRows : Int = 1) :
     IManager(gameIconMaterial, gameName, gameDescription) {
     // if there is a no game active, this set is null
-    var gameTeams : TeamSet<T>? = null
+    var gameTeams : TeamSet<T>? = null // this is essentially the dictionary from Team to GameTeam
     val settingsInventory = ManagerSettings(this, settingsRows)
 
     var gameFinished = false
@@ -35,7 +39,8 @@ abstract class ITTGameManager <T : ITTGameTeam>(
     protected var atOvertimeSetting : String? = null
 
     // to make sure that whenever we start game, we have the default already predefined, and you don't have to anymore
-    abstract val defaultValue : ((Team) -> T)
+    abstract val teamObjectInitializer : ((Team, TeamSet<T>) -> T)
+
     val startCommand : ICommandPartial = if( teamRange.min() != teamRange.max() )
         IntPartial(gameName.lowercase().replace(' ', '_')).setStaticRange(teamRange.min(), teamRange.max())
             .setEffect{commander, size -> TaskTussleSystem.startGame(commander, size, this) }
@@ -71,15 +76,15 @@ abstract class ITTGameManager <T : ITTGameTeam>(
             for(manager in TaskTussleGrouper.taskManagers)
                 manager.prepareForThisTaskType(set)
 
-            set.forEachObject { teamObject -> teamObject.associatedCard?.selectCardGui(set) }
+            set.forEachObject { teamObject -> teamObject.associatedCard?.selectCardGui() }
             startGame(commander,set)
         }
 
         // if we want to choose the teams beforehand, we need to start the team maker and tell the team maker what to do with those teams
         // if we don't want to choose, we can just generate the teams directly
         if(TaskTussleSystem.choseTeamsBeforehand)
-            TeamSystem.startTeamMaker(commander,defaultValue,teamAmount, gameName, startEffect)
-        else startEffect.invoke(TeamSystem.generateTeams(teamAmount, gameName, defaultValue))
+            TeamSystem.startTeamMaker(commander, teamObjectInitializer, teamAmount, gameName, startEffect)
+        else startEffect.invoke(TeamSystem.generateTeams(teamAmount, gameName, teamObjectInitializer))
         return true
     }
 
@@ -88,7 +93,7 @@ abstract class ITTGameManager <T : ITTGameTeam>(
     abstract fun startGame(commander: Player, teams: TeamSet<T>)
 
     // this method will be called whenever a game finishes, the team that is put in as parameter is the winning team
-    abstract fun finishGame(winningTeam : Team)
+    abstract fun finishGame(winningTeam : T)
 
     abstract fun drawGame()
 
@@ -111,7 +116,7 @@ abstract class ITTGameManager <T : ITTGameTeam>(
     open fun debugStatus(commander: Player) {}
 
     open fun requestTasks(amount: Int, team: Team) : Array<ITask>? {
-        return TaskTussleSystem.generateTasks(amount, team, gameTeams!!, emptyList())
+        return TaskTussleSystem.generateTasks(amount, emptyList())
     }
 
 

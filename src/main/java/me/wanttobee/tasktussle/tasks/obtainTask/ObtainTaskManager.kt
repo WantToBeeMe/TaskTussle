@@ -82,7 +82,7 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
             })
     }
 
-    override fun generateTasks(associatedTeam: Team?, associatedSet: TeamSet<*>, amounts: Triple<Int, Int, Int>, skip: List<ITask>): Array<ObtainTask>? {
+    override fun generateTasks(amounts: Triple<Int, Int, Int>, skip: Collection<ITask>): Array<ObtainTask>? {
         val taskPool = ObtainTaskFiles.readFile(fileName!!) ?: return null
         val realSkip : List<ObtainTask> = skip.filterIsInstance<ObtainTask>()
         val easyPool  =  taskPool.first .filter{mat -> !realSkip.any { task -> task.itemToObtain == mat }}.shuffled()
@@ -91,13 +91,14 @@ object ObtainTaskManager : ITaskManager<ObtainTask>(Material.SHULKER_SHELL, "Obt
 
         val realAmounts = shiftAmounts(amounts, easyPool.size, normalPool.size, hardPool.size)
 
+
         val selectedMaterials = mutableListOf<ObtainTask>()
         selectedMaterials.addAll(easyPool.take(realAmounts.first).map {
-            material -> ObtainTask(associatedTeam, associatedSet, material, easyCount ) })
+            material -> ObtainTask(material, easyCount ) })
         selectedMaterials.addAll(normalPool.take(realAmounts.second).map {
-            material -> ObtainTask(associatedTeam, associatedSet, material, normalCount ) })
+            material -> ObtainTask(material, normalCount ) })
         selectedMaterials.addAll(hardPool.take(realAmounts.third).map {
-            material -> ObtainTask(associatedTeam, associatedSet, material, hardCount ) })
+            material -> ObtainTask(material, hardCount ) })
         val arrayTasks = selectedMaterials.toTypedArray()
         arrayTasks.shuffle()
         return arrayTasks

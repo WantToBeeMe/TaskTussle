@@ -2,10 +2,12 @@ package me.wanttobee.tasktussle;
 
 import me.wanttobee.everythingitems.ItemUtil
 import me.wanttobee.commandtree.CommandTreeSystem
-import me.wanttobee.tasktussle.base.generic.TaskTussleConfig
-import me.wanttobee.tasktussle.base.tasks.TaskEventsListener
+import me.wanttobee.tasktussle.commands.DebugCommands
+import me.wanttobee.tasktussle.commands.WorldSetupCommands
+import me.wanttobee.tasktussle.commands.TaskTussleCommands
+import me.wanttobee.tasktussle.commands.TeamCommands
 import me.wanttobee.tasktussle.teams.TeamSystem
-import me.wanttobee.tasktussle.util.StartHelper
+import me.wanttobee.tasktussle.util.WorldSetupHelper
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -17,16 +19,17 @@ class MinecraftPlugin : JavaPlugin() {
 
     override fun onEnable() {
         instance = this
-        CommandTreeSystem.initialize(instance, "${ChatColor.GREEN}(C)$title")
-        ItemUtil.initialize(instance, "${ChatColor.LIGHT_PURPLE}(I)$title")
-        TeamSystem.initialize(instance, "${ChatColor.AQUA}(T)$title")
-        TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(B)$title")
-        server.pluginManager.registerEvents(StartHelper, this)
+        CommandTreeSystem.initialize(instance, "${ChatColor.GREEN}(Com)$title")
+        ItemUtil.initialize(instance, "${ChatColor.LIGHT_PURPLE}(Ite)$title")
+        TeamSystem.initialize(instance, "${ChatColor.AQUA}(Tea)$title")
+        TaskTussleSystem.initialize(instance, "${ChatColor.YELLOW}(TT)$title")
+        server.pluginManager.registerEvents(WorldSetupHelper, this)
 
         TaskTussleGrouper.generateDefaultFolders()
-        // CommandTreeSystem.createCommand(DebugCommand)
-        CommandTreeSystem.createCommand(TaskTussleConfig)
-        CommandTreeSystem.createCommand(StartHelper)
+        CommandTreeSystem.createCommand(DebugCommands)
+        CommandTreeSystem.createCommand(TaskTussleCommands)
+        CommandTreeSystem.createCommand(TeamCommands)
+        CommandTreeSystem.createCommand(WorldSetupCommands)
 
         server.onlinePlayers.forEach { player ->
             player.sendMessage("$title Plugin has been enabled!")

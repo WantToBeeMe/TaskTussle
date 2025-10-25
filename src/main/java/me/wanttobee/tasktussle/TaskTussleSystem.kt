@@ -70,15 +70,13 @@ object TaskTussleSystem {
         TimerSystem.clearTimer(gameTimerKey)
     }
 
+    // TODO: CHANGE METHOD DESCRIPTION, SINCE IT CHANGED
     // generates a bunch of tasks for the designated team
     // associatedTeam:
     //   Team -> That teams is the only team that can complete this task
     //   null -> all teams can complete this task (but tasks can still be completed only once of-coarse)
-    // TODO:
-    //  Instead of having `Team?` we could make it so we have `Array<Team>?`
-    //  null would still mean the same, but it would mean that multiple teams can complete the task, but not all teams
-    fun generateTasks(amount: Int, associatedTeam : Team?, associatedSet : TeamSet<*>, skips: List<ITask> = emptyList()) : Array<ITask>?{
-        return TaskFactory.generateTasks(associatedTeam,associatedSet, amount, easyRatio, normalRatio, hardRatio, skips)
+    fun generateTasks(amount: Int, skips: Collection<ITask> = emptyList()) : Array<ITask>?{
+        return TaskFactory.generateTasks(amount, easyRatio, normalRatio, hardRatio, skips)
     }
 
     fun gameIsRunning() : Boolean{

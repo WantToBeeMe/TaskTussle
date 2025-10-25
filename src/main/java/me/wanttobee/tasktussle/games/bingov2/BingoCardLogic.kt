@@ -3,12 +3,14 @@ package me.wanttobee.tasktussle.games.bingov2
 import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.base.games.ITTCardGui
 import me.wanttobee.tasktussle.base.games.ITTCardLogic
-import me.wanttobee.tasktussle.base.games.ITTGameTeam
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskState
 import me.wanttobee.tasktussle.teams.TeamSet
 
-class BingoCardLogic : ITTCardLogic {
+// The card Logic is essentially the Model in a MVC architecture. It should NOT be responsible for anything UI related, that is the CardGui
+// It is however responsible for what type of cardGui to use. Anyway, it should handle all the logic for 1 specific card.
+
+class BingoCardLogic(associatedSet: TeamSet<BingoTeam>) : ITTCardLogic<BingoTeam>(associatedSet) {
     override var cardGui: ITTCardGui? = null
     private lateinit var taskSet : Array<ITask>
 
@@ -19,10 +21,10 @@ class BingoCardLogic : ITTCardLogic {
 
     // FIXME: this method is unhinged. it should save the bingoCardLogic from having an hardcoded card. currently when teams share one card
     //  this method gets called multiple times on the same card.
-    override fun <T : ITTGameTeam> selectCardGui(teams: TeamSet<T>) {
+    override fun selectCardGui() {
         val newCard = BingoGuiCenter("Bingo")
         cardGui = newCard
-        newCard.setTeams(teams)
+        newCard.setTeams(associatedSet)
     }
 
     override fun onTaskDisabled(task: ITask) {

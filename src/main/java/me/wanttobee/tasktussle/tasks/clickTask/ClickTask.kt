@@ -11,7 +11,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class ClickTask(associatedTeam : Team?, associatedSet: TeamSet<*>): ITask(associatedTeam, associatedSet) {
+class ClickTask(): ITask() {
     override val icon: TaskIcon = TaskIcon(Material.BELL, "CLICK ME", ClickTaskManager.taskName, {"0/1"}, "click me")
 
     override fun getSuccessMessage(completerTeam: Team): String {
@@ -27,7 +27,7 @@ class ClickTask(associatedTeam : Team?, associatedSet: TeamSet<*>): ITask(associ
     }
     override fun disable() {}
 
-    override fun clone(otherTeam: Team): ITask {
-        return ClickTask(otherTeam, associatedSet)
+    override fun clone(): ITask {
+        return ClickTask()
     }
 }

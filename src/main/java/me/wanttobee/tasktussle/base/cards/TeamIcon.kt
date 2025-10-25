@@ -76,7 +76,7 @@ class TeamIcon(private val ownerInventory : InteractiveInventory, private val as
             return
         }
         val newContributionLore : MutableList<String> = mutableListOf()
-        val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
+        val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam?.associatedTeam == associatedTeam }
         val totalCompleted = allCompleted.count()
         for(member in associatedTeam.getMembers()){
             val thisParticipation = allCompleted.count { task -> task.contributors.contains(member.name) }

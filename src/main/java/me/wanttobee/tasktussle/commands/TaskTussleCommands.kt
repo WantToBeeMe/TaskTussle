@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.base.generic
+package me.wanttobee.tasktussle.commands
 
 import me.wanttobee.commandtree.Description
 import me.wanttobee.commandtree.ITreeCommand
@@ -8,14 +8,16 @@ import me.wanttobee.tasktussle.TaskTussleSystem
 import me.wanttobee.tasktussle.TaskTussleSystem.minecraftPlugin
 import me.wanttobee.tasktussle.TaskTussleSystem.title
 import me.wanttobee.tasktussle.TaskTussleGrouper
+import me.wanttobee.tasktussle.base.generic.TaskTussleSettings
+import me.wanttobee.tasktussle.base.generic.TimeSettings
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import kotlin.math.max
 import kotlin.math.min
 
-object TaskTussleConfig : ITreeCommand {
+object TaskTussleCommands : ITreeCommand {
     override val description = Description("to start a game or change settings before starting the game")
-        .addSubDescription(name="start", description = "to start one of the games")
+        .addSubDescription(name="start", description= "to start one of the games")
         .addSubDescription(name="debug", description = "check some information just about its current running game (no real usage besides that)")
         .addSubDescription(name="stop", description = "to stop and clear the current running game")
         .addSubDescription(name="finish", description = "to finish the game early ")
@@ -52,14 +54,16 @@ object TaskTussleConfig : ITreeCommand {
         TaskTussleSettings.addGenericSetting(visibilityItem, {
             visibilityItem
                 .updateTitle("${TaskTussleSettings.settingColor}Card Visibility:${ChatColor.YELLOW} ${TaskTussleSystem.cardVisibility}")
-                .updateMaterial(when (TaskTussleSystem.cardVisibility){
-                    "visible" -> Material.ENDER_EYE
-                    "hidden" -> Material.FIREWORK_STAR
-                    else -> Material.ENDER_PEARL
-                })
+                .updateMaterial(
+                    when (TaskTussleSystem.cardVisibility) {
+                        "visible" -> Material.ENDER_EYE
+                        "hidden" -> Material.FIREWORK_STAR
+                        else -> Material.ENDER_PEARL
+                    }
+                )
                 .pushUpdates()
         }) { _, _ ->
-            currentVisiblityIndex = (currentVisiblityIndex+1)%TaskTussleSystem.cardVisibilityOptions.size
+            currentVisiblityIndex = (currentVisiblityIndex + 1) % TaskTussleSystem.cardVisibilityOptions.size
             TaskTussleSystem.cardVisibility = TaskTussleSystem.cardVisibilityOptions[currentVisiblityIndex]
             TaskTussleSystem.updateVisibility()
         }
@@ -67,7 +71,8 @@ object TaskTussleConfig : ITreeCommand {
 
         // Easy Ratio
         val easyRatioItem = UniqueItemStack(Material.BRICK, "", TaskTussleSettings.ratioLore)
-        TaskTussleSettings.addGenericSetting(easyRatioItem, {
+        TaskTussleSettings.addGenericSetting(
+            easyRatioItem, {
             easyRatioItem
                 .updateTitle("${TaskTussleSettings.settingColor}Easy Ratio:${ChatColor.YELLOW} ${TaskTussleSystem.easyRatio}")
                 .updateCount(max(1, TaskTussleSystem.easyRatio))
@@ -81,7 +86,8 @@ object TaskTussleConfig : ITreeCommand {
 
         // Normal Ratio
         val normalRatioItem = UniqueItemStack(Material.NETHER_BRICK, "", TaskTussleSettings.ratioLore)
-        TaskTussleSettings.addGenericSetting(normalRatioItem, {
+        TaskTussleSettings.addGenericSetting(
+            normalRatioItem, {
             normalRatioItem
                 .updateTitle("${TaskTussleSettings.settingColor}Normal Ratio:${ChatColor.YELLOW} ${TaskTussleSystem.normalRatio}")
                 .updateCount(max(1, TaskTussleSystem.normalRatio))
@@ -94,8 +100,9 @@ object TaskTussleConfig : ITreeCommand {
             })
 
         // Hard Ratio
-        val hardRatioItem = UniqueItemStack(Material.NETHERITE_INGOT, "", TaskTussleSettings.ratioLore )
-        TaskTussleSettings.addGenericSetting(hardRatioItem, {
+        val hardRatioItem = UniqueItemStack(Material.NETHERITE_INGOT, "", TaskTussleSettings.ratioLore)
+        TaskTussleSettings.addGenericSetting(
+            hardRatioItem, {
             hardRatioItem
                 .updateTitle("${TaskTussleSettings.settingColor}Hard Ratio:${ChatColor.YELLOW} ${TaskTussleSystem.hardRatio}")
                 .updateCount(max(1, TaskTussleSystem.hardRatio))

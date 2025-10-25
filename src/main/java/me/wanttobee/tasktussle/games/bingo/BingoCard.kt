@@ -21,8 +21,8 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
     // we have to save the tasks here because we want to be aware whenever a task is completed or anything
     override fun setTasks(tasks: Array<ITask>): Boolean {
         taskSet = tasks
-        for (task in taskSet)
-            task.setActive(this)
+        // for (task in taskSet)
+        //     task.setActive(this)
         return cardGui.displayTask(taskSet)
     }
 
@@ -81,7 +81,7 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         return Triple(horizontal,vertical,diagonal)
     }
 
-    // this method is being called whenever the game ends, currently only enabling the teamvisial
+    // this method is being called whenever the game ends, currently only enabling the team visial
     fun endGame(){
         cardGui.teamIcon.finishIcon(taskSet)
     }

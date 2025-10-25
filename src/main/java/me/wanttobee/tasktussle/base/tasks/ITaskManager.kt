@@ -42,7 +42,7 @@ abstract class ITaskManager<T : ITask>(taskIconMaterial : Material, taskName: St
     }
 
     // this is to write your own implementation for generating tasks with the different difficulties
-    abstract fun generateTasks(associatedTeam : Team?, associatedSet : TeamSet<*>, amounts : Triple<Int,Int,Int>, skip: List<ITask> = emptyList() ) : Array<T>?
+    abstract fun generateTasks(amounts : Triple<Int,Int,Int>, skip: Collection<ITask> = emptyList() ) : Array<T>?
 
     // clickItemName is the item that is used for the game, most of the time it's called TaskTussleCard,
     // but we don't want to be stuck to this name, so doing this we make sure that if we change it, it will be changed everywhere

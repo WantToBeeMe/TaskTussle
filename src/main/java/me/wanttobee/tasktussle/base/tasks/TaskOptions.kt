@@ -43,7 +43,7 @@ class TaskOptions(private val task: ITask) : InteractiveInventory() {
     }
 
     private fun setSkipToken(){
-        val card = task.assosiatedCard ?: return
+        val card = task.associatedCard ?: return
         if(card.skipTokensMax <= 0) return
 
         val skipToken = UniqueItemStack(
@@ -65,7 +65,7 @@ class TaskOptions(private val task: ITask) : InteractiveInventory() {
     }
 
     private fun setSucceedToken(){
-        val card = task.assosiatedCard ?: return
+        val card = task.associatedCard ?: return
         if(card.successTokensMax <= 0) return
 
         val succeedToken = UniqueItemStack(

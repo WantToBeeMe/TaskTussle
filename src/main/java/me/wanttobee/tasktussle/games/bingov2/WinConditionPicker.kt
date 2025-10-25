@@ -1,9 +1,10 @@
-package me.wanttobee.tasktussle.games.bingo
+package me.wanttobee.tasktussle.games.bingov2
 
 import me.wanttobee.everythingitems.UniqueItemStack
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventory
 import me.wanttobee.everythingitems.interactiveinventory.InteractiveInventorySystem
 import me.wanttobee.tasktussle.TaskTussleSystem
+import me.wanttobee.tasktussle.games.bingo.BingoManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material

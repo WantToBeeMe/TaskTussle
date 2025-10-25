@@ -1,25 +1,38 @@
 package me.wanttobee.tasktussle.base.games
 
+import me.wanttobee.tasktussle.MinecraftPlugin
 import me.wanttobee.tasktussle.base.tasks.ITask
-import me.wanttobee.tasktussle.games.bingov2.BingoTeam
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.entity.Player
 
 // to make the task themselves be dynamic, we need to make it so that cards request the tasks from the game manager (and not the other way around)
-interface ITTCardLogic {
-    var cardGui : ITTCardGui?
+abstract class ITTCardLogic<T: ITTGameTeam>(val associatedSet: TeamSet<T>) {
+    abstract var cardGui : ITTCardGui?
+    val associatedGameTeams : MutableList<ITTGameTeam> = mutableListOf()
+
     fun openCard(player : Player){ cardGui?.open(player) }
 
     // if you don't allow any skip tokens in a sustain game mode,
     // make sure you init it to 0,  otherwise init it to the amount in the settings
     //    override var skipTokens: Int = 0
     //    override var successTokens: Int = TaskTussleSystem.succeedTokens
-    var skipTokens : Int
-    var successTokens : Int
-    val skipTokensMax : Int
-    val successTokensMax : Int
+    abstract var skipTokens : Int
+    abstract var successTokens : Int
+    abstract val skipTokensMax : Int
+    abstract val successTokensMax : Int
 
-    fun onTaskDisabled(task : ITask)
+    abstract fun onTaskDisabled(task : ITask)
     // you know that T is the gameTeam of the game that this logic card is associated with. so if you really need that type context you can just do `teams as TeamSet<...>`
-    fun <T: ITTGameTeam> selectCardGui(teams: TeamSet<T>)
+    abstract fun selectCardGui()
+
+    fun setTasks(taskSet: Array<ITask>) {
+        if (cardGui == null)
+            MinecraftPlugin.instance.logger.warning("ERROR: Trying to set tasks for a card that has not yet been selected. Make sure that the \"card Gui\" has been selected before calling `setTasks` from the \"card Logic\"")
+
+        cardGui?.displayTask(taskSet)
+    }
+
+    open fun clear(){
+        cardGui?.clear()
+    }
 }

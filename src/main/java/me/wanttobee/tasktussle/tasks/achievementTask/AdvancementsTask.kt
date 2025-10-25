@@ -11,7 +11,7 @@ import org.bukkit.Material
 import org.bukkit.advancement.Advancement
 import org.bukkit.event.player.PlayerAdvancementDoneEvent
 
-class AdvancementsTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val advancementToComplete: Advancement) : ITask(associatedTeam, associatedSet) {
+class AdvancementsTask(val advancementToComplete: Advancement) : ITask() {
     private val advancementTitle = advancementToComplete.display?.title ?: "Unknown Advancement"
     override val icon: TaskIcon = TaskIcon(Material.KNOWLEDGE_BOOK, advancementTitle,
         AdvancementsTaskManager.taskName, {"0/1"}, "complete this advancement")
@@ -36,7 +36,7 @@ class AdvancementsTask(associatedTeam : Team?, associatedSet: TeamSet<*>, val ad
         TaskEventsListener.advancementObservers.remove(advancementsEvent)
     }
 
-    override fun clone(otherTeam: Team): ITask {
-        return AdvancementsTask(otherTeam, associatedSet, advancementToComplete)
+    override fun clone(): ITask {
+        return AdvancementsTask(advancementToComplete)
     }
 }
