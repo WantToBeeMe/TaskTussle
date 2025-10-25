@@ -61,7 +61,7 @@ abstract class ITask() {
 
     // we need to pass in the TaskCardManager in able to know to what manager this task should be subscribed
     fun setActive(){
-        completerTeam = null
+        revokeTaskCompletion()
         stateCode = TaskState.ACTIVE
         icon.setState(stateCode)
         internalEnable()
@@ -85,37 +85,23 @@ abstract class ITask() {
         // that not besides that it is completed, that also the team who completed it matters
         stateCode = TaskState.COMPLETED // if(associatedTeam != null) TaskState.COMPLETED else TaskState.COMPLETED_BY
         icon.setState(stateCode, completerTeam.associatedTeam, contributors)
-
-        if(TaskTussleSystem.cardVisibility != "visible"){
-            ownerCard!!.associatedSet.forEachTeam{ team ->
-                team.forEachMember { p ->
-                    if( ownerCard!!.associatedGameTeams.firstOrNull { it.associatedTeam == team} != null )
-                        p.sendMessage(getSuccessMessage(completerTeam.associatedTeam))
-                    else if( TaskTussleSystem.cardVisibility != "hidden" ){
-                        p.sendMessage("${completerTeam.associatedTeam.getDisplayName()}${ChatColor.RESET} got a task")
-                    }
-                }
-            }
-        }
-        else{
-            ownerCard!!.associatedSet.broadcast(getSuccessMessage(completerTeam.associatedTeam))
-        }
+        completerTeam.onTaskCompleted(this)
         internalDisable()
     }
     fun setHidden(){
-        completerTeam = null
+        revokeTaskCompletion()
         stateCode = TaskState.HIDDEN
         icon.setState(stateCode)
         internalDisable()
     }
     fun setLocked(){
-        completerTeam = null
+        revokeTaskCompletion()
         stateCode = TaskState.LOCKED
         icon.setState(stateCode)
         internalDisable()
     }
     fun setFailed(){
-        completerTeam = null
+        revokeTaskCompletion()
         stateCode = TaskState.FAILED
         icon.setState(stateCode)
         internalDisable()
@@ -147,6 +133,13 @@ abstract class ITask() {
         ownerCard!!.onTaskEnabled(this)
         TaskEventsListener.taskObserver.add(this)
         enable()
+    }
+
+    private fun revokeTaskCompletion(){
+        // If it had a completer team, it now loses it and notifies the team
+        completerTeam?.onTaskRevoked(this)
+        completerTeam = null
+        contributors.clear()
     }
 
     protected abstract fun enable()

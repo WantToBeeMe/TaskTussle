@@ -4,6 +4,7 @@ import me.wanttobee.tasktussle.base.cards.ITTCardGUI
 import me.wanttobee.tasktussle.base.games.ITTCardGui
 import me.wanttobee.tasktussle.base.games.ITTGameTeam
 import me.wanttobee.tasktussle.base.tasks.ITask
+import me.wanttobee.tasktussle.base.tasks.TaskIcon
 import me.wanttobee.tasktussle.teams.TeamSet
 
 
@@ -33,10 +34,10 @@ class BingoGuiCenter(title: String) : ITTCardGui(45,title) {
         }
     }
 
-    override fun displayTask(taskSet: Array<ITask>) {
+    override fun displayTask(taskIconSet: Array<TaskIcon>) {
         val pushOver = 2 // How much each task should be pushed over to the right
         // (2 because 1 row is the teams, the other row are the separators)
         for(i in 0 until 25) // 25 because bingo always has 25 tasks
-            taskSet[i].icon.addToInventory(pushOver + (i%5) + 9*(i/5), this)
+            taskIconSet[i].addToInventory(pushOver + (i%5) + 9*(i/5), this)
     }
 }

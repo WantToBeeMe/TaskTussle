@@ -118,16 +118,34 @@ object BingoManager : ITTGameManager<BingoTeam>(
             team.associatedCard!!.setTasks(tasks)
             team.openCard()
 
-           // for (t in tasks){
-           //     t.setActive(team.associatedCard!!)
-           // }
+           for (t in tasks){
+               t.setActive()
+           }
         }
+    }
+
+    fun checkCardForWin(cardLogic: BingoCardLogic) {
+        val completed = cardLogic.getCompletedLines()
+        if(gameTeams == null) return
+        val sum = completed.first + completed.second + completed.third
+        val finished = when(winningCondition){
+            "horizontal line" -> completed.first >= 1
+            "vertical line" -> completed.second >= 1
+            "diagonal line" -> completed.third >= 1
+            "1 line" -> sum >= 1
+            "2 lines" -> sum >= 2
+            "3 lines" -> sum >= 3
+            "4 lines" -> sum >= 4
+            "full card" -> completed.first == 5
+            else -> false
+        }
+        if(finished) finishGame(cardLogic.associatedGameTeams.first() as BingoTeam)
     }
 
     override fun finishGame(winningTeam: BingoTeam) {
         TaskTussleSystem.pauseGame()
         gameTeams!!.forEachObject { team ->
-            team.teamIcon.finishIcon(arrayOf()) // TODO: set the tasks
+            team.onGameFinished()
         }
 
         // everyone open their own card
@@ -145,7 +163,7 @@ object BingoManager : ITTGameManager<BingoTeam>(
     override fun drawGame() {
         TaskTussleSystem.pauseGame()
         gameTeams!!.forEachObject { team ->
-            team.teamIcon.finishIcon(arrayOf()) // TODO: set the tasks
+            team.onGameFinished()
         }
 
         // everyone open their own card

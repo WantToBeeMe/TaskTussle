@@ -9,6 +9,7 @@ import org.bukkit.entity.Player
 abstract class ITTCardLogic<T: ITTGameTeam>(val associatedSet: TeamSet<T>) {
     abstract var cardGui : ITTCardGui?
     val associatedGameTeams : MutableList<ITTGameTeam> = mutableListOf()
+    protected lateinit var taskSet : Array<ITask>
 
     fun openCard(player : Player){ cardGui?.open(player) }
 
@@ -26,17 +27,25 @@ abstract class ITTCardLogic<T: ITTGameTeam>(val associatedSet: TeamSet<T>) {
     // you know that T is the gameTeam of the game that this logic card is associated with. so if you really need that type context you can just do `teams as TeamSet<...>`
     abstract fun selectCardGui()
 
-    fun setTasks(taskSet: Array<ITask>) {
+    fun setTasks(newSet: Array<ITask>) {
+        if (::taskSet.isInitialized){
+            MinecraftPlugin.instance.logger.warning("(TaskTussle/ITTCardLogic) ERROR: Trying to set tasks for a card that already has tasks assigned. Make sure to only call `setTasks` once per card.")
+            return
+        }
+
+        taskSet = newSet
         if (cardGui == null)
-            MinecraftPlugin.instance.logger.warning("ERROR: Trying to set tasks for a card that has not yet been selected. Make sure that the \"card Gui\" has been selected before calling `setTasks` from the \"card Logic\"")
+            MinecraftPlugin.instance.logger.warning("(TaskTussle/ITTCardLogic) ERROR: Trying to set tasks for a card that has not yet been selected. Make sure that the \"card Gui\" has been selected before calling `setTasks` from the \"card Logic\"")
 
         for (iTask in taskSet) {
             iTask.setOwnership(this)
         }
-        cardGui?.displayTask(taskSet)
+        cardGui?.displayTask(taskSet.map { it.icon }.toTypedArray())
     }
 
     open fun clear(){
         cardGui?.clear()
     }
+
+    fun getTaskCount(): Int { return taskSet.size }
 }

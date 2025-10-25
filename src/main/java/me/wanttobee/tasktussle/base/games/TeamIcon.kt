@@ -21,7 +21,7 @@ class TeamIcon(private val ownerInventory : ITTGameTeam, private val associatedT
     private val enableClickEvent : MutableList<()->Unit> = mutableListOf()
     // if the game is finished, then this is a list of the contributions
     // otherwise its null (meaning the game is not yet finished)
-    private var gameFinished : List<String>? = null
+    private var gameFinished : Collection<String>? = null
     private var currentProgress = "0"
     private var currentProgressStack = 0
     // clickable indicates what the previous state was of this icon,
@@ -68,25 +68,8 @@ class TeamIcon(private val ownerInventory : ITTGameTeam, private val associatedT
         refresh()
     }
 
-    // TODO: This should probably be moved out, i dont think its the teamIcon responsibility to calculate what the final
-    // status is
-    fun finishIcon(taskList: Array<ITask>?){
-       // if(taskList == null){
-       //     // if its null, we "un finish" this icon lol
-       //     gameFinished = null
-       //     refresh()
-       //     return
-       // }
-       // val newContributionLore : MutableList<String> = mutableListOf()
-       // val allCompleted = taskList.filter { task -> task.stateCode.isCompleted && task.completerTeam == associatedTeam }
-       // val totalCompleted = allCompleted.count()
-       // for(member in associatedTeam.getMembers()){
-       //     val thisParticipation = allCompleted.count { task -> task.contributors.contains(member.name) }
-       //     val percentage = ((thisParticipation/totalCompleted.toFloat()) * 10000).toInt().toFloat() / 100
-       //     newContributionLore += "${ChatColor.GRAY}${member.name} = $percentage%"
-       // }
-       // gameFinished = newContributionLore
-        gameFinished = if(taskList == null) null else listOf("${ChatColor.YELLOW}TODO: fix contributions text")
+    fun finishIcon(contributors: Collection<String>?){
+        gameFinished = contributors
         refresh()
     }
 
