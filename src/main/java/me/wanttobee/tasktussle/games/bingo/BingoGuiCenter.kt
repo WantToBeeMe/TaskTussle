@@ -1,9 +1,7 @@
-package me.wanttobee.tasktussle.games.bingov2
+package me.wanttobee.tasktussle.games.bingo
 
-import me.wanttobee.tasktussle.base.cards.ITTCardGUI
 import me.wanttobee.tasktussle.base.games.ITTCardGui
 import me.wanttobee.tasktussle.base.games.ITTGameTeam
-import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskIcon
 import me.wanttobee.tasktussle.teams.TeamSet
 
@@ -25,7 +23,7 @@ class BingoGuiCenter(title: String) : ITTCardGui(45,title) {
         for(index in 0 until 10){
             val spot = 9*(index%5) + 8*(index/5)
             if(index >= teamsMutableMap.size)
-                addLockedItem( spot, ITTCardGUI.emptyTeamIcon)
+                addLockedItem( spot, emptyTeamIcon)
             else {
                 teamsMutableMap[index]
                     .second.teamIcon

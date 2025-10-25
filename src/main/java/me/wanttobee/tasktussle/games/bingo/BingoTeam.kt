@@ -1,4 +1,4 @@
-package me.wanttobee.tasktussle.games.bingov2
+package me.wanttobee.tasktussle.games.bingo
 
 import me.wanttobee.tasktussle.base.games.ITTCardLogic
 import me.wanttobee.tasktussle.base.games.ITTGameTeam

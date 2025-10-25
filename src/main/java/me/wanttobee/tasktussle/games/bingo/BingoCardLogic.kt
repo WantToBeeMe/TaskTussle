@@ -1,57 +1,52 @@
 package me.wanttobee.tasktussle.games.bingo
 
 import me.wanttobee.tasktussle.TaskTussleSystem
-import me.wanttobee.tasktussle.base.cards.ITTCardGUI
-import me.wanttobee.tasktussle.base.cards.ITTCard
+import me.wanttobee.tasktussle.base.games.ITTCardGui
+import me.wanttobee.tasktussle.base.games.ITTCardLogic
 import me.wanttobee.tasktussle.base.tasks.ITask
 import me.wanttobee.tasktussle.base.tasks.TaskState
-import me.wanttobee.tasktussle.teams.Team
 import me.wanttobee.tasktussle.teams.TeamSet
 import org.bukkit.ChatColor
 
-class BingoCard(private val associatedTeam : Team) : ITTCard {
-    override val cardGui: ITTCardGUI = BingoCardGUI(associatedTeam)
-    private lateinit var taskSet : Array<ITask>
+// The card Logic is essentially the Model in a MVC architecture. It should NOT be responsible for anything UI related, that is the CardGui
+// It is however responsible for what type of cardGui to use. Anyway, it should handle all the logic for 1 specific card.
+
+class BingoCardLogic(associatedSet: TeamSet<BingoTeam>) : ITTCardLogic<BingoTeam>(associatedSet) {
+    override var cardGui: ITTCardGui? = null
 
     override var skipTokens: Int = 0
     override var successTokens: Int = TaskTussleSystem.succeedTokens
     override val skipTokensMax: Int = skipTokens
     override val successTokensMax: Int = successTokens
 
-    // we have to save the tasks here because we want to be aware whenever a task is completed or anything
-    override fun setTasks(tasks: Array<ITask>): Boolean {
-        taskSet = tasks
-        // for (task in taskSet)
-        //     task.setActive(this)
-        return cardGui.displayTask(taskSet)
-    }
-
-    // here we have no important business with the teams, however, we do need to inform the card itself to display it
-    override fun <T : ITTCard> setTeams(teams: TeamSet<T>) {
-        cardGui.displayTeams(teams)
+    // FIXME: this method is unhinged. it should save the bingoCardLogic from having an hardcoded card. currently when teams share one card
+    //  this method gets called multiple times on the same card.
+    override fun selectCardGui() {
+        val newCard = BingoGuiCenter("Bingo")
+        cardGui = newCard
+        newCard.setTeams(associatedSet)
     }
 
     override fun onTaskDisabled(task: ITask) {
         if(task.stateCode != TaskState.COMPLETED){
-            associatedTeam.forEachMember { p ->
-                p.sendMessage("${TaskTussleSystem.title}${ChatColor.RED} a wrong disableCode (${task.stateCode}) has been given in your card")
+            for (associatedGameTeam in associatedGameTeams) {
+                associatedGameTeam.forEachMember { p ->
+                    // It's not necessarily wrong to get a different code than Complete.
+                    // It is however wrong in bingo, since when playing bingo we don't expect any other code than Completed.
+                    p.sendMessage("${TaskTussleSystem.title}${ChatColor.RED} a wrong disableCode (${task.stateCode}) has been given in your card")
+                }
             }
             return
         }
-        val currentlyCompleted = getCompletedAmount()
-        cardGui.teamIcon.updateProgression("$currentlyCompleted/25", currentlyCompleted)
+
         BingoManager.checkCardForWin(this)
     }
 
-    fun getCompletedAmount() : Int {
-        var value = 0
-        for(t in taskSet)
-            if(t.stateCode == TaskState.COMPLETED) value++
-        return value
-    }
-
     //this method returns triple<Horizontal, Vertical, Diagonal>
-    fun getCompletedLines() : Triple<Int,Int,Int> {
+    fun getCompletedLines() : Triple<Int, Int, Int> {
+        // This method is used to determent whether the game has been won or not.
+        // Here we only look at the tasks related to this card, regardless of the associated team. This is possible because single cards are not shared between teams.
+        // But if this was not the case, we could not do it this way
         var horizontal = 0
         var vertical = 0
         var diagonal = 0
@@ -79,10 +74,5 @@ class BingoCard(private val associatedTeam : Team) : ITTCard {
         if(diagonalBool1) diagonal++
         if(diagonalBool2) diagonal++
         return Triple(horizontal,vertical,diagonal)
-    }
-
-    // this method is being called whenever the game ends, currently only enabling the team visial
-    fun endGame(){
-        cardGui.teamIcon.finishIcon(taskSet)
     }
 }
