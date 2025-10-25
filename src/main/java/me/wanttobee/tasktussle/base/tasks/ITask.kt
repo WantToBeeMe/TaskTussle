@@ -19,7 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 // 5 -> Failed
 abstract class ITask() {
     abstract val icon : TaskIcon
-    var associatedCard : ITTCardLogic<ITTGameTeam>? = null
+    var ownerCard : ITTCardLogic<*>? = null
         private set
     var stateCode : TaskState = TaskState.HIDDEN
         private set
@@ -32,21 +32,45 @@ abstract class ITask() {
     // its only something when it is being used, otherwise its null
     private var taskOptions : TaskOptions? = null
 
+    //region ownership / contributors
+
+    fun setOwnership(owner: ITTCardLogic<*>){
+        if (ownerCard != null){
+            TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant set task ownership, already has an owner")
+            return
+        }
+
+        this.ownerCard = owner
+    }
+
     fun addContributor(playerName: String) : Boolean{
         return contributors.add(playerName)
     }
 
+    fun isPlayerAllowed(potentialCompleter : Player) : Boolean{
+        for (asTeam in ownerCard!!.associatedGameTeams){
+            if(asTeam.containsMember(potentialCompleter))
+                return true
+        }
+        return false
+        //return associatedCard?.containsMember(potentialCompleter) ?: associatedSet.containsPlayer(potentialCompleter)
+    }
+
+    //endregion
+    //region state management
+
     // we need to pass in the TaskCardManager in able to know to what manager this task should be subscribed
-    fun setActive(callBackCard : ITTCardLogic<ITTGameTeam>){
+    fun setActive(){
         completerTeam = null
         stateCode = TaskState.ACTIVE
         icon.setState(stateCode)
-        internalEnable(callBackCard)
+        internalEnable()
     }
 
     fun setCompleted(completer: Player) {
         addContributor(completer.name)
-        return setCompleted(associatedCard!!.associatedSet.getObject(completer)!!, false)
+        val a = ownerCard!!.associatedSet.getObject(completer)!!
+        return setCompleted(a, false)
     }
 
     fun setCompleted(completerTeam: ITTGameTeam, wholeTeamContributed: Boolean = true){
@@ -63,9 +87,9 @@ abstract class ITask() {
         icon.setState(stateCode, completerTeam.associatedTeam, contributors)
 
         if(TaskTussleSystem.cardVisibility != "visible"){
-            associatedCard!!.associatedSet.forEachTeam{ team ->
+            ownerCard!!.associatedSet.forEachTeam{ team ->
                 team.forEachMember { p ->
-                    if( associatedCard!!.associatedGameTeams.firstOrNull { it.associatedTeam == team} != null )
+                    if( ownerCard!!.associatedGameTeams.firstOrNull { it.associatedTeam == team} != null )
                         p.sendMessage(getSuccessMessage(completerTeam.associatedTeam))
                     else if( TaskTussleSystem.cardVisibility != "hidden" ){
                         p.sendMessage("${completerTeam.associatedTeam.getDisplayName()}${ChatColor.RESET} got a task")
@@ -74,7 +98,7 @@ abstract class ITask() {
             }
         }
         else{
-            associatedCard!!.associatedSet.broadcast(getSuccessMessage(completerTeam.associatedTeam))
+            ownerCard!!.associatedSet.broadcast(getSuccessMessage(completerTeam.associatedTeam))
         }
         internalDisable()
     }
@@ -100,37 +124,34 @@ abstract class ITask() {
     // this method will be called only from this abstract class, it is to make sure the task will not work anymore
     // the public implementation is just disable()
     private fun internalDisable(){
-        if(associatedCard == null)
-            TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant do task-callback for disable call (no card manager assigned)")
-        else{
-            associatedCard!!.onTaskDisabled(this)
-            TaskEventsListener.taskObserver.remove(this)
-            taskOptions?.clear()
-            taskOptions = null
-            disable()
+        if(ownerCard == null){
+            TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant do task-callback for disable call (no owner card assigned)")
+            return
         }
 
+        ownerCard!!.onTaskDisabled(this)
+        TaskEventsListener.taskObserver.remove(this)
+        taskOptions?.clear()
+        taskOptions = null
+        disable()
     }
 
     // this method will be called only from this abstract class, it is to make sure the task will work
     // the public implementation is just enable()
-    private fun internalEnable(callBackCard : ITTCardLogic<ITTGameTeam>){
-        this.associatedCard = callBackCard
+    private fun internalEnable(){
+        if(ownerCard == null){
+            TaskTussleSystem.minecraftPlugin.logger.info("(TaskTussle/ITask) ERROR: Cant do task-callback for enable call (no owner card assigned)")
+            return
+        }
+
+        ownerCard!!.onTaskEnabled(this)
         TaskEventsListener.taskObserver.add(this)
         enable()
     }
 
-    fun isPlayerAllowed(potentialCompleter : Player) : Boolean{
-        for (asTeam in associatedCard!!.associatedGameTeams){
-            if(asTeam.containsMember(potentialCompleter))
-                return true
-        }
-        return false
-        //return associatedCard?.containsMember(potentialCompleter) ?: associatedSet.containsPlayer(potentialCompleter)
-    }
-
     protected abstract fun enable()
     protected abstract fun disable()
+    //endregion
 
     abstract fun getSuccessMessage(completerTeam: Team) : String
     abstract fun clone() : ITask
@@ -140,8 +161,8 @@ abstract class ITask() {
     // than the player belongs to one of those teams
     open fun onLeftClickIcon(player : Player, shift: Boolean, event: InventoryClickEvent){ /* nothing by default */ }
     open fun onRightClickIcon(player : Player, shift: Boolean, event: InventoryClickEvent){
-        if((associatedCard?.skipTokensMax ?: 0) == 0 &&
-            (associatedCard?.successTokensMax ?: 0) == 0) {
+        if((ownerCard?.skipTokensMax ?: 0) == 0 &&
+            (ownerCard?.successTokensMax ?: 0) == 0) {
             // when we didn't have any tokens to begin with, we can just ignore this call and not open the inventory at all, there is no use anyway
             return
         }

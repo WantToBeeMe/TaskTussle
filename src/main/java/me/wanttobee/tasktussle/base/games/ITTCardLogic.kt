@@ -22,6 +22,7 @@ abstract class ITTCardLogic<T: ITTGameTeam>(val associatedSet: TeamSet<T>) {
     abstract val successTokensMax : Int
 
     abstract fun onTaskDisabled(task : ITask)
+    open fun onTaskEnabled(task : ITask) {}
     // you know that T is the gameTeam of the game that this logic card is associated with. so if you really need that type context you can just do `teams as TeamSet<...>`
     abstract fun selectCardGui()
 
@@ -29,6 +30,9 @@ abstract class ITTCardLogic<T: ITTGameTeam>(val associatedSet: TeamSet<T>) {
         if (cardGui == null)
             MinecraftPlugin.instance.logger.warning("ERROR: Trying to set tasks for a card that has not yet been selected. Make sure that the \"card Gui\" has been selected before calling `setTasks` from the \"card Logic\"")
 
+        for (iTask in taskSet) {
+            iTask.setOwnership(this)
+        }
         cardGui?.displayTask(taskSet)
     }
 
